@@ -1,4 +1,4 @@
-package sdkman_cli
+package sdkmanCli
 
 import (
 	"crypto/tls"

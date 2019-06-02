@@ -4,10 +4,11 @@ import (
 	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
-	sdkman_cli "sdkman-cli/sdkman-cli"
+	"sdkman-cli/sdkmanCli"
 )
 
 func main() {
+	env := &sdkmanCli.Env{"~\\sdkman", "C:\\Users\\palin\\.sdkman\\candidates", []string{"java", "scala"}, false, "https://api.sdkman.io/2/candidates", "1"}
 	app := cli.NewApp()
 	app.Commands = []cli.Command{
 		{
@@ -16,7 +17,14 @@ func main() {
 				"l", "ls",
 			},
 			Action: func(c *cli.Context) error {
-				sdkman_cli.ListSdk(c.Args().First())
+				sdkmanCli.List(c.Args().First(), env)
+				return nil
+			},
+		}, {
+			Name:    "current",
+			Aliases: []string{"c"},
+			Action: func(c *cli.Context) error {
+				sdkmanCli.Current(env, c.Args().First())
 				return nil
 			},
 		},
