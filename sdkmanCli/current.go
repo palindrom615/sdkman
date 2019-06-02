@@ -3,8 +3,9 @@ package sdkmanCli
 import (
 	"fmt"
 	"github.com/fatih/color"
+	"io/ioutil"
 	"os"
-	"strings"
+	"path"
 )
 
 func Current(e *Env, candidate string) {
@@ -30,10 +31,19 @@ func Current(e *Env, candidate string) {
 	}
 }
 func currentVersion(e *Env, candidate string) (string, error) {
-	p, err := os.Readlink(strings.Join([]string{e.CandidateDir, candidate, "current"}, string(os.PathSeparator)))
+	p, err := os.Readlink(path.Join(e.CandidateDir, candidate, "current"))
 	if err == nil {
 		d, _ := os.Stat(p)
 		return d.Name(), nil
 	}
 	return "", err
+}
+
+func installed(e *Env, candidate string) ([]string, error) {
+	res := []string{}
+	vers, err := ioutil.ReadDir(path.Join(e.CandidateDir, candidate))
+	for _, ver := range vers {
+		res = append(res, ver.Name())
+	}
+	return res, err
 }

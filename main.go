@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	env := &sdkmanCli.Env{"~\\sdkman", "C:\\Users\\palin\\.sdkman\\candidates", []string{"java", "scala"}, false, "https://api.sdkman.io/2/candidates", "1", "MSYS_NT-10.0"}
+	env := &sdkmanCli.Env{"~\\sdkman", "C:\\Users\\palin\\.sdkman\\candidates",
+		[]string{"java", "scala"}, false, "https://api.sdkman.io/2/candidates", "1", "MSYS_NT-10.0"}
 	app := cli.NewApp()
 	app.Commands = []cli.Command{
 		{
