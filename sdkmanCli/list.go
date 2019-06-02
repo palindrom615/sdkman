@@ -1,32 +1,16 @@
 package sdkmanCli
 
 import (
-	"github.com/fatih/color"
-	"io/ioutil"
-	"os"
-	"path"
-	"strings"
+	"sdkman-cli/api"
 )
 
-func List(e *Env, candidate string) {
+func List(candidate string) {
+
 	if candidate == "" {
-		if os.Getenv("SDKMAN_AVAILABLE") == "false" {
-			color.Red("This command is not available while offline")
-		} else {
-			Pager(string(download(listCandidatesApi(e))))
-		}
+		Pager(string(api.GetList()))
 	} else {
-		ins, _ := installed(e, candidate)
-		curr, _ := currentVersion(e, candidate)
-		Pager(string(download(listCandidateApi(e, candidate, curr, ins))))
+		ins, _ := installed(candidate)
+		curr, _ := currentVersion(candidate)
+		Pager(string(api.GetVersionsList(candidate, curr, ins)))
 	}
-}
-
-func listCandidatesApi(e *Env) string {
-	return e.CandidatesApi + "/list"
-}
-
-func listCandidateApi(e *Env, candidate string, current string, installed []string) string {
-	return e.CandidatesApi + "/" + candidate + "/" + e.Platform + "/versions/list?" +
-		"current=" + current + "&installed=" + strings.Join(installed, ",")
 }

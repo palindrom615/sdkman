@@ -1,34 +1,13 @@
 package sdkmanCli
 
 import (
-	"crypto/tls"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"os/exec"
+	"path"
 	"strings"
 )
-
-func download(url string) []byte {
-	insecureSkipVerify := os.Getenv("sdkman_insecure_ssl") == "true"
-	client := &http.Client{Transport: &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: insecureSkipVerify},
-	}}
-
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
-	data, err := ioutil.ReadAll(resp.Body)
-	return data
-}
 
 func Pager(pages string) {
 	pager := os.Getenv("PAGER")
@@ -43,4 +22,29 @@ func Pager(pages string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func currentVersion(candidate string) (string, error) {
+	p, err := os.Readlink(path.Join(e.Dir, "candidates", candidate, "current"))
+	if err == nil {
+		d, _ := os.Stat(p)
+		return d.Name(), nil
+	}
+	return "", err
+}
+
+func installed(candidate string) ([]string, error) {
+	res := []string{}
+	vers, err := ioutil.ReadDir(path.Join(e.Dir, "candidates", candidate))
+	for _, ver := range vers {
+		res = append(res, ver.Name())
+	}
+	return res, err
+}
+
+func isInstalled(candidate string, version string) bool {
+	archDir := e.Dir + "/archives"
+	target := archDir + "/" + candidate + "-" + version
+	_, err := os.Stat(target)
+	return os.IsNotExist(err)
 }

@@ -3,16 +3,13 @@ package sdkmanCli
 import (
 	"fmt"
 	"github.com/fatih/color"
-	"io/ioutil"
-	"os"
-	"path"
 )
 
-func Current(e *Env, candidate string) {
+func Current(candidate string) {
 	if candidate == "" {
 		installedCount := 0
 		for _, c := range e.Candidates {
-			CURRENT, err := currentVersion(e, c)
+			CURRENT, err := currentVersion(c)
 			if err == nil {
 				fmt.Println(c + ": " + CURRENT)
 				installedCount++
@@ -22,7 +19,7 @@ func Current(e *Env, candidate string) {
 			color.Red("No candidates are in use")
 		}
 	} else {
-		CURRENT, err := currentVersion(e, candidate)
+		CURRENT, err := currentVersion(candidate)
 		if err == nil {
 			fmt.Println(candidate + ": " + CURRENT)
 		} else {
@@ -30,20 +27,4 @@ func Current(e *Env, candidate string) {
 		}
 	}
 }
-func currentVersion(e *Env, candidate string) (string, error) {
-	p, err := os.Readlink(path.Join(e.CandidateDir, candidate, "current"))
-	if err == nil {
-		d, _ := os.Stat(p)
-		return d.Name(), nil
-	}
-	return "", err
-}
 
-func installed(e *Env, candidate string) ([]string, error) {
-	res := []string{}
-	vers, err := ioutil.ReadDir(path.Join(e.CandidateDir, candidate))
-	for _, ver := range vers {
-		res = append(res, ver.Name())
-	}
-	return res, err
-}

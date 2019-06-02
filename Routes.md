@@ -7,7 +7,7 @@
     * /all
     * /list
     * /:candidate/:platform/versions/all
-    * /:candidate/:platform/versions/list
+    * /:candidate/:platform/versions/list?current=:current&installed=:installed
     
 ## [sdkman-broker](https://github.com/sdkman/sdkman-candidates/blob/master/conf/routes)
 
@@ -30,5 +30,5 @@
 
 * /alive
 * /install
-* /selfupdate
-* hooks/:phase/:candidate/:version/:platform
+* /selfupdate?beta=:beta
+* /hooks/:phase/:candidate/:version/:platform
