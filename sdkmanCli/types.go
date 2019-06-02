@@ -7,4 +7,5 @@ type Env struct {
 	OfflineMod    bool
 	CandidatesApi string
 	Version       string
+	Platform      string
 }

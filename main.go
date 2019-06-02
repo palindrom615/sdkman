@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	env := &sdkmanCli.Env{"~\\sdkman", "C:\\Users\\palin\\.sdkman\\candidates", []string{"java", "scala"}, false, "https://api.sdkman.io/2/candidates", "1"}
+	env := &sdkmanCli.Env{"~\\sdkman", "C:\\Users\\palin\\.sdkman\\candidates", []string{"java", "scala"}, false, "https://api.sdkman.io/2/candidates", "1", "MSYS_NT-10.0"}
 	app := cli.NewApp()
 	app.Commands = []cli.Command{
 		{
@@ -17,7 +17,7 @@ func main() {
 				"l", "ls",
 			},
 			Action: func(c *cli.Context) error {
-				sdkmanCli.List(c.Args().First(), env)
+				sdkmanCli.List(env, c.Args().First())
 				return nil
 			},
 		}, {

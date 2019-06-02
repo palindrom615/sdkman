@@ -11,7 +11,7 @@ func Current(e *Env, candidate string) {
 	if candidate == "" {
 		installedCount := 0
 		for _, c := range e.Candidates {
-			CURRENT, err := determineCurrentVersion(e, c)
+			CURRENT, err := currentVersion(e, c)
 			if err == nil {
 				fmt.Println(c + ": " + CURRENT)
 				installedCount++
@@ -21,7 +21,7 @@ func Current(e *Env, candidate string) {
 			color.Red("No candidates are in use")
 		}
 	} else {
-		CURRENT, err := determineCurrentVersion(e, candidate)
+		CURRENT, err := currentVersion(e, candidate)
 		if err == nil {
 			fmt.Println(candidate + ": " + CURRENT)
 		} else {
@@ -29,7 +29,7 @@ func Current(e *Env, candidate string) {
 		}
 	}
 }
-func determineCurrentVersion(e *Env, candidate string) (string, error) {
+func currentVersion(e *Env, candidate string) (string, error) {
 	p, err := os.Readlink(strings.Join([]string{e.CandidateDir, candidate, "current"}, string(os.PathSeparator)))
 	if err == nil {
 		d, _ := os.Stat(p)

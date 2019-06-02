@@ -1,15 +1,17 @@
 package sdkmanCli
 
 import (
+	"fmt"
 	"github.com/fatih/color"
+	"io/ioutil"
 	"os"
 )
 
-func List(candidate string, e *Env) {
+func List(e *Env, candidate string) {
 	if candidate == "" {
 		listCandidates(e)
 	}
-	listVersions(candidate)
+	listVersions(e, candidate)
 }
 
 func listCandidates(e *Env) {
@@ -20,6 +22,18 @@ func listCandidates(e *Env) {
 	}
 }
 
-func listVersions(candidate string) {
+func listVersions(e *Env, candidate string) {
+	ins, _ := installed(e, candidate)
+	curr, _ := currentVersion(e, candidate)
+	fmt.Println(SecureCurl(e.CandidatesApi + "/" + candidate + "/" +
+		e.Platform + "/versions/list?current=" + curr + "&installed=" + ins))
+}
 
+func installed(e *Env, candidate string) (string, error) {
+	res := ""
+	vers, err := ioutil.ReadDir(e.CandidateDir + string(os.PathSeparator) + candidate)
+	for _, ver := range vers {
+		res += "," + ver.Name()
+	}
+	return res, err
 }
