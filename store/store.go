@@ -25,7 +25,7 @@ func GetCandidates() []string {
 	return strings.Split(string(candidates), ",")
 }
 
-func SetCandidates(val []byte) error {
-	e := db.Put("candidates/all", val)
+func SetCandidates(val []string) error {
+	e := db.Put("candidates/all", []byte(strings.Join(val, ",")))
 	return e
 }

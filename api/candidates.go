@@ -7,15 +7,15 @@ import (
 var candidatesApi = e.Api + "/candidates"
 
 func GetDefault(candidate string) []byte {
-	return download(candidatesApi + "s/default/" + candidate)
+	return download(candidatesApi + "/default/" + candidate)
 }
 
-func GetValidate(candidate string, version string) []byte {
-	return download(candidatesApi + "/validate/" + candidate + "/" + version + "/" + e.Platform)
+func GetValidate(candidate string, version string) bool {
+	return string(download(candidatesApi + "/validate/" + candidate + "/" + version + "/" + e.Platform)) == "valid"
 }
 
-func GetAll() []byte {
-	return download(candidatesApi + "/all")
+func GetAll() []string {
+	return strings.Split(string(download(candidatesApi + "/all")), ",")
 }
 
 func GetList() []byte {

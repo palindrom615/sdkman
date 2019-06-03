@@ -10,17 +10,11 @@ import (
 )
 
 func Update() {
-	freshCandidatesCsv := api.GetAll()
+	freshCsv := api.GetAll()
+	fresh := strset.New(freshCsv...)
+	cachedCsv := store.GetCandidates()
+	cached := strset.New(cachedCsv...)
 
-	fresh := strset.New()
-	cached := strset.New()
-
-	for _, can := range strings.Split(string(freshCandidatesCsv), ",") {
-		fresh.Add(can)
-	}
-	for _, can := range store.GetCandidates() {
-		cached.Add(can)
-	}
 	added := strset.Difference(fresh, cached)
 	obsoleted := strset.Difference(cached, fresh)
 
@@ -29,6 +23,6 @@ func Update() {
 	} else {
 		color.Green("Adding new candidates: %s", strings.Join(added.List(), ", "))
 		color.Green("Removing obsolete candidates: %s", strings.Join(obsoleted.List(), ", "))
-		_ = store.SetCandidates(freshCandidatesCsv)
+		_ = store.SetCandidates(freshCsv)
 	}
 }
