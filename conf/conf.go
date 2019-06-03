@@ -8,7 +8,6 @@ import (
 
 type config struct {
 	Dir        string
-	Candidates []string
 	Api        string
 	Platform   string
 	Insecure   bool
@@ -22,7 +21,6 @@ func GetConf() *config {
 		home, _ := os.UserHomeDir()
 		envInstance = &config{
 			Dir:        path.Join(home, ".sdkman"),
-			Candidates: []string{"java", "scala"},
 			Api:        "https://api.sdkman.io/2",
 			Platform:   "MSYS_NT-10.0",
 			Insecure:   false,

@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"sdkman-cli/store"
 
 	"github.com/fatih/color"
 )
@@ -9,7 +10,7 @@ import (
 func Current(candidate string) {
 	if candidate == "" {
 		installedCount := 0
-		for _, c := range e.Candidates {
+		for _, c := range store.GetCandidates() {
 			CURRENT, err := currentVersion(c)
 			if err == nil {
 				fmt.Println(c + ": " + CURRENT)

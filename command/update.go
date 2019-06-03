@@ -2,6 +2,7 @@ package command
 
 import (
 	"sdkman-cli/api"
+	"sdkman-cli/store"
 	"strings"
 
 	"github.com/fatih/color"
@@ -10,14 +11,14 @@ import (
 
 func Update() {
 	freshCandidatesCsv := api.GetAll()
-	cachedCandidatesCsv, _ := kv.Get("candidates/all")
 
 	fresh := strset.New()
 	cached := strset.New()
+
 	for _, can := range strings.Split(string(freshCandidatesCsv), ",") {
 		fresh.Add(can)
 	}
-	for _, can := range strings.Split(string(cachedCandidatesCsv), ",") {
+	for _, can := range store.GetCandidates() {
 		cached.Add(can)
 	}
 	added := strset.Difference(fresh, cached)
@@ -28,6 +29,6 @@ func Update() {
 	} else {
 		color.Green("Adding new candidates: %s", strings.Join(added.List(), ", "))
 		color.Green("Removing obsolete candidates: %s", strings.Join(obsoleted.List(), ", "))
-		kv.Put("candidates/all", freshCandidatesCsv)
+		_ = store.SetCandidates(freshCandidatesCsv)
 	}
 }
