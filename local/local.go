@@ -10,7 +10,7 @@ import (
 
 var e = conf.GetConf()
 
-func IsVersionExists(candidate string, version string ) bool {
+func IsVersionExists(candidate string, version string) bool {
 	target := path.Join(e.Dir, "candidates", candidate, version)
 	dir, err := os.Lstat(target)
 	if os.IsNotExist(err) {
@@ -32,7 +32,7 @@ func IsVersionExists(candidate string, version string ) bool {
 }
 
 func IsArchiveExists(candidate string, version string) bool {
-	target := path.Join(e.Dir, "archives",  candidate + "-" + version + ".zip")
+	target := path.Join(e.Dir, "archives", candidate+"-"+version+".zip")
 	_, err := os.Stat(target)
 	return os.IsNotExist(err)
 }

@@ -11,11 +11,11 @@ func GetDefault(candidate string) []byte {
 }
 
 func GetValidate(candidate string, version string) bool {
-	return string(download(candidatesApi + "/validate/" + candidate + "/" + version + "/" + e.Platform)) == "valid"
+	return string(download(candidatesApi+"/validate/"+candidate+"/"+version+"/"+e.Platform)) == "valid"
 }
 
 func GetAll() []string {
-	return strings.Split(string(download(candidatesApi + "/all")), ",")
+	return strings.Split(string(download(candidatesApi+"/all")), ",")
 }
 
 func GetList() []byte {
