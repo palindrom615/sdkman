@@ -2,6 +2,7 @@ package command
 
 import (
 	"sdkman-cli/api"
+	"sdkman-cli/local"
 )
 
 func List(candidate string) {
@@ -9,8 +10,8 @@ func List(candidate string) {
 	if candidate == "" {
 		Pager(string(api.GetList()))
 	} else {
-		ins, _ := installed(candidate)
-		curr, _ := currentVersion(candidate)
+		ins, _ := local.InstalledVersions(candidate)
+		curr, _ := local.CurrentVersion(candidate)
 		Pager(string(api.GetVersionsList(candidate, curr, ins)))
 	}
 }

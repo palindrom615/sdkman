@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"sdkman-cli/local"
 	"sdkman-cli/store"
 
 	"github.com/fatih/color"
@@ -11,9 +12,7 @@ func Current(candidate string) {
 	if candidate == "" {
 		installedCount := 0
 		for _, c := range store.GetCandidates() {
-			CURRENT, err := currentVersion(c)
-			if err == nil {
-				fmt.Println(c + ": " + CURRENT)
+			if printCurrent(c) == nil {
 				installedCount++
 			}
 		}
@@ -21,11 +20,16 @@ func Current(candidate string) {
 			color.Red("No candidates are in use")
 		}
 	} else {
-		CURRENT, err := currentVersion(candidate)
-		if err == nil {
-			fmt.Println(candidate + ": " + CURRENT)
-		} else {
+		if printCurrent(candidate) != nil {
 			color.Red("Not using any version of " + candidate)
 		}
 	}
+}
+
+func printCurrent(c string) error {
+	ver, err := local.CurrentVersion(c);
+	if err == nil {
+		fmt.Println(c + ": " + ver)
+	}
+	return err
 }
