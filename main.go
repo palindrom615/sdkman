@@ -27,6 +27,12 @@ func main() {
 				command.Current(c.Args().First())
 				return nil
 			},
+		}, {
+			Name: "update",
+			Action: func(c *cli.Context) error {
+				command.Update()
+				return nil
+			},
 		},
 	}
 
