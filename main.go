@@ -1,10 +1,11 @@
 package main
 
 import (
-	"gopkg.in/urfave/cli.v1"
 	"log"
 	"os"
-	"sdkman-cli/sdkmanCli"
+	"sdkman-cli/command"
+
+	"gopkg.in/urfave/cli.v1"
 )
 
 func main() {
@@ -16,14 +17,14 @@ func main() {
 				"l", "ls",
 			},
 			Action: func(c *cli.Context) error {
-				sdkmanCli.List(c.Args().First())
+				command.List(c.Args().First())
 				return nil
 			},
 		}, {
 			Name:    "current",
 			Aliases: []string{"c"},
 			Action: func(c *cli.Context) error {
-				sdkmanCli.Current(c.Args().First())
+				command.Current(c.Args().First())
 				return nil
 			},
 		},

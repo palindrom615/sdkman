@@ -1,7 +1,8 @@
-package sdkmanCli
+package command
 
 import (
 	"fmt"
+
 	"github.com/fatih/color"
 )
 
@@ -27,4 +28,3 @@ func Current(candidate string) {
 		}
 	}
 }
-

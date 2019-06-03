@@ -1,4 +1,4 @@
-package sdkmanCli
+package command
 
 import (
 	"sdkman-cli/api"
