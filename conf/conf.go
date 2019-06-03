@@ -1,6 +1,10 @@
 package conf
 
-import "sync"
+import (
+	"os"
+	"path"
+	"sync"
+)
 
 type config struct {
 	Dir        string
@@ -15,8 +19,9 @@ var once sync.Once
 
 func GetConf() *config {
 	once.Do(func() {
+		home, _ := os.UserHomeDir()
 		envInstance = &config{
-			Dir:        "C:\\Users\\palin\\.sdkman",
+			Dir:        path.Join(home, ".sdkman"),
 			Candidates: []string{"java", "scala"},
 			Api:        "https://api.sdkman.io/2",
 			Platform:   "MSYS_NT-10.0",
