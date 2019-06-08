@@ -3,6 +3,7 @@ package command
 import (
 	"sdkman-cli/api"
 	"sdkman-cli/store"
+	"sdkman-cli/utils"
 	"strings"
 
 	"github.com/fatih/color"
@@ -10,7 +11,10 @@ import (
 )
 
 func Update() {
-	freshCsv := api.GetAll()
+	freshCsv, netErr := api.GetAll()
+	if netErr != nil {
+		utils.ThrowError(utils.ErrNotOnline)
+	}
 	fresh := strset.New(freshCsv...)
 	cachedCsv := store.GetCandidates()
 	cached := strset.New(cachedCsv...)

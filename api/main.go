@@ -10,7 +10,7 @@ import (
 
 var e = conf.GetConf()
 
-func download(url string) []byte {
+func download(url string) ([]byte, error) {
 	client := &http.Client{Transport: &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: e.Insecure},
 	}}
@@ -20,11 +20,15 @@ func download(url string) []byte {
 		log.Fatal(err)
 	}
 
-	resp, err := client.Do(req)
+	resp, netErr := client.Do(req)
+	if netErr != nil {
+		return []byte{}, netErr
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer resp.Body.Close()
-	data, err := ioutil.ReadAll(resp.Body)
-	return data
+	return data, nil
 }

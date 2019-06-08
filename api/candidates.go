@@ -6,27 +6,32 @@ import (
 
 var candidatesApi = e.Api + "/candidates"
 
-func GetDefault(candidate string) []byte {
-	return download(candidatesApi + "/default/" + candidate)
+func GetDefault(candidate string) (string, error) {
+	res, err := download(candidatesApi + "/default/" + candidate)
+	return string(res), err
 }
 
-func GetValidate(candidate string, version string) bool {
-	return string(download(candidatesApi+"/validate/"+candidate+"/"+version+"/"+e.Platform)) == "valid"
+func GetValidate(candidate string, version string) (bool, error) {
+	res, err := download(candidatesApi + "/validate/" + candidate + "/" + version + "/" + e.Platform)
+	return string(res) == "valid", err
 }
 
-func GetAll() []string {
-	return strings.Split(string(download(candidatesApi+"/all")), ",")
+func GetAll() ([]string, error) {
+	res, err := download(candidatesApi + "/all")
+	return strings.Split(string(res), ","), err
 }
 
-func GetList() []byte {
-	return download(candidatesApi + "/list")
+func GetList() (string, error) {
+	res, err := download(candidatesApi + "/list")
+	return string(res), err
 }
 
-func GetVersionsAll(candidate string) []byte {
+func GetVersionsAll(candidate string) ([]byte, error) {
 	return download(candidatesApi + "/" + candidate + "/" + e.Platform + "/versions/all")
 }
 
-func GetVersionsList(candidate string, current string, installed []string) []byte {
-	return download(candidatesApi + "/" + candidate + "/" + e.Platform + "/versions/list?current=" + current +
+func GetVersionsList(candidate string, current string, installed []string) (string, error) {
+	res, err := download(candidatesApi + "/" + candidate + "/" + e.Platform + "/versions/list?current=" + current +
 		"&installed=" + strings.Join(installed, ","))
+	return string(res), err
 }

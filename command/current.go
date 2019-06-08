@@ -27,7 +27,7 @@ func Current(candidate string) {
 }
 
 func printCurrent(c string) error {
-	ver, err := local.CurrentVersion(c)
+	ver, err := local.Current(c)
 	if err == nil {
 		fmt.Println(c + ": " + ver)
 	}
