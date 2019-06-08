@@ -2,19 +2,21 @@ package api
 
 import (
 	"crypto/tls"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"sdkman-cli/conf"
 )
 
-var e = conf.GetConf()
-
-func download(url string) ([]byte, error) {
-	client := &http.Client{Transport: &http.Transport{
+var (
+	e      = conf.GetConf()
+	client = &http.Client{Transport: &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: e.Insecure},
 	}}
+)
 
+func download(url string) (io.ReadCloser, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -22,13 +24,14 @@ func download(url string) ([]byte, error) {
 
 	resp, netErr := client.Do(req)
 	if netErr != nil {
-		return []byte{}, netErr
+		resp.Body.Close()
 	}
-	defer resp.Body.Close()
+	return resp.Body, netErr
+}
 
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return data, nil
+func downloadSync(url string) ([]byte, error) {
+	body, err := download(url)
+	defer body.Close()
+	data, _ := ioutil.ReadAll(body)
+	return data, err
 }

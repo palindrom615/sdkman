@@ -1,15 +1,17 @@
 package api
 
+import "io"
+
 var brokerApi = e.Api + "/broker"
 
 func GetVersion() ([]byte, error) {
-	return download(brokerApi + "/version")
+	return downloadSync(brokerApi + "/version")
 }
 
-func getDownloadSdkmanVersion(versionType string) ([]byte, error) {
-	return download(brokerApi + "/download/sdkman/version/" + versionType)
+func GetDownloadSdkmanVersion(versionType string) ([]byte, error) {
+	return downloadSync(brokerApi + "/download/sdkman/version/" + versionType)
 }
 
-func getDownload(candidate string, version string) ([]byte, error) {
+func GetDownload(candidate string, version string) (io.ReadCloser, error) {
 	return download(brokerApi + "/download/" + candidate + "/" + version + "/" + e.Platform)
 }
