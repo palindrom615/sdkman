@@ -10,7 +10,7 @@ import (
 
 var e = conf.GetConf()
 
-func IsVersionExists(candidate string, version string) bool {
+func IsInstalled(candidate string, version string) bool {
 	target := path.Join(e.Dir, "candidates", candidate, version)
 	dir, err := os.Lstat(target)
 	if os.IsNotExist(err) {
@@ -31,13 +31,13 @@ func IsVersionExists(candidate string, version string) bool {
 	return false
 }
 
-func IsArchiveExists(candidate string, version string) bool {
+func IsArchived(candidate string, version string) bool {
 	target := path.Join(e.Dir, "archives", candidate+"-"+version+".zip")
 	_, err := os.Stat(target)
 	return os.IsNotExist(err)
 }
 
-func CurrentVersion(candidate string) (string, error) {
+func Current(candidate string) (string, error) {
 	p, err := os.Readlink(path.Join(e.Dir, "candidates", candidate, "current"))
 	if err == nil {
 		d, err := os.Stat(p)
@@ -49,7 +49,7 @@ func CurrentVersion(candidate string) (string, error) {
 	return "", err
 }
 
-func InstalledVersions(candidate string) ([]string, error) {
+func Installed(candidate string) ([]string, error) {
 	res := []string{}
 	versions, err := ioutil.ReadDir(path.Join(e.Dir, "candidates", candidate))
 	for _, ver := range versions {
