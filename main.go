@@ -16,28 +16,30 @@ func main() {
 			Aliases: []string{
 				"l", "ls",
 			},
-			Action: func(c *cli.Context) error {
+			Action: func(c *cli.Context) {
 				command.List(c.Args().First())
-				return nil
 			},
 		}, {
 			Name:    "current",
 			Aliases: []string{"c"},
-			Action: func(c *cli.Context) error {
+			Action: func(c *cli.Context) {
 				command.Current(c.Args().First())
-				return nil
 			},
 		}, {
 			Name: "update",
-			Action: func(c *cli.Context) error {
+			Action: func(c *cli.Context) {
 				command.Update()
-				return nil
 			},
 		}, {
-			Name: "install",
-			Action: func(c *cli.Context) error {
+			Name:    "install",
+			Aliases: []string{"i"},
+			Action: func(c *cli.Context) {
 				command.Install(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
-				return nil
+			},
+		}, {
+			Name: "use",
+			Action: func(c *cli.Context) {
+				command.Use(c.Args().Get(0), c.Args().Get(1))
 			},
 		},
 	}

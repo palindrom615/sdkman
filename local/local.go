@@ -1,8 +1,6 @@
 package local
 
 import (
-	"archive/zip"
-	"io"
 	"io/ioutil"
 	"os"
 	"path"
@@ -31,27 +29,6 @@ func IsInstalled(candidate string, version string) bool {
 	return false
 }
 
-func IsArchived(candidate string, version string) bool {
-	target := archivePath(candidate, version)
-	r, invalidZipFile := zip.OpenReader(target)
-	defer func() {
-		if r != nil {
-			r.Close()
-		}
-	}()
-	return invalidZipFile == nil
-}
-
-func Current(candidate string) (string, error) {
-	p, err := os.Readlink(installPath(candidate, "current"))
-	if err == nil {
-		d, err := os.Stat(p)
-		utils.Check(err)
-		return d.Name(), nil
-	}
-	return "", err
-}
-
 func Installed(candidate string) ([]string, error) {
 	res := []string{}
 	versions, err := ioutil.ReadDir(path.Join(e.Dir, "candidates", candidate))
@@ -62,21 +39,6 @@ func Installed(candidate string) ([]string, error) {
 		res = append(res, ver.Name())
 	}
 	return res, nil
-}
-
-func Archive(r io.ReadCloser, candidate string, version string, completed chan<- bool) {
-	f, err := os.Create(archivePath(candidate, version))
-	utils.Check(err)
-	println("downloading...")
-	_, err = io.Copy(f, r)
-	utils.Check(err)
-	defer func() {
-		r.Close()
-		if f != nil {
-			_ = f.Close()
-		}
-		completed <- true
-	}()
 }
 
 func Unpack(candidate string, version string, archiveReady <-chan bool, installReady chan<- bool) {
@@ -100,8 +62,4 @@ func Unpack(candidate string, version string, archiveReady <-chan bool, installR
 
 func installPath(candidate string, version string) string {
 	return path.Join(e.Dir, "candidates", candidate, version)
-}
-
-func archivePath(candidate string, version string) string {
-	return path.Join(e.Dir, "archives", candidate+"-"+version+".zip")
 }
