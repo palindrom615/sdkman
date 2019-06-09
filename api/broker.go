@@ -2,8 +2,6 @@ package api
 
 import (
 	"io"
-	"io/ioutil"
-	"strings"
 )
 
 var brokerApi = e.Api + "/broker"
@@ -17,10 +15,5 @@ func GetDownloadSdkmanVersion(versionType string) ([]byte, error) {
 }
 
 func GetDownload(candidate string, version string) (io.ReadCloser, error) {
-	resp, err := download(brokerApi + "/download/" + candidate + "/" + version + "/" + e.Platform)
-	if resp == nil {
-		empty := ioutil.NopCloser(strings.NewReader(""))
-		return empty, err
-	}
-	return resp.Body, err
+	return download(brokerApi + "/download/" + candidate + "/" + version + "/" + e.Platform)
 }

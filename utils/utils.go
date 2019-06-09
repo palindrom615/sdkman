@@ -1,22 +1,21 @@
 package utils
 
 import (
+	"io"
 	"os"
 	"os/exec"
-	"strings"
 )
 
-func Pager(pages string) {
+func Pager(pages io.ReadCloser) {
 	pager := os.Getenv("PAGER")
 	if pager == "" {
 		pager = "more"
 	}
 	c1 := exec.Command(pager)
-	c1.Stdin = strings.NewReader(pages)
+	c1.Stdin = pages
 	c1.Stdout = os.Stdout
 	err := c1.Start()
+	Check(err)
 	c1.Wait()
-	if err != nil {
-		Check(err)
-	}
+	defer pages.Close()
 }

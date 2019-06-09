@@ -1,11 +1,13 @@
 package api
 
 import (
+	"bytes"
 	"crypto/tls"
+	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"sdkman-cli/conf"
+	"sdkman-cli/utils"
 )
 
 var (
@@ -15,20 +17,21 @@ var (
 	}}
 )
 
-func download(url string) (*http.Response, error) {
+func download(url string) (io.ReadCloser, error) {
 	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		log.Fatal(err)
+	utils.Check(err)
+
+	resp, err := client.Do(req)
+	if resp == nil {
+		empty := ioutil.NopCloser(bytes.NewReader([]byte{}))
+		return empty, err
 	}
-	return client.Do(req)
+	return resp.Body, err
 }
 
 func downloadSync(url string) ([]byte, error) {
-	resp, err := download(url)
-	if resp == nil {
-		return []byte{}, err
-	}
-	defer resp.Body.Close()
-	data, _ := ioutil.ReadAll(resp.Body)
+	r, err := download(url)
+	defer r.Close()
+	data, _ := ioutil.ReadAll(r)
 	return data, err
 }
