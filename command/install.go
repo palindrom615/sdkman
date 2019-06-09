@@ -13,9 +13,9 @@ func Install(candidate string, version string, folder string) {
 	if version == "" {
 		version = defaultVersion(candidate)
 	}
-	//if local.IsInstalled(candidate, version) {
-	//	utils.Check(utils.ErrVersionExists)
-	//}
+	if local.IsInstalled(candidate, version) {
+		utils.Check(utils.ErrVersionExists)
+	}
 	if !isValidVersion(candidate, version, folder) {
 		utils.Check(utils.ErrNotValidVersion)
 	}

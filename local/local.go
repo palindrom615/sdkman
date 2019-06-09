@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"sdkman-cli/conf"
@@ -18,17 +17,15 @@ func IsInstalled(candidate string, version string) bool {
 	dir, err := os.Lstat(target)
 	if os.IsNotExist(err) {
 		return false
-	} else if err != nil {
-		log.Fatal(err)
+	} else {
+		utils.Check(err)
 	}
 	mode := dir.Mode()
 	if mode.IsDir() {
 		return true
 	} else if mode&os.ModeSymlink != 0 {
 		_, err := os.Readlink(target)
-		if err != nil {
-			log.Fatal(err)
-		}
+		utils.Check(err)
 		return true
 	}
 	return false
@@ -49,9 +46,7 @@ func Current(candidate string) (string, error) {
 	p, err := os.Readlink(installPath(candidate, "current"))
 	if err == nil {
 		d, err := os.Stat(p)
-		if err != nil {
-			log.Fatal(err)
-		}
+		utils.Check(err)
 		return d.Name(), nil
 	}
 	return "", err
@@ -91,9 +86,14 @@ func Unpack(candidate string, version string, archiveReady <-chan bool, installR
 			utils.Check(utils.ErrNoArchive)
 		}
 		_ = os.Mkdir(path.Join(e.Dir, "candidates", candidate), os.ModeDir)
-		output, err := utils.Unzip(archivePath(candidate, version), os.TempDir())
+
+		tmpDir := path.Join(os.TempDir(), candidate+"-"+version)
+		defer os.RemoveAll(tmpDir)
+		_, err := utils.Unzip(archivePath(candidate, version), tmpDir)
 		utils.Check(err)
-		utils.Check(os.Rename(output[0], installPath(candidate, version)))
+		res, _ := ioutil.ReadDir(tmpDir)
+		result := path.Join(tmpDir, res[0].Name())
+		utils.Check(os.Rename(result, installPath(candidate, version)))
 		installReady <- true
 	}
 }
