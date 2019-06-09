@@ -33,6 +33,12 @@ func main() {
 				command.Update()
 				return nil
 			},
+		}, {
+			Name: "install",
+			Action: func(c *cli.Context) error {
+				command.Install(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2))
+				return nil
+			},
 		},
 	}
 

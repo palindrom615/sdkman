@@ -2,7 +2,6 @@ package api
 
 import (
 	"crypto/tls"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -16,22 +15,20 @@ var (
 	}}
 )
 
-func download(url string) (io.ReadCloser, error) {
+func download(url string) (*http.Response, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	resp, netErr := client.Do(req)
-	if netErr != nil {
-		resp.Body.Close()
-	}
-	return resp.Body, netErr
+	return client.Do(req)
 }
 
 func downloadSync(url string) ([]byte, error) {
-	body, err := download(url)
-	defer body.Close()
-	data, _ := ioutil.ReadAll(body)
+	resp, err := download(url)
+	if resp == nil {
+		return []byte{}, err
+	}
+	defer resp.Body.Close()
+	data, _ := ioutil.ReadAll(resp.Body)
 	return data, err
 }
