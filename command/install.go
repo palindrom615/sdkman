@@ -10,6 +10,8 @@ func Install(candidate string, version string, folder string) {
 	if candidate == "" {
 		utils.Check(utils.ErrNoCandidate)
 	}
+	Update()
+	utils.CheckValid(candidate)
 	if version == "" {
 		version = defaultVersion(candidate)
 	}
