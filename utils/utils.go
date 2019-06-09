@@ -17,6 +17,6 @@ func Pager(pages string) {
 	err := c1.Start()
 	c1.Wait()
 	if err != nil {
-		ThrowError(err)
+		Check(err)
 	}
 }

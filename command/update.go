@@ -13,7 +13,7 @@ import (
 func Update() {
 	freshCsv, netErr := api.GetAll()
 	if netErr != nil {
-		utils.ThrowError(utils.ErrNotOnline)
+		utils.Check(utils.ErrNotOnline)
 	}
 	fresh := strset.New(freshCsv...)
 	cachedCsv := store.GetCandidates()

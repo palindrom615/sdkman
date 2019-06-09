@@ -11,7 +11,7 @@ func List(candidate string) {
 	if candidate == "" {
 		list, err := api.GetList()
 		if err != nil {
-			utils.ThrowError(utils.ErrNotOnline)
+			utils.Check(utils.ErrNotOnline)
 		}
 		utils.Pager(list)
 	} else {
@@ -19,7 +19,7 @@ func List(candidate string) {
 		curr, _ := local.Current(candidate)
 		list, err := api.GetVersionsList(candidate, curr, ins)
 		if err != nil {
-			utils.ThrowError(utils.ErrNotOnline)
+			utils.Check(utils.ErrNotOnline)
 		}
 		utils.Pager(list)
 	}
