@@ -1,8 +1,8 @@
 package command
 
 import (
-	"sdkman-cli/conf"
-	"sdkman-cli/store"
+	"github.com/palindrom615/sdkman-cli/conf"
+	"github.com/palindrom615/sdkman-cli/store"
 )
 
 var e = conf.GetConf()

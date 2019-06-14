@@ -1,10 +1,10 @@
 package command
 
 import (
+	"github.com/palindrom615/sdkman-cli/api"
+	"github.com/palindrom615/sdkman-cli/local"
+	"github.com/palindrom615/sdkman-cli/utils"
 	"io"
-	"sdkman-cli/api"
-	"sdkman-cli/local"
-	"sdkman-cli/utils"
 )
 
 func List(candidate string) {

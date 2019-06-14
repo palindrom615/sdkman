@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/palindrom615/sdkman-cli/command"
 	"log"
 	"os"
-	"sdkman-cli/command"
 
 	"gopkg.in/urfave/cli.v1"
 )

@@ -3,8 +3,8 @@ package utils
 import (
 	"errors"
 	"github.com/fatih/color"
+	"github.com/palindrom615/sdkman-cli/store"
 	"os"
-	"sdkman-cli/store"
 )
 
 var (
