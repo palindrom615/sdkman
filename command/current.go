@@ -2,8 +2,8 @@ package command
 
 import (
 	"fmt"
-	"sdkman-cli/local"
-	"sdkman-cli/store"
+	"github.com/palindrom615/sdkman-cli/local"
+	"github.oom/palindrom615/sdkman-cli/store"
 
 	"github.com/fatih/color"
 )

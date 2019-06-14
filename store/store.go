@@ -1,8 +1,8 @@
 package store
 
 import (
+	"github.oom/palindrom615/sdkman-cli/conf"
 	"path"
-	"sdkman-cli/conf"
 	"strings"
 	"sync"
 

@@ -3,11 +3,11 @@ package api
 import (
 	"bytes"
 	"crypto/tls"
+	"github.oom/palindrom615/sdkman-cli/conf"
+	"github.oom/palindrom615/sdkman-cli/utils"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"sdkman-cli/conf"
-	"sdkman-cli/utils"
 )
 
 var (

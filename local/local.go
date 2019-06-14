@@ -1,11 +1,11 @@
 package local
 
 import (
+	"github.oom/palindrom615/sdkman-cli/conf"
+	"github.oom/palindrom615/sdkman-cli/utils"
 	"io/ioutil"
 	"os"
 	"path"
-	"sdkman-cli/conf"
-	"sdkman-cli/utils"
 )
 
 var e = conf.GetConf()

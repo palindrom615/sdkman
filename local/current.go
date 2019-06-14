@@ -1,8 +1,9 @@
 package local
 
 import (
+	copy2 "github.com/otiai10/copy"
+	"github.oom/palindrom615/sdkman-cli/utils"
 	"os"
-	"sdkman-cli/utils"
 )
 
 func Current(candidate string) (string, error) {
@@ -16,5 +17,5 @@ func Current(candidate string) (string, error) {
 }
 
 func LinkCurrent(candidate string, version string) {
-	utils.Check(os.Symlink(installPath(candidate, version), installPath(candidate, "current")))
+	utils.Check(copy2.Copy(installPath(candidate, version), installPath(candidate, "current")))
 }

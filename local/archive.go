@@ -2,10 +2,10 @@ package local
 
 import (
 	"archive/zip"
+	"github.oom/palindrom615/sdkman-cli/utils"
 	"io"
 	"os"
 	"path"
-	"sdkman-cli/utils"
 )
 
 func IsArchived(candidate string, version string) bool {

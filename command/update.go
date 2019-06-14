@@ -1,9 +1,9 @@
 package command
 
 import (
-	"sdkman-cli/api"
-	"sdkman-cli/store"
-	"sdkman-cli/utils"
+	"github.oom/palindrom615/sdkman-cli/api"
+	"github.oom/palindrom615/sdkman-cli/store"
+	"github.oom/palindrom615/sdkman-cli/utils"
 	"strings"
 
 	"github.com/fatih/color"

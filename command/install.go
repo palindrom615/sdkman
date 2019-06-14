@@ -1,9 +1,9 @@
 package command
 
 import (
-	"sdkman-cli/api"
-	"sdkman-cli/local"
-	"sdkman-cli/utils"
+	"github.oom/palindrom615/sdkman-cli/api"
+	"github.oom/palindrom615/sdkman-cli/local"
+	"github.oom/palindrom615/sdkman-cli/utils"
 )
 
 func Install(candidate string, version string, folder string) {

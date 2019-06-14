@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"os"
-	"sdkman-cli/command"
+	"github.oom/palindrom615/sdkman-cli/command"
 
 	"gopkg.in/urfave/cli.v1"
 )

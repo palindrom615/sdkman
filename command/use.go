@@ -1,8 +1,8 @@
 package command
 
 import (
-	"sdkman-cli/local"
-	"sdkman-cli/utils"
+	"github.oom/palindrom615/sdkman-cli/local"
+	"github.oom/palindrom615/sdkman-cli/utils"
 )
 
 func Use(candidate string, version string) {
