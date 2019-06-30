@@ -33,6 +33,7 @@ func Install(candidate string, version string, folder string) {
 		archiveReady <- true
 	}
 	<-installReady
+	Use(candidate, version)
 }
 
 func defaultVersion(candidate string) string {
