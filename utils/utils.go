@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/palindrom615/sdkman-cli/conf"
 	"io"
 	"os"
 	"os/exec"
@@ -8,8 +9,14 @@ import (
 
 func Pager(pages io.ReadCloser) {
 	pager := os.Getenv("PAGER")
+	c := conf.GetConf()
+
 	if pager == "" {
-		pager = "more"
+		if c.Platform == "msys_nt-10.0" {
+			pager = "more"
+		} else {
+			pager = "less"
+		}
 	}
 	c1 := exec.Command(pager)
 	c1.Stdin = pages

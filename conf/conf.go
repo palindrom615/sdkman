@@ -14,7 +14,7 @@ type config struct {
 	Insecure bool
 }
 
-var envInstance *config
+var confInstance *config
 var once sync.Once
 
 func GetConf() *config {
@@ -24,12 +24,12 @@ func GetConf() *config {
 		if platform == "windows" {
 			platform = "msys_nt-10.0"
 		}
-		envInstance = &config{
+		confInstance = &config{
 			Dir:      path.Join(home, ".sdkman"),
 			Api:      "https://api.sdkman.io/2",
 			Platform: platform,
 			Insecure: false,
 		}
 	})
-	return envInstance
+	return confInstance
 }
