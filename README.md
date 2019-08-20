@@ -1,5 +1,7 @@
 ## sdkman-cli
 
+![travis ci status](https://travis-ci.org/palindrom615/sdkman-cli.svg?branch=master)
+
 **⚠This repo lacks a lot of features now and does not guarantee compatibility with official sdkman-cli.⚠**
 
 **cli stands for client!**
