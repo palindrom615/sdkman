@@ -47,7 +47,7 @@ func Unpack(candidate string, version string, archiveReady <-chan bool, installR
 		if !IsArchived(candidate, version) {
 			utils.Check(utils.ErrNoArchive)
 		}
-		_ = os.Mkdir(path.Join(e.Dir, "candidates", candidate), os.ModeDir)
+		_ = os.Mkdir(path.Join(e.Dir, "candidates", candidate), os.ModeDir | os.ModePerm)
 
 		tmpDir := path.Join(os.TempDir(), candidate+"-"+version)
 		defer os.RemoveAll(tmpDir)
