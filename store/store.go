@@ -12,6 +12,8 @@ import (
 var db *bitcask.Bitcask
 var once sync.Once
 
+var keyAll = []byte("candidates/all")
+
 func GetStore() *bitcask.Bitcask {
 	once.Do(func() {
 		e := conf.GetConf()
@@ -21,11 +23,11 @@ func GetStore() *bitcask.Bitcask {
 }
 
 func GetCandidates() []string {
-	candidates, _ := db.Get("candidates/all")
+	candidates, _ := db.Get(keyAll)
 	return strings.Split(string(candidates), ",")
 }
 
 func SetCandidates(val []string) error {
-	e := db.Put("candidates/all", []byte(strings.Join(val, ",")))
+	e := db.Put(keyAll, []byte(strings.Join(val, ",")))
 	return e
 }
