@@ -17,10 +17,8 @@ var (
 	}}
 )
 
-func download(url string) (io.ReadCloser, error) {
-	req, err := http.NewRequest("GET", url, nil)
-	utils.Check(err)
-
+func request(url string) (io.ReadCloser, error) {
+	req, _ := http.NewRequest("GET", url, nil)
 	resp, err := client.Do(req)
 	if resp == nil {
 		empty := ioutil.NopCloser(bytes.NewReader([]byte{}))
@@ -29,9 +27,21 @@ func download(url string) (io.ReadCloser, error) {
 	return resp.Body, err
 }
 
-func downloadSync(url string) ([]byte, error) {
-	r, err := download(url)
-	defer r.Close()
+func download(url string) (io.ReadCloser, error, string) {
+	req, _ := http.NewRequest("GET", url, nil)
+	resp, err := client.Do(req)
+	if resp == nil {
+		empty := ioutil.NopCloser(bytes.NewReader([]byte{}))
+		return empty, err, ""
+	}
+	return resp.Body, err, utils.TypeOfResponse(resp.Header)
+}
+
+func requestSync(url string) ([]byte, error) {
+	r, err := request(url)
+	if r != nil {
+		defer r.Close()
+	}
 	data, _ := ioutil.ReadAll(r)
 	return data, err
 }

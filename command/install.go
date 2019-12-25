@@ -10,7 +10,7 @@ func Install(candidate string, version string, folder string) error {
 	if candidate == "" {
 		return utils.ErrNoCandidate
 	}
-	Update()
+	_ = Update()
 
 	if !utils.IsCandidateValid(candidate) {
 		return utils.ErrNoCandidate
@@ -28,13 +28,14 @@ func Install(candidate string, version string, folder string) error {
 	archiveReady := make(chan bool)
 	installReady := make(chan bool)
 	go local.Unpack(candidate, version, archiveReady, installReady)
-	if !local.IsArchived(candidate, version) {
-		s, err := api.GetDownload(candidate, version)
-		utils.Check(err)
-		go local.Archive(s, candidate, version, archiveReady)
-
-	} else {
+	if local.IsArchived(candidate, version) {
 		archiveReady <- true
+	} else {
+		s, err, t := api.GetDownload(candidate, version)
+		if err != nil {
+			return err
+		}
+		go local.Archive(s, candidate, version, t, archiveReady)
 	}
 	<-installReady
 	return Use(candidate, version)

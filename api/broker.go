@@ -7,13 +7,13 @@ import (
 var brokerApi = e.Api + "/broker"
 
 func GetVersion() ([]byte, error) {
-	return downloadSync(brokerApi + "/version")
+	return requestSync(brokerApi + "/version")
 }
 
 func GetDownloadSdkmanVersion(versionType string) ([]byte, error) {
-	return downloadSync(brokerApi + "/download/sdkman/version/" + versionType)
+	return requestSync(brokerApi + "/download/sdkman/version/" + versionType)
 }
 
-func GetDownload(candidate string, version string) (io.ReadCloser, error) {
+func GetDownload(candidate string, version string) (io.ReadCloser, error, string) {
 	return download(brokerApi + "/download/" + candidate + "/" + version + "/" + e.Platform)
 }

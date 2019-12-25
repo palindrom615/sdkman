@@ -1,6 +1,7 @@
 package local
 
 import (
+	"github.com/mholt/archiver"
 	"github.com/palindrom615/sdkman-cli/conf"
 	"github.com/palindrom615/sdkman-cli/utils"
 	"io/ioutil"
@@ -47,15 +48,13 @@ func Unpack(candidate string, version string, archiveReady <-chan bool, installR
 		if !IsArchived(candidate, version) {
 			utils.Check(utils.ErrNoArchive)
 		}
-		_ = os.Mkdir(path.Join(e.Dir, "candidates", candidate), os.ModeDir | os.ModePerm)
+		_ = os.Mkdir(path.Join(e.Dir, "candidates", candidate), os.ModeDir|os.ModePerm)
 
-		tmpDir := path.Join(os.TempDir(), candidate+"-"+version)
-		defer os.RemoveAll(tmpDir)
-		_, err := utils.Unzip(archivePath(candidate, version), tmpDir)
+		err := archiver.Unarchive(archiveFile(candidate, version), installPath(candidate, version))
+		if err != nil {
+			_ = os.RemoveAll(installPath(candidate, version))
+		}
 		utils.Check(err)
-		res, _ := ioutil.ReadDir(tmpDir)
-		result := path.Join(tmpDir, res[0].Name())
-		utils.Check(os.Rename(result, installPath(candidate, version)))
 		installReady <- true
 	}
 }

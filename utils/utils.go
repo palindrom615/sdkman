@@ -3,8 +3,11 @@ package utils
 import (
 	"github.com/palindrom615/sdkman-cli/conf"
 	"io"
+	"mime"
+	"net/http"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 func Pager(pages io.ReadCloser) {
@@ -23,6 +26,18 @@ func Pager(pages io.ReadCloser) {
 	c1.Stdout = os.Stdout
 	err := c1.Start()
 	Check(err)
-	c1.Wait()
+	_ = c1.Wait()
 	defer pages.Close()
+}
+
+func TypeOfResponse(header http.Header) string {
+	contentType, contentDisposition := header.Get("Content-Type"), header.Get("Content-Disposition")
+	if contentDisposition != "" {
+		_, params, _ := mime.ParseMediaType(contentDisposition)
+		filename := strings.Split(params["filename"], ".")
+		return filename[len(filename)-1]
+	} else {
+		exts, _ := (mime.ExtensionsByType(contentType))
+		return exts[0]
+	}
 }
