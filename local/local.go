@@ -1,7 +1,7 @@
 package local
 
 import (
-	"github.com/mholt/archiver"
+	"github.com/mholt/archiver/v3"
 	"github.com/palindrom615/sdkman-cli/conf"
 	"github.com/palindrom615/sdkman-cli/utils"
 	"io/ioutil"
