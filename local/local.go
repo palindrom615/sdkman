@@ -16,16 +16,13 @@ func IsInstalled(candidate string, version string) bool {
 	dir, err := os.Lstat(target)
 	if os.IsNotExist(err) {
 		return false
-	} else {
-		utils.Check(err)
 	}
 	mode := dir.Mode()
 	if mode.IsDir() {
 		return true
 	} else if mode&os.ModeSymlink != 0 {
 		_, err := os.Readlink(target)
-		utils.Check(err)
-		return true
+		return err == nil
 	}
 	return false
 }
@@ -46,7 +43,7 @@ func Unpack(candidate string, version string, archiveReady <-chan bool, installR
 	if <-archiveReady {
 		println("installing...")
 		if !IsArchived(candidate, version) {
-			utils.Check(utils.ErrArcNotIns)
+			return utils.ErrArcNotIns
 		}
 		_ = os.Mkdir(candPath(candidate), os.ModeDir|os.ModePerm)
 

@@ -21,8 +21,7 @@ func Pager(pages io.ReadCloser) {
 	c1 := exec.Command(pager)
 	c1.Stdin = pages
 	c1.Stdout = os.Stdout
-	err := c1.Start()
-	Check(err)
+	_ = c1.Start()
 	_ = c1.Wait()
 	defer pages.Close()
 }

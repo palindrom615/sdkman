@@ -1,15 +1,13 @@
 package local
 
 import (
-	"github.com/palindrom615/sdkman-cli/utils"
 	"os"
 )
 
 func Current(candidate string) (string, error) {
 	p, err := os.Readlink(installPath(candidate, "current"))
 	if err == nil {
-		d, err := os.Stat(p)
-		utils.Check(err)
+		d, _ := os.Stat(p)
 		return d.Name(), nil
 	}
 	return "", err

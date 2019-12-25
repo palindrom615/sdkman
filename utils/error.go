@@ -2,9 +2,7 @@ package utils
 
 import (
 	"errors"
-	"github.com/fatih/color"
 	"github.com/palindrom615/sdkman-cli/store"
-	"os"
 )
 
 var (
@@ -19,13 +17,6 @@ var (
 
 func ErrCandNotIns(cand string) error {
 	return errors.New("sdkman: not using any version of " + cand)
-}
-
-func Check(e error) {
-	if e != nil {
-		color.Red(e.Error())
-		os.Exit(1)
-	}
 }
 
 func CheckValidCand(candidate string) error {

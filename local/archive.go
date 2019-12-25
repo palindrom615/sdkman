@@ -1,7 +1,6 @@
 package local
 
 import (
-	"github.com/palindrom615/sdkman-cli/utils"
 	"io"
 	"os"
 	"path"
@@ -13,12 +12,16 @@ func IsArchived(candidate string, version string) bool {
 	return target != ""
 }
 
-func Archive(r io.ReadCloser, candidate string, version string, format string, completed chan<- bool) {
+func Archive(r io.ReadCloser, candidate string, version string, format string, completed chan<- bool) error {
 	f, err := os.Create(archivePath(candidate, version, format))
-	utils.Check(err)
+	if err != nil {
+		return err
+	}
 	println("downloading...")
 	_, err = io.Copy(f, r)
-	utils.Check(err)
+	if err != nil {
+		return err
+	}
 	defer func() {
 		r.Close()
 		if f != nil {
@@ -26,6 +29,7 @@ func Archive(r io.ReadCloser, candidate string, version string, format string, c
 		}
 		completed <- true
 	}()
+	return nil
 }
 
 func archivePath(candidate string, version string, format string) string {
