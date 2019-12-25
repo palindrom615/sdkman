@@ -10,10 +10,10 @@ import (
 	"github.com/scylladb/go-set/strset"
 )
 
-func Update() {
+func Update() error {
 	freshCsv, netErr := api.GetAll()
 	if netErr != nil {
-		utils.Check(utils.ErrNotOnline)
+		return utils.ErrNotOnline
 	}
 	fresh := strset.New(freshCsv...)
 	cachedCsv := store.GetCandidates()
@@ -29,4 +29,5 @@ func Update() {
 		color.Green("Removing obsolete candidates: %s", strings.Join(obsoleted.List(), ", "))
 		_ = store.SetCandidates(freshCsv)
 	}
+	return nil
 }

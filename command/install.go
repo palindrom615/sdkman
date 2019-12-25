@@ -6,20 +6,23 @@ import (
 	"github.com/palindrom615/sdkman-cli/utils"
 )
 
-func Install(candidate string, version string, folder string) {
+func Install(candidate string, version string, folder string) error {
 	if candidate == "" {
-		utils.Check(utils.ErrNoCandidate)
+		return utils.ErrNoCandidate
 	}
 	Update()
-	utils.CheckValid(candidate)
+
+	if !utils.IsCandidateValid(candidate) {
+		return utils.ErrNoCandidate
+	}
 	if version == "" {
 		version = defaultVersion(candidate)
 	}
 	if local.IsInstalled(candidate, version) {
-		utils.Check(utils.ErrVersionExists)
+		return utils.ErrVersionExists
 	}
 	if !isValidVersion(candidate, version, folder) {
-		utils.Check(utils.ErrNotValidVersion)
+		return utils.ErrNotValidVersion
 	}
 
 	archiveReady := make(chan bool)
@@ -29,11 +32,12 @@ func Install(candidate string, version string, folder string) {
 		s, err := api.GetDownload(candidate, version)
 		utils.Check(err)
 		go local.Archive(s, candidate, version, archiveReady)
+
 	} else {
 		archiveReady <- true
 	}
 	<-installReady
-	Use(candidate, version)
+	return Use(candidate, version)
 }
 
 func defaultVersion(candidate string) string {

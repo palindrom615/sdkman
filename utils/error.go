@@ -23,11 +23,11 @@ func Check(e error) {
 	}
 }
 
-func CheckValid(candidate string) {
+func IsCandidateValid(candidate string) bool {
 	for _, can := range store.GetCandidates() {
 		if can == candidate {
-			return
+			return true
 		}
 	}
-	Check(ErrNoCandidate)
+	return false
 }

@@ -15,6 +15,6 @@ func Current(candidate string) (string, error) {
 	return "", err
 }
 
-func LinkCurrent(candidate string, version string) {
-	utils.Check(os.Symlink(installPath(candidate, version), installPath(candidate, "current")))
+func LinkCurrent(candidate string, version string) error {
+	return os.Symlink(installPath(candidate, version), installPath(candidate, "current"))
 }

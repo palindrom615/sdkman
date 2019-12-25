@@ -8,7 +8,7 @@ import (
 	"github.com/fatih/color"
 )
 
-func Current(candidate string) {
+func Current(candidate string) error {
 	if candidate == "" {
 		installedCount := 0
 		for _, c := range store.GetCandidates() {
@@ -24,6 +24,7 @@ func Current(candidate string) {
 			color.Red("Not using any version of " + candidate)
 		}
 	}
+	return nil
 }
 
 func printCurrent(c string) error {

@@ -7,7 +7,7 @@ import (
 	"io"
 )
 
-func List(candidate string) {
+func List(candidate string) error {
 	var (
 		list io.ReadCloser
 		err  error
@@ -15,11 +15,11 @@ func List(candidate string) {
 	if candidate == "" {
 		list, err = api.GetList()
 	} else {
-		utils.CheckValid(candidate)
+		utils.IsCandidateValid(candidate)
 		ins, _ := local.Installed(candidate)
 		curr, _ := local.Current(candidate)
 		list, err = api.GetVersionsList(candidate, curr, ins)
 	}
-	utils.Check(err)
 	utils.Pager(list)
+	return err
 }

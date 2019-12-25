@@ -5,10 +5,11 @@ import (
 	"github.com/palindrom615/sdkman-cli/utils"
 )
 
-func Use(candidate string, version string) {
-	utils.CheckValid(candidate)
+func Use(candidate string, version string) error {
+	utils.IsCandidateValid(candidate)
 	if !local.IsInstalled(candidate, version) {
-		utils.Check(utils.ErrNoVersion)
+		return utils.ErrNoVersion
 	}
 	local.LinkCurrent(candidate, version)
+	return nil
 }
