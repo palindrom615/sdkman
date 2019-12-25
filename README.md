@@ -15,7 +15,7 @@ There's [plan to migrate SDKMAN client](https://github.com/sdkman/sdk) with rust
 ## Installation
 
 ```bash
-go get github.com/palindrom615/sdkman-cli
+env GO111MODULE=on go get github.com/palindrom615/sdkman-cli
 ```
 
 ## Build
