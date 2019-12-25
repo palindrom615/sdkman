@@ -6,10 +6,11 @@ import (
 )
 
 func Use(candidate string, version string) error {
-	utils.IsCandidateValid(candidate)
-	if !local.IsInstalled(candidate, version) {
-		return utils.ErrNoVersion
+	if err := utils.CheckValidCand(candidate); err != nil {
+		return err
 	}
-	local.LinkCurrent(candidate, version)
-	return nil
+	if !local.IsInstalled(candidate, version) {
+		return utils.ErrVerNotIns
+	}
+	return local.LinkCurrent(candidate, version)
 }

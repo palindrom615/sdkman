@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"github.com/palindrom615/sdkman-cli/local"
 	"github.com/palindrom615/sdkman-cli/store"
-
-	"github.com/fatih/color"
+	"github.com/palindrom615/sdkman-cli/utils"
 )
 
 func Current(candidate string) error {
@@ -17,11 +16,11 @@ func Current(candidate string) error {
 			}
 		}
 		if installedCount == 0 {
-			color.Red("No candidates are in use")
+			return utils.ErrCandsNotIns
 		}
 	} else {
 		if printCurrent(candidate) != nil {
-			color.Red("Not using any version of " + candidate)
+			return utils.ErrCandNotIns(candidate)
 		}
 	}
 	return nil

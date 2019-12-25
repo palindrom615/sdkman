@@ -8,13 +8,18 @@ import (
 )
 
 var (
-	ErrNotOnline       = errors.New("sdkman: not available on offline mode")
-	ErrNotValidVersion = errors.New("sdkman: not valid version")
-	ErrVersionExists   = errors.New("sdkman: already installed version")
-	ErrNoCandidate     = errors.New("sdkman: no valid candidate")
-	ErrNoVersion       = errors.New("sdkman: specified version not installed")
-	ErrNoArchive       = errors.New("sdkman: archive file not exists")
+	ErrNotOnline   = errors.New("sdkman: not available on offline mode")
+	ErrNoVer       = errors.New("sdkman: not valid version")
+	ErrNoCand      = errors.New("sdkman: no valid candidate")
+	ErrVerNotIns   = errors.New("sdkman: specified version not installed")
+	ErrArcNotIns   = errors.New("sdkman: archive file not exists")
+	ErrCandsNotIns = errors.New("sdkman: no candidates are in use")
+	ErrVerExists   = errors.New("sdkman: already installed version")
 )
+
+func ErrCandNotIns(cand string) error {
+	return errors.New("sdkman: not using any version of " + cand)
+}
 
 func Check(e error) {
 	if e != nil {
@@ -23,11 +28,11 @@ func Check(e error) {
 	}
 }
 
-func IsCandidateValid(candidate string) bool {
+func CheckValidCand(candidate string) error {
 	for _, can := range store.GetCandidates() {
 		if can == candidate {
-			return true
+			return nil
 		}
 	}
-	return false
+	return ErrNoCand
 }

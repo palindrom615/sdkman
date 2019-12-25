@@ -4,22 +4,23 @@ import (
 	"github.com/palindrom615/sdkman-cli/api"
 	"github.com/palindrom615/sdkman-cli/local"
 	"github.com/palindrom615/sdkman-cli/utils"
-	"io"
 )
 
 func List(candidate string) error {
-	var (
-		list io.ReadCloser
-		err  error
-	)
 	if candidate == "" {
-		list, err = api.GetList()
+		list, err := api.GetList()
+		if err == nil {
+			utils.Pager(list)
+		}
+		return err
 	} else {
-		utils.IsCandidateValid(candidate)
-		ins, _ := local.Installed(candidate)
+		if err := utils.CheckValidCand(candidate); err != nil {
+			return err
+		}
+		ins := local.Installed(candidate)
 		curr, _ := local.Current(candidate)
-		list, err = api.GetVersionsList(candidate, curr, ins)
+		list, err := api.GetVersionsList(candidate, curr, ins)
+		utils.Pager(list)
+		return err
 	}
-	utils.Pager(list)
-	return err
 }

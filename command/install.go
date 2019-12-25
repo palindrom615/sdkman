@@ -7,22 +7,23 @@ import (
 )
 
 func Install(candidate string, version string, folder string) error {
-	if candidate == "" {
-		return utils.ErrNoCandidate
-	}
 	_ = Update()
 
-	if !utils.IsCandidateValid(candidate) {
-		return utils.ErrNoCandidate
+	if err := utils.CheckValidCand(candidate); err != nil {
+		return err
 	}
 	if version == "" {
-		version = defaultVersion(candidate)
+		if dfVer, err := defaultVersion(candidate); err != nil {
+			return err
+		} else {
+			version = dfVer
+		}
 	}
 	if local.IsInstalled(candidate, version) {
-		return utils.ErrVersionExists
+		return utils.ErrVerExists
 	}
-	if !isValidVersion(candidate, version, folder) {
-		return utils.ErrNotValidVersion
+	if err := CheckValidVer(candidate, version, folder); err != nil {
+		return err
 	}
 
 	archiveReady := make(chan bool)
@@ -41,26 +42,24 @@ func Install(candidate string, version string, folder string) error {
 	return Use(candidate, version)
 }
 
-func defaultVersion(candidate string) string {
-	v, netErr := api.GetDefault(candidate)
-	if netErr != nil {
-		curr, fsErr := local.Current(candidate)
-		if fsErr != nil {
-			utils.Check(utils.ErrNotOnline)
-		}
-		return curr
+func defaultVersion(candidate string) (string, error) {
+	if v, netErr := api.GetDefault(candidate); netErr == nil {
+		return v, nil
+	} else if curr, fsErr := local.Current(candidate); fsErr == nil {
+		return curr, nil
+	} else {
+		return "", utils.ErrNotOnline
 	}
-	return v
+
 }
 
-func isValidVersion(candidate string, version string, folder string) bool {
+func CheckValidVer(candidate string, version string, folder string) error {
 	isValid, netErr := api.GetValidate(candidate, version)
 	if (netErr == nil && isValid) || folder != "" || local.IsInstalled(candidate, version) {
-		return true
+		return nil
+	} else if netErr != nil {
+		return utils.ErrNotOnline
 	} else {
-		if netErr != nil {
-			utils.Check(utils.ErrNotOnline)
-		}
-		return false
+		return utils.ErrNoVer
 	}
 }
