@@ -28,7 +28,7 @@ func Install(candidate string, version string, folder string) error {
 
 	archiveReady := make(chan bool)
 	installReady := make(chan bool)
-	go local.Unpack(candidate, version, archiveReady, installReady)
+	go local.Unarchive(candidate, version, archiveReady, installReady)
 	if local.IsArchived(candidate, version) {
 		archiveReady <- true
 	} else {
@@ -45,7 +45,7 @@ func Install(candidate string, version string, folder string) error {
 func defaultVersion(candidate string) (string, error) {
 	if v, netErr := api.GetDefault(candidate); netErr == nil {
 		return v, nil
-	} else if curr, fsErr := local.GetCurrVer(candidate); fsErr == nil {
+	} else if curr, fsErr := local.UsingVer(candidate); fsErr == nil {
 		return curr, nil
 	} else {
 		return "", utils.ErrNotOnline

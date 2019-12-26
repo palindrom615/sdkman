@@ -17,8 +17,8 @@ func List(candidate string) error {
 		if err := utils.CheckValidCand(candidate); err != nil {
 			return err
 		}
-		ins := local.Installed(candidate)
-		curr, _ := local.GetCurrVer(candidate)
+		ins := local.InstalledVers(candidate)
+		curr, _ := local.UsingVer(candidate)
 		list, err := api.GetVersionsList(candidate, curr, ins)
 		utils.Pager(list)
 		return err

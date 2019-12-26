@@ -3,33 +3,25 @@ package command
 import (
 	"fmt"
 	"github.com/palindrom615/sdkman-cli/local"
-	"github.com/palindrom615/sdkman-cli/store"
 	"github.com/palindrom615/sdkman-cli/utils"
 )
 
 func Current(candidate string) error {
 	if candidate == "" {
-		installedCount := 0
-		for _, c := range store.GetCandidates() {
-			if printCurrVer(c) == nil {
-				installedCount++
-			}
-		}
-		if installedCount == 0 {
+		cands, vers := local.UsingCands()
+		if len(cands) == 0 {
 			return utils.ErrCandsNotIns
 		}
+		for i, _ := range cands {
+			fmt.Println(cands[i] + ": " + vers[i])
+		}
 	} else {
-		if printCurrVer(candidate) != nil {
+		ver, err := local.UsingVer(candidate)
+		if err == nil {
+			fmt.Println(candidate + ": " + ver)
+		} else {
 			return utils.ErrCandNotIns(candidate)
 		}
 	}
 	return nil
-}
-
-func printCurrVer(c string) error {
-	ver, err := local.GetCurrVer(c)
-	if err == nil {
-		fmt.Println(c + ": " + ver)
-	}
-	return err
 }

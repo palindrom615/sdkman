@@ -12,5 +12,5 @@ func Use(candidate string, version string) error {
 	if !local.IsInstalled(candidate, version) {
 		return utils.ErrVerNotIns
 	}
-	return local.SetCurrVer(candidate, version)
+	return local.UseVer(candidate, version)
 }
