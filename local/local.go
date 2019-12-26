@@ -1,6 +1,7 @@
 package local
 
 import (
+	"fmt"
 	"github.com/mholt/archiver/v3"
 	"github.com/palindrom615/sdkman-cli/conf"
 	"github.com/palindrom615/sdkman-cli/utils"
@@ -41,7 +42,7 @@ func Installed(candidate string) []string {
 
 func Unpack(candidate string, version string, archiveReady <-chan bool, installReady chan<- bool) error {
 	if <-archiveReady {
-		println("installing...")
+		fmt.Printf("installing %s %s...\n", candidate, version)
 		if !IsArchived(candidate, version) {
 			return utils.ErrArcNotIns
 		}

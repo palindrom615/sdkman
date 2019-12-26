@@ -1,6 +1,7 @@
 package local
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"path"
@@ -17,7 +18,7 @@ func Archive(r io.ReadCloser, candidate string, version string, format string, c
 	if err != nil {
 		return err
 	}
-	println("downloading...")
+	fmt.Printf("downloading %s %s...\n", candidate, version)
 	_, err = io.Copy(f, r)
 	if err != nil {
 		return err
