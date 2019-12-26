@@ -4,7 +4,7 @@ import (
 	"os"
 )
 
-func Current(candidate string) (string, error) {
+func GetCurrVer(candidate string) (string, error) {
 	p, err := os.Readlink(installPath(candidate, "current"))
 	if err == nil {
 		d, _ := os.Stat(p)
@@ -13,6 +13,6 @@ func Current(candidate string) (string, error) {
 	return "", err
 }
 
-func LinkCurrent(candidate string, version string) error {
+func SetCurrVer(candidate string, version string) error {
 	return os.Symlink(installPath(candidate, version), installPath(candidate, "current"))
 }

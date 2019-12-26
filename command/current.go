@@ -11,7 +11,7 @@ func Current(candidate string) error {
 	if candidate == "" {
 		installedCount := 0
 		for _, c := range store.GetCandidates() {
-			if printCurrent(c) == nil {
+			if printCurrVer(c) == nil {
 				installedCount++
 			}
 		}
@@ -19,15 +19,15 @@ func Current(candidate string) error {
 			return utils.ErrCandsNotIns
 		}
 	} else {
-		if printCurrent(candidate) != nil {
+		if printCurrVer(candidate) != nil {
 			return utils.ErrCandNotIns(candidate)
 		}
 	}
 	return nil
 }
 
-func printCurrent(c string) error {
-	ver, err := local.Current(c)
+func printCurrVer(c string) error {
+	ver, err := local.GetCurrVer(c)
 	if err == nil {
 		fmt.Println(c + ": " + ver)
 	}

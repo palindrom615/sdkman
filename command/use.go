@@ -12,5 +12,5 @@ func Use(candidate string, version string) error {
 	if !local.IsInstalled(candidate, version) {
 		return utils.ErrVerNotIns
 	}
-	return local.LinkCurrent(candidate, version)
+	return local.SetCurrVer(candidate, version)
 }

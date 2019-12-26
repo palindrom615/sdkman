@@ -22,7 +22,7 @@ func Install(candidate string, version string, folder string) error {
 	if local.IsInstalled(candidate, version) {
 		return utils.ErrVerExists
 	}
-	if err := CheckValidVer(candidate, version, folder); err != nil {
+	if err := checkValidVer(candidate, version, folder); err != nil {
 		return err
 	}
 
@@ -45,7 +45,7 @@ func Install(candidate string, version string, folder string) error {
 func defaultVersion(candidate string) (string, error) {
 	if v, netErr := api.GetDefault(candidate); netErr == nil {
 		return v, nil
-	} else if curr, fsErr := local.Current(candidate); fsErr == nil {
+	} else if curr, fsErr := local.GetCurrVer(candidate); fsErr == nil {
 		return curr, nil
 	} else {
 		return "", utils.ErrNotOnline
@@ -53,7 +53,7 @@ func defaultVersion(candidate string) (string, error) {
 
 }
 
-func CheckValidVer(candidate string, version string, folder string) error {
+func checkValidVer(candidate string, version string, folder string) error {
 	isValid, netErr := api.GetValidate(candidate, version)
 	if (netErr == nil && isValid) || folder != "" || local.IsInstalled(candidate, version) {
 		return nil
