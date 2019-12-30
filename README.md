@@ -16,6 +16,9 @@ There's [plan to migrate SDKMAN client](https://github.com/sdkman/sdk) with rust
 
 ```bash
 env GO111MODULE=on go get github.com/palindrom615/sdkman-cli
+
+# You should add "eval $(sdkman-cli" export bash)" on your .bashrc file
+echo "eval \$(sdkman-cli export bash)" >> ~/.bashrc
 ```
 
 ## Build

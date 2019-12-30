@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+
 	app := &cli.App{
 		Name:  "sdkman",
 		Usage: "manage various versions of SDKs",
@@ -46,6 +47,12 @@ func main() {
 				Usage: "<candidate> <version>",
 				Action: func(c *cli.Context) error {
 					return command.Use(c.Args().Get(0), c.Args().Get(1))
+				},
+			}, {
+				Name:  "export",
+				Usage: "[shell]",
+				Action: func(c *cli.Context) error {
+					return command.Export(c.Args().Get(0))
 				},
 			},
 		},
