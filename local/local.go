@@ -38,16 +38,15 @@ func archiveFile(candidate string, version string) string {
 }
 
 func IsInstalled(candidate string, version string) bool {
-	target := installPath(candidate, version)
-	dir, err := os.Lstat(target)
-	if os.IsNotExist(err) {
+	dir, err := os.Lstat(installPath(candidate, version))
+	if err != nil {
 		return false
 	}
 	mode := dir.Mode()
 	if mode.IsDir() {
 		return true
 	} else if mode&os.ModeSymlink != 0 {
-		_, err := os.Readlink(target)
+		_, err := os.Readlink(installPath(candidate, version))
 		return err == nil
 	}
 	return false
@@ -78,18 +77,22 @@ func UsingCands() ([]string, []string) {
 }
 
 func IsArchived(candidate string, version string) bool {
-	target := archiveFile(candidate, version)
-	return target != ""
+	return archiveFile(candidate, version) != ""
 }
 
 func Archive(r io.ReadCloser, candidate string, version string, format string, completed chan<- bool) error {
+	if format == "gz" {
+		format = "tar.gz"
+	}
 	f, err := os.Create(archivePath(candidate, version, format))
 	if err != nil {
+		completed <- false
 		return err
 	}
 	fmt.Printf("downloading %s %s...\n", candidate, version)
 	_, err = io.Copy(f, r)
-	if err != nil {
+	if os.IsNotExist(err) {
+		completed <- false
 		return err
 	}
 	defer func() {
@@ -112,6 +115,7 @@ func Unarchive(candidate string, version string, archiveReady <-chan bool, insta
 
 		err := archiver.Unarchive(archiveFile(candidate, version), installPath(candidate, version))
 		if err != nil {
+			installReady <- false
 			_ = os.RemoveAll(installPath(candidate, version))
 		}
 		installReady <- true
@@ -136,9 +140,9 @@ func UseVer(candidate string, version string) error {
 func MkdirIfNotExist() error {
 	candDir := path.Join(e.Dir, "candidates")
 	arcDir := path.Join(e.Dir, "archives")
-	e := os.MkdirAll(candDir, os.ModeDir)
+	e := os.MkdirAll(candDir, os.ModeDir|os.ModePerm)
 	if e != nil {
 		return e
 	}
-	return os.MkdirAll(arcDir, os.ModeDir)
+	return os.MkdirAll(arcDir, os.ModeDir|os.ModePerm)
 }

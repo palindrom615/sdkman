@@ -6,6 +6,7 @@ import (
 )
 
 var (
+	ErrDirNoExists = errors.New("sdkman: making directory failed")
 	ErrNotOnline   = errors.New("sdkman: not available on offline mode")
 	ErrNoVer       = errors.New("sdkman: not valid version")
 	ErrNoCand      = errors.New("sdkman: no valid candidate")

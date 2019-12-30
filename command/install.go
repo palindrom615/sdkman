@@ -9,6 +9,7 @@ import (
 func Install(candidate string, version string, folder string) error {
 	_ = Update()
 
+	local.MkdirIfNotExist()
 	if err := utils.CheckValidCand(candidate); err != nil {
 		return err
 	}
@@ -19,8 +20,6 @@ func Install(candidate string, version string, folder string) error {
 			version = dfVer
 		}
 	}
-
-	local.MkdirIfNotExist()
 
 	if local.IsInstalled(candidate, version) {
 		return utils.ErrVerExists
@@ -37,6 +36,7 @@ func Install(candidate string, version string, folder string) error {
 	} else {
 		s, err, t := api.GetDownload(candidate, version)
 		if err != nil {
+			archiveReady <- false
 			return err
 		}
 		go local.Archive(s, candidate, version, t, archiveReady)
