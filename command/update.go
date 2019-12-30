@@ -26,7 +26,7 @@ func Update() error {
 		fmt.Println("No new candidates found at this time.")
 	} else {
 		fmt.Println("Adding new candidates: " + strings.Join(added.List(), ", "))
-		fmt.Println("Removing obsolete candidates: %s" + strings.Join(obsoleted.List(), ", "))
+		fmt.Println("Removing obsolete candidates: " + strings.Join(obsoleted.List(), ", "))
 		_ = store.SetCandidates(freshCsv)
 	}
 	return nil
