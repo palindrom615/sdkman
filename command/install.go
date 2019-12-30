@@ -19,6 +19,9 @@ func Install(candidate string, version string, folder string) error {
 			version = dfVer
 		}
 	}
+
+	local.MkdirIfNotExist()
+
 	if local.IsInstalled(candidate, version) {
 		return utils.ErrVerExists
 	}

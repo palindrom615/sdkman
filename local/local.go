@@ -132,3 +132,13 @@ func UsingVer(candidate string) (string, error) {
 func UseVer(candidate string, version string) error {
 	return os.Symlink(installPath(candidate, version), installPath(candidate, "current"))
 }
+
+func MkdirIfNotExist() error {
+	candDir := path.Join(e.Dir, "candidates")
+	arcDir := path.Join(e.Dir, "archives")
+	e := os.MkdirAll(candDir, os.ModeDir)
+	if e != nil {
+		return e
+	}
+	return os.MkdirAll(arcDir, os.ModeDir)
+}
