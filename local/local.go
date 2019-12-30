@@ -113,11 +113,23 @@ func Unarchive(candidate string, version string, archiveReady <-chan bool, insta
 		}
 		_ = os.Mkdir(candPath(candidate), os.ModeDir|os.ModePerm)
 
-		err := archiver.Unarchive(archiveFile(candidate, version), installPath(candidate, version))
+		wd := installPath(candidate, version)
+		err := archiver.Unarchive(archiveFile(candidate, version), wd)
 		if err != nil {
 			installReady <- false
-			_ = os.RemoveAll(installPath(candidate, version))
+			_ = os.RemoveAll(wd)
 		}
+
+		// for nested directory like java:
+		if l, _ := ioutil.ReadDir(wd); len(l) == 1 && l[0].IsDir() {
+			nestedRoot := l[0].Name()
+			inside, _ := ioutil.ReadDir(nestedRoot)
+			for _, c := range inside {
+				os.Rename(path.Join(wd, nestedRoot, c.Name()), path.Join(wd, c.Name()))
+			}
+			os.Remove(nestedRoot)
+		}
+
 		installReady <- true
 		return err
 	}
