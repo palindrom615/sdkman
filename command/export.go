@@ -24,7 +24,7 @@ func Export(shell string) error {
 	homes := []envVar{}
 	for _, cand := range cands {
 		candHome := path.Join(e.Dir, "candidates", cand, "current")
-		paths = append(paths, candHome)
+		paths = append(paths, path.Join(candHome, "bin"))
 		homes = append(homes, envVar{fmt.Sprintf("%s_HOME", strings.ToUpper(cand)), candHome})
 	}
 

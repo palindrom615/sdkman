@@ -123,7 +123,7 @@ func Unarchive(candidate string, version string, archiveReady <-chan bool, insta
 		// for nested directory like java:
 		if l, _ := ioutil.ReadDir(wd); len(l) == 1 && l[0].IsDir() {
 			nestedRoot := l[0].Name()
-			inside, _ := ioutil.ReadDir(nestedRoot)
+			inside, _ := ioutil.ReadDir(path.Join(wd, nestedRoot))
 			for _, c := range inside {
 				os.Rename(path.Join(wd, nestedRoot, c.Name()), path.Join(wd, c.Name()))
 			}
