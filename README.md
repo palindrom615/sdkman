@@ -1,6 +1,6 @@
-## sdkman-cli
+## sdk
 
-![travis ci status](https://travis-ci.org/palindrom615/sdkman-cli.svg?branch=master)
+![travis ci status](https://travis-ci.org/palindrom615/sdk.svg?branch=master)
 
 **cli stands for client!**
 
@@ -15,10 +15,10 @@ There's [plan to migrate SDKMAN client](https://github.com/sdkman/sdk) with rust
 ## Installation
 
 ```bash
-env GO111MODULE=on go get github.com/palindrom615/sdkman-cli
+env GO111MODULE=on go get github.com/palindrom615/sdk
 
-# You should add "eval $(sdkman-cli" export bash)" on your .bashrc file
-echo "eval \$(sdkman-cli export bash)" >> ~/.bashrc
+# You should add "eval $(sdk" export bash)" on your .bashrc file
+echo "eval \$(sdk export bash)" >> ~/.bashrc
 ```
 
 ## Build

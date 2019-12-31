@@ -1,4 +1,4 @@
-module github.com/palindrom615/sdkman-cli
+module github.com/palindrom615/sdk
 
 go 1.12
 

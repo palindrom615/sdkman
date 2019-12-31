@@ -1,9 +1,9 @@
 package command
 
 import (
-	"github.com/palindrom615/sdkman-cli/api"
-	"github.com/palindrom615/sdkman-cli/local"
-	"github.com/palindrom615/sdkman-cli/utils"
+	"github.com/palindrom615/sdk/api"
+	"github.com/palindrom615/sdk/local"
+	"github.com/palindrom615/sdk/utils"
 )
 
 func List(candidate string) error {

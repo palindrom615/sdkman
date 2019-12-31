@@ -3,9 +3,9 @@ package local
 import (
 	"fmt"
 	"github.com/mholt/archiver/v3"
-	"github.com/palindrom615/sdkman-cli/conf"
-	"github.com/palindrom615/sdkman-cli/store"
-	"github.com/palindrom615/sdkman-cli/utils"
+	"github.com/palindrom615/sdk/conf"
+	"github.com/palindrom615/sdk/store"
+	"github.com/palindrom615/sdk/utils"
 	"io"
 	"io/ioutil"
 	"os"

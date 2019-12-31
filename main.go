@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/palindrom615/sdkman-cli/command"
+	"github.com/palindrom615/sdk/command"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"

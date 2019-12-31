@@ -2,9 +2,9 @@ package command
 
 import (
 	"fmt"
-	"github.com/palindrom615/sdkman-cli/api"
-	"github.com/palindrom615/sdkman-cli/store"
-	"github.com/palindrom615/sdkman-cli/utils"
+	"github.com/palindrom615/sdk/api"
+	"github.com/palindrom615/sdk/store"
+	"github.com/palindrom615/sdk/utils"
 	"strings"
 
 	"github.com/scylladb/go-set/strset"

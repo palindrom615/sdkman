@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/palindrom615/sdkman-cli/conf"
+	"github.com/palindrom615/sdk/conf"
 	"io"
 	"os"
 	"os/exec"

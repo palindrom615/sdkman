@@ -2,7 +2,7 @@ package utils
 
 import (
 	"errors"
-	"github.com/palindrom615/sdkman-cli/store"
+	"github.com/palindrom615/sdk/store"
 )
 
 var (

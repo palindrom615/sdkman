@@ -3,7 +3,7 @@ package api
 import (
 	"bytes"
 	"crypto/tls"
-	"github.com/palindrom615/sdkman-cli/conf"
+	"github.com/palindrom615/sdk/conf"
 	"io"
 	"io/ioutil"
 	"mime"

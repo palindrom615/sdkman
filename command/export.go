@@ -2,8 +2,8 @@ package command
 
 import (
 	"fmt"
-	"github.com/palindrom615/sdkman-cli/conf"
-	"github.com/palindrom615/sdkman-cli/local"
+	"github.com/palindrom615/sdk/conf"
+	"github.com/palindrom615/sdk/local"
 	"path"
 	"strings"
 )

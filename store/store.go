@@ -1,7 +1,7 @@
 package store
 
 import (
-	"github.com/palindrom615/sdkman-cli/conf"
+	"github.com/palindrom615/sdk/conf"
 	"github.com/prologic/bitcask"
 	"path"
 	"strings"

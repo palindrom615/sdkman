@@ -2,8 +2,8 @@ package command
 
 import (
 	"fmt"
-	"github.com/palindrom615/sdkman-cli/local"
-	"github.com/palindrom615/sdkman-cli/utils"
+	"github.com/palindrom615/sdk/local"
+	"github.com/palindrom615/sdk/utils"
 )
 
 func Current(candidate string) error {
