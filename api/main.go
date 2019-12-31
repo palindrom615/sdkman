@@ -2,20 +2,11 @@ package api
 
 import (
 	"bytes"
-	"crypto/tls"
-	"github.com/palindrom615/sdk/conf"
 	"io"
 	"io/ioutil"
 	"mime"
 	"net/http"
 	"strings"
-)
-
-var (
-	e      = conf.GetConf()
-	client = &http.Client{Transport: &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: e.Insecure},
-	}}
 )
 
 func wrapResponseBody(r *http.Response) io.ReadCloser {
@@ -28,13 +19,13 @@ func wrapResponseBody(r *http.Response) io.ReadCloser {
 
 func request(url string) (io.ReadCloser, error) {
 	req, _ := http.NewRequest("GET", url, nil)
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	return wrapResponseBody(resp), err
 }
 
 func download(url string) (io.ReadCloser, error, string) {
 	req, _ := http.NewRequest("GET", url, nil)
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	return wrapResponseBody(resp), err, typeOfResponse(resp)
 }
 

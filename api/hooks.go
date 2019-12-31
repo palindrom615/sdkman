@@ -1,15 +1,18 @@
 package api
 
-import "strconv"
+import (
+	"github.com/palindrom615/sdk/utils"
+	"strconv"
+)
 
-func GetAlive() ([]byte, error) {
-	return requestSync(e.Api + "/alive")
+func GetAlive(api string) ([]byte, error) {
+	return requestSync(api + "/alive")
 }
 
-func GetSelfupdate(beta bool) ([]byte, error) {
-	return requestSync(e.Api + "/selfupdate?beta=" + strconv.FormatBool(beta))
+func GetSelfupdate(api string, beta bool) ([]byte, error) {
+	return requestSync(api + "/selfupdate?beta=" + strconv.FormatBool(beta))
 }
 
-func GetHooks(phase string, candidate string, version string) ([]byte, error) {
-	return requestSync(e.Api + "/hooks/" + phase + "/" + candidate + "/" + version + "/" + e.Platform)
+func GetHooks(api string, phase string, candidate string, version string) ([]byte, error) {
+	return requestSync(api + "/hooks/" + phase + "/" + candidate + "/" + version + "/" + utils.Platform())
 }

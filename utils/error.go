@@ -6,7 +6,6 @@ import (
 )
 
 var (
-	ErrDirNoExists = errors.New("sdkman: making directory failed")
 	ErrNotOnline   = errors.New("sdkman: not available on offline mode")
 	ErrNoVer       = errors.New("sdkman: not valid version")
 	ErrNoCand      = errors.New("sdkman: no valid candidate")
@@ -14,14 +13,15 @@ var (
 	ErrArcNotIns   = errors.New("sdkman: archive file not exists")
 	ErrCandsNotIns = errors.New("sdkman: no candidates are in use")
 	ErrVerExists   = errors.New("sdkman: already installed version")
+	ErrVerInsFail  = errors.New("sdkman: installation failed")
 )
 
 func ErrCandNotIns(cand string) error {
 	return errors.New("sdkman: not using any version of " + cand)
 }
 
-func CheckValidCand(candidate string) error {
-	for _, can := range store.GetCandidates() {
+func CheckValidCand(root string, candidate string) error {
+	for _, can := range store.GetCandidates(root) {
 		if can == candidate {
 			return nil
 		}

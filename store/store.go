@@ -1,7 +1,6 @@
 package store
 
 import (
-	"github.com/palindrom615/sdk/conf"
 	"github.com/prologic/bitcask"
 	"path"
 	"strings"
@@ -9,21 +8,20 @@ import (
 
 var keyAll = []byte("candidates/all")
 
-func getStore() *bitcask.Bitcask {
-	e := conf.GetConf()
-	db, _ := bitcask.Open(path.Join(e.Dir, "db"))
+func getStore(dir string) *bitcask.Bitcask {
+	db, _ := bitcask.Open(path.Join(dir, "db"))
 	return db
 }
 
-func GetCandidates() []string {
-	db := getStore()
+func GetCandidates(dir string) []string {
+	db := getStore(dir)
 	defer db.Close()
 	candidates, _ := db.Get(keyAll)
 	return strings.Split(string(candidates), ",")
 }
 
-func SetCandidates(val []string) error {
-	db := getStore()
+func SetCandidates(dir string, val []string) error {
+	db := getStore(dir)
 	defer db.Close()
 	return db.Put(keyAll, []byte(strings.Join(val, ",")))
 }

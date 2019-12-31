@@ -1,19 +1,21 @@
 package api
 
 import (
+	"github.com/palindrom615/sdk/utils"
 	"io"
 )
 
-var brokerApi = e.Api + "/broker"
-
-func GetVersion() ([]byte, error) {
+func GetVersion(api string) ([]byte, error) {
+	brokerApi := api + "/broker"
 	return requestSync(brokerApi + "/version")
 }
 
-func GetDownloadSdkmanVersion(versionType string) ([]byte, error) {
+func GetDownloadSdkmanVersion(api string, versionType string) ([]byte, error) {
+	brokerApi := api + "/broker"
 	return requestSync(brokerApi + "/download/sdkman/version/" + versionType)
 }
 
-func GetDownload(candidate string, version string) (io.ReadCloser, error, string) {
-	return download(brokerApi + "/download/" + candidate + "/" + version + "/" + e.Platform)
+func GetDownload(api string, candidate string, version string) (io.ReadCloser, error, string) {
+	brokerApi := api + "/broker"
+	return download(brokerApi + "/download/" + candidate + "/" + version + "/" + utils.Platform())
 }

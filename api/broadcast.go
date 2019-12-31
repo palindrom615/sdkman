@@ -1,15 +1,16 @@
 package api
 
-var broadcastApi = e.Api + "/broadcast"
-
-func GetBroadcastLatestId() ([]byte, error) {
+func GetBroadcastLatestId(api string) ([]byte, error) {
+	broadcastApi := api + "/broadcast"
 	return requestSync(broadcastApi + "/latest/id")
 }
 
-func GetBroadcastLatest() ([]byte, error) {
+func GetBroadcastLatest(api string) ([]byte, error) {
+	broadcastApi := api + "/broadcast"
 	return requestSync(broadcastApi + "/latest")
 }
 
-func GetBroadcastId(id string) ([]byte, error) {
+func GetBroadcastId(api string, id string) ([]byte, error) {
+	broadcastApi := api + "/broadcast"
 	return requestSync(broadcastApi + "/" + id)
 }

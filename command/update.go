@@ -5,18 +5,21 @@ import (
 	"github.com/palindrom615/sdk/api"
 	"github.com/palindrom615/sdk/store"
 	"github.com/palindrom615/sdk/utils"
+	"github.com/urfave/cli/v2"
 	"strings"
 
 	"github.com/scylladb/go-set/strset"
 )
 
-func Update() error {
-	freshCsv, netErr := api.GetAll()
+func Update(c *cli.Context) error {
+	reg := c.String("registry")
+	root := c.String("directory")
+	freshCsv, netErr := api.GetAll(reg)
 	if netErr != nil {
 		return utils.ErrNotOnline
 	}
 	fresh := strset.New(freshCsv...)
-	cachedCsv := store.GetCandidates()
+	cachedCsv := store.GetCandidates(root)
 	cached := strset.New(cachedCsv...)
 
 	added := strset.Difference(fresh, cached)
@@ -27,7 +30,7 @@ func Update() error {
 	} else {
 		fmt.Println("Adding new candidates: " + strings.Join(added.List(), ", "))
 		fmt.Println("Removing obsolete candidates: " + strings.Join(obsoleted.List(), ", "))
-		_ = store.SetCandidates(freshCsv)
+		_ = store.SetCandidates(root, freshCsv)
 	}
 	return nil
 }

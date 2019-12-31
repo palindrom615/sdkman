@@ -1,18 +1,26 @@
 package utils
 
 import (
-	"github.com/palindrom615/sdk/conf"
 	"io"
 	"os"
 	"os/exec"
+	"runtime"
 )
+
+func Platform() string {
+	platform := runtime.GOOS
+	if platform == "windows" {
+		platform = "msys_nt-10.0"
+	}
+	return platform
+}
 
 func Pager(pages io.ReadCloser) {
 	pager := os.Getenv("PAGER")
-	c := conf.GetConf()
+	p := Platform()
 
 	if pager == "" {
-		if c.Platform == "msys_nt-10.0" {
+		if p == "msys_nt-10.0" {
 			pager = "more"
 		} else {
 			pager = "less"

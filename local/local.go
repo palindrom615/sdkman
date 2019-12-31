@@ -3,7 +3,6 @@ package local
 import (
 	"fmt"
 	"github.com/mholt/archiver/v3"
-	"github.com/palindrom615/sdk/conf"
 	"github.com/palindrom615/sdk/store"
 	"github.com/palindrom615/sdk/utils"
 	"io"
@@ -13,32 +12,30 @@ import (
 	"strings"
 )
 
-var e = conf.GetConf()
-
-func candPath(candidate string) string {
-	return path.Join(e.Dir, "candidates", candidate)
+func candPath(root string, candidate string) string {
+	return path.Join(root, "candidates", candidate)
 }
-func installPath(candidate string, version string) string {
-	return path.Join(candPath(candidate), version)
+func installPath(root string, candidate string, version string) string {
+	return path.Join(candPath(root, candidate), version)
 }
 
-func archivePath(candidate string, version string, format string) string {
-	return path.Join(e.Dir, "archives", candidate+"-"+version+"."+format)
+func archivePath(root string, candidate string, version string, format string) string {
+	return path.Join(root, "archives", candidate+"-"+version+"."+format)
 }
 
-func archiveFile(candidate string, version string) string {
-	archives, _ := os.Open(path.Join(e.Dir, "archives"))
+func archiveFile(root string, candidate string, version string) string {
+	archives, _ := os.Open(path.Join(root, "archives"))
 	arcs, _ := archives.Readdir(0)
 	for _, archive := range arcs {
 		if strings.HasPrefix(archive.Name(), candidate+"-"+version) {
-			return path.Join(e.Dir, "archives", archive.Name())
+			return path.Join(root, "archives", archive.Name())
 		}
 	}
 	return ""
 }
 
-func IsInstalled(candidate string, version string) bool {
-	dir, err := os.Lstat(installPath(candidate, version))
+func IsInstalled(root string, candidate string, version string) bool {
+	dir, err := os.Lstat(installPath(root, candidate, version))
 	if err != nil {
 		return false
 	}
@@ -46,14 +43,14 @@ func IsInstalled(candidate string, version string) bool {
 	if mode.IsDir() {
 		return true
 	} else if mode&os.ModeSymlink != 0 {
-		_, err := os.Readlink(installPath(candidate, version))
+		_, err := os.Readlink(installPath(root, candidate, version))
 		return err == nil
 	}
 	return false
 }
 
-func InstalledVers(candidate string) []string {
-	if versions, err := ioutil.ReadDir(candPath(candidate)); err == nil {
+func InstalledVers(root string, candidate string) []string {
+	if versions, err := ioutil.ReadDir(candPath(root, candidate)); err == nil {
 		var res []string
 		for _, ver := range versions {
 			res = append(res, ver.Name())
@@ -64,10 +61,10 @@ func InstalledVers(candidate string) []string {
 	}
 }
 
-func UsingCands() ([]string, []string) {
+func UsingCands(root string) ([]string, []string) {
 	var cands, vers []string
-	for _, cand := range store.GetCandidates() {
-		ver, err := UsingVer(cand)
+	for _, cand := range store.GetCandidates(root) {
+		ver, err := UsingVer(root, cand)
 		if err == nil {
 			cands = append(cands, cand)
 			vers = append(vers, ver)
@@ -76,15 +73,15 @@ func UsingCands() ([]string, []string) {
 	return cands, vers
 }
 
-func IsArchived(candidate string, version string) bool {
-	return archiveFile(candidate, version) != ""
+func IsArchived(root string, candidate string, version string) bool {
+	return archiveFile(root, candidate, version) != ""
 }
 
-func Archive(r io.ReadCloser, candidate string, version string, format string, completed chan<- bool) error {
+func Archive(r io.ReadCloser, root string, candidate string, version string, format string, completed chan<- bool) error {
 	if format == "gz" {
 		format = "tar.gz"
 	}
-	f, err := os.Create(archivePath(candidate, version, format))
+	f, err := os.Create(archivePath(root, candidate, version, format))
 	if err != nil {
 		completed <- false
 		return err
@@ -105,16 +102,16 @@ func Archive(r io.ReadCloser, candidate string, version string, format string, c
 	return nil
 }
 
-func Unarchive(candidate string, version string, archiveReady <-chan bool, installReady chan<- bool) error {
+func Unarchive(root string, candidate string, version string, archiveReady <-chan bool, installReady chan<- bool) error {
 	if <-archiveReady {
 		fmt.Printf("installing %s %s...\n", candidate, version)
-		if !IsArchived(candidate, version) {
+		if !IsArchived(root, candidate, version) {
 			return utils.ErrArcNotIns
 		}
-		_ = os.Mkdir(candPath(candidate), os.ModeDir|os.ModePerm)
+		_ = os.Mkdir(candPath(root, candidate), os.ModeDir|os.ModePerm)
 
-		wd := installPath(candidate, version)
-		err := archiver.Unarchive(archiveFile(candidate, version), wd)
+		wd := installPath(root, candidate, version)
+		err := archiver.Unarchive(archiveFile(root, candidate, version), wd)
 		if err != nil {
 			installReady <- false
 			_ = os.RemoveAll(wd)
@@ -136,8 +133,8 @@ func Unarchive(candidate string, version string, archiveReady <-chan bool, insta
 	return utils.ErrArcNotIns
 }
 
-func UsingVer(candidate string) (string, error) {
-	p, err := os.Readlink(installPath(candidate, "current"))
+func UsingVer(root string, candidate string) (string, error) {
+	p, err := os.Readlink(installPath(root, candidate, "current"))
 	if err == nil {
 		d, _ := os.Stat(p)
 		return d.Name(), nil
@@ -145,13 +142,13 @@ func UsingVer(candidate string) (string, error) {
 	return "", err
 }
 
-func UseVer(candidate string, version string) error {
-	return os.Symlink(installPath(candidate, version), installPath(candidate, "current"))
+func UseVer(root string, candidate string, version string) error {
+	return os.Symlink(installPath(root, candidate, version), installPath(root, candidate, "current"))
 }
 
-func MkdirIfNotExist() error {
-	candDir := path.Join(e.Dir, "candidates")
-	arcDir := path.Join(e.Dir, "archives")
+func MkdirIfNotExist(root string) error {
+	candDir := path.Join(root, "candidates")
+	arcDir := path.Join(root, "archives")
 	e := os.MkdirAll(candDir, os.ModeDir|os.ModePerm)
 	if e != nil {
 		return e

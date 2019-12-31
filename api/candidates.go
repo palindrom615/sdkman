@@ -1,36 +1,44 @@
 package api
 
 import (
+	"github.com/palindrom615/sdk/utils"
 	"io"
 	"strings"
 )
 
-var candidatesApi = e.Api + "/candidates"
+func GetDefault(api string, candidate string) (string, error) {
+	candidatesApi := api + "/candidates"
 
-func GetDefault(candidate string) (string, error) {
 	res, err := requestSync(candidatesApi + "/default/" + candidate)
 	return string(res), err
 }
 
-func GetValidate(candidate string, version string) (bool, error) {
-	res, err := requestSync(candidatesApi + "/validate/" + candidate + "/" + version + "/" + e.Platform)
+func GetValidate(api string, candidate string, version string) (bool, error) {
+	candidatesApi := api + "/candidates"
+
+	res, err := requestSync(candidatesApi + "/validate/" + candidate + "/" + version + "/" + utils.Platform())
 	return string(res) == "valid", err
 }
 
-func GetList() (io.ReadCloser, error) {
+func GetList(api string) (io.ReadCloser, error) {
+	candidatesApi := api + "/candidates"
+
 	return request(candidatesApi + "/list")
 }
 
-func GetVersionsList(candidate string, current string, installed []string) (io.ReadCloser, error) {
-	return request(candidatesApi + "/" + candidate + "/" + e.Platform + "/versions/list?current=" + current +
+func GetVersionsList(api string, candidate string, current string, installed []string) (io.ReadCloser, error) {
+	candidatesApi := api + "/candidates"
+	return request(candidatesApi + "/" + candidate + "/" + utils.Platform() + "/versions/list?current=" + current +
 		"&installed=" + strings.Join(installed, ","))
 }
 
-func GetAll() ([]string, error) {
+func GetAll(api string) ([]string, error) {
+	candidatesApi := api + "/candidates"
 	res, err := requestSync(candidatesApi + "/all")
 	return strings.Split(string(res), ","), err
 }
 
-func GetVersionsAll(candidate string) ([]byte, error) {
-	return requestSync(candidatesApi + "/" + candidate + "/" + e.Platform + "/versions/all")
+func GetVersionsAll(api string, candidate string) ([]byte, error) {
+	candidatesApi := api + "/candidates"
+	return requestSync(candidatesApi + "/" + candidate + "/" + utils.Platform() + "/versions/all")
 }

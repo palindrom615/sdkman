@@ -2,8 +2,8 @@ package command
 
 import (
 	"fmt"
-	"github.com/palindrom615/sdk/conf"
 	"github.com/palindrom615/sdk/local"
+	"github.com/urfave/cli/v2"
 	"path"
 	"strings"
 )
@@ -13,9 +13,10 @@ type envVar struct {
 	val  string
 }
 
-func Export(shell string) error {
-	e := conf.GetConf()
-	cands, _ := local.UsingCands()
+func Export(c *cli.Context) error {
+	shell := c.Args().Get(0)
+	root := c.String("directory")
+	cands, _ := local.UsingCands(c.String("directory"))
 	if len(cands) == 0 {
 		fmt.Println("")
 		return nil
@@ -23,7 +24,7 @@ func Export(shell string) error {
 	paths := []string{}
 	homes := []envVar{}
 	for _, cand := range cands {
-		candHome := path.Join(e.Dir, "candidates", cand, "current")
+		candHome := path.Join(root, "candidates", cand, "current")
 		paths = append(paths, path.Join(candHome, "bin"))
 		homes = append(homes, envVar{fmt.Sprintf("%s_HOME", strings.ToUpper(cand)), candHome})
 	}
