@@ -34,6 +34,16 @@ func archiveFile(root string, candidate string, version string) string {
 	return ""
 }
 
+func MkdirIfNotExist(root string) error {
+	candDir := path.Join(root, "candidates")
+	arcDir := path.Join(root, "archives")
+	e := os.MkdirAll(candDir, os.ModeDir|os.ModePerm)
+	if e != nil {
+		return e
+	}
+	return os.MkdirAll(arcDir, os.ModeDir|os.ModePerm)
+}
+
 func IsInstalled(root string, candidate string, version string) bool {
 	dir, err := os.Lstat(installPath(root, candidate, version))
 	if err != nil {
@@ -144,14 +154,4 @@ func UsingVer(root string, candidate string) (string, error) {
 
 func UseVer(root string, candidate string, version string) error {
 	return os.Symlink(installPath(root, candidate, version), installPath(root, candidate, "current"))
-}
-
-func MkdirIfNotExist(root string) error {
-	candDir := path.Join(root, "candidates")
-	arcDir := path.Join(root, "archives")
-	e := os.MkdirAll(candDir, os.ModeDir|os.ModePerm)
-	if e != nil {
-		return e
-	}
-	return os.MkdirAll(arcDir, os.ModeDir|os.ModePerm)
 }
