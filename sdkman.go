@@ -193,15 +193,15 @@ func evalFish(paths []string, envVars []envVar) {
 }
 
 func evalPosh(paths []string, envVars []envVar) {
-	fmt.Printf("$env:Path = %s; + $env:Path\n", strings.Join(paths, ";"))
+	fmt.Printf("$env:Path = \"%s;\" + $env:Path;", strings.Join(paths, ";"))
 	for _, v := range envVars {
-		fmt.Printf("$env:%s = %s\n", v.name, v.val)
+		fmt.Printf("$env:%s = \"%s\";", v.name, v.val)
 	}
 }
 
 func evalWindows(paths []string, envVars []envVar) {
-	fmt.Printf("[Environment]::SetEnvironmentVariable(\"Path\", \"%s;\" + $env:Path, [System.EnvironmentVariableTarget]::User\n", strings.Join(paths, ";"))
+	fmt.Printf("[Environment]::SetEnvironmentVariable(\"Path\", \"%s;\" + $env:Path, [System.EnvironmentVariableTarget]::User);", strings.Join(paths, ";"))
 	for _, v := range envVars {
-		fmt.Printf("[Environment]::SetEnvironmentVariable(\"%s\", \"%s\", [System.EnvironmentVariableTarget]::User\n", v.name, v.val)
+		fmt.Printf("[Environment]::SetEnvironmentVariable(\"%s\", \"%s\", [System.EnvironmentVariableTarget]::User);", v.name, v.val)
 	}
 }

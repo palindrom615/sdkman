@@ -14,11 +14,40 @@ There's [plan to migrate SDKMAN client](https://github.com/sdkman/sdk) with rust
 
 ## Installation
 
+### Windows
+
+for permanent enviornment variable setting, open powershell and type
+
+```powershell
+Invoke-Expression (sdk export windows)
+```
+
+### powershell
+
+for using only on powershell,
+
+```powershell
+Add-Content $Profile "Invoke-Expression (sdk export posh)"
+```
+
+### bash, fish, zsh
+
 ```bash
 env GO111MODULE=on go install github.com/palindrom615/sdkman/cmd/sdk
 
 # You should add "eval $(sdk" export bash)" on your .bashrc file
 echo "eval \$(sdk export bash)" >> ~/.bashrc
+echo "eval \$(sdk export zsh)" >> ~/.zshrc
+echo "eval \(sdk export fish)" >> ~/.config/config.fish
+```
+
+## Usage
+
+### Install SDK
+
+```
+sdk install java
+sdk install gradle@6.0.1
 ```
 
 ## Build
