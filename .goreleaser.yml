@@ -15,6 +15,10 @@ builds:
   env:
   - CGO_ENABLED=0
 archives:
+format: tar.gz
+format_overrides:
+  - goos: windows
+    format: zip
 - replacements:
     darwin: Darwin
     linux: Linux
