@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func arg2sdk(reg string, root string, arg string) (Sdk, error){
+func arg2sdk(reg string, root string, arg string) (Sdk, error) {
 	sdk := strings.Split(arg, "@")
 	candidate := sdk[0]
 	if err := checkValidCand(root, candidate); err != nil {

@@ -102,7 +102,7 @@ func TestIsArchived(t *testing.T) {
 func TestCurrentSdk(t *testing.T) {
 	sdk, err := sdkman.CurrentSdk("test", "java")
 	if !reflect.DeepEqual(err, sdkman.ErrNoCurrSdk("java")) {
-		t.Errorf("no using version, but CurrentSdk return %s", sdk.Candidate + "@" + sdk.Version)
+		t.Errorf("no using version, but CurrentSdk return %s", sdk.Candidate+"@"+sdk.Version)
 	}
 	mkdirP("test/candidates/java/8")
 	os.Symlink("test/candidates/java/8", "test/candidates/java/current")

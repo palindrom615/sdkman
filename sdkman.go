@@ -98,6 +98,13 @@ type envVar struct {
 
 func Export(c *cli.Context) error {
 	shell := c.Args().Get(0)
+	if shell == "" {
+		if platform() == "msys_nt-10.0" {
+			shell = "windows"
+		} else {
+			shell = "bash"
+		}
+	}
 	root := c.String("directory")
 	sdks := CurrentSdks(c.String("directory"))
 	if len(sdks) == 0 {
@@ -112,8 +119,14 @@ func Export(c *cli.Context) error {
 		homes = append(homes, envVar{fmt.Sprintf("%s_HOME", strings.ToUpper(sdk.Candidate)), candHome})
 	}
 
-	if shell == "bash" || shell == "" {
+	if shell == "bash" || shell == "zsh" {
 		evalBash(paths, homes)
+	} else if shell == "fish" {
+		evalFish(paths, homes)
+	} else if shell == "powershell" || shell == "posh" {
+		evalPosh(paths, homes)
+	} else if shell == "windows" || shell == "window" {
+		evalWindows(paths, homes)
 	}
 	return nil
 }
@@ -172,3 +185,23 @@ func evalBash(paths []string, envVars []envVar) {
 	}
 }
 
+func evalFish(paths []string, envVars []envVar) {
+	fmt.Println("set -x PATH " + strings.Join(paths, " ") + " $PATH")
+	for _, v := range envVars {
+		fmt.Println("set -x " + v.name + " " + v.val)
+	}
+}
+
+func evalPosh(paths []string, envVars []envVar) {
+	fmt.Printf("$env:Path = %s; + $env:Path\n", strings.Join(paths, ";"))
+	for _, v := range envVars {
+		fmt.Printf("$env:%s = %s\n", v.name, v.val)
+	}
+}
+
+func evalWindows(paths []string, envVars []envVar) {
+	fmt.Printf("[Environment]::SetEnvironmentVariable(\"Path\", \"%s;\" + $env:Path, [System.EnvironmentVariableTarget]::User\n", strings.Join(paths, ";"))
+	for _, v := range envVars {
+		fmt.Printf("[Environment]::SetEnvironmentVariable(\"%s\", \"%s\", [System.EnvironmentVariableTarget]::User\n", v.name, v.val)
+	}
+}
