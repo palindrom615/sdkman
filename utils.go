@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path"
 	"runtime"
+	"strings"
 )
 
 // MkdirIfNotExist creates "candidates" and "archives" directory
@@ -21,8 +22,15 @@ func MkdirIfNotExist(root string) error {
 
 func platform() string {
 	platform := runtime.GOOS
+
 	if platform == "windows" {
-		platform = "msys_nt-10.0"
+		platform = "mingw"
+		if runtime.GOARCH == "amd64" {
+			platform += "64"
+		}
+	}
+	if runtime.GOARCH == "386" || runtime.GOARCH == "amd64p32" {
+		platform += "32"
 	}
 	return platform
 }
@@ -32,7 +40,7 @@ func pager(pages io.ReadCloser) {
 	p := platform()
 
 	if pager == "" {
-		if p == "msys_nt-10.0" {
+		if strings.HasPrefix(platform(), "mingw") {
 			pager = "more"
 		} else {
 			pager = "less"

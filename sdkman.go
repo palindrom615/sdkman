@@ -99,7 +99,7 @@ func Current(c *cli.Context) error {
 func Export(c *cli.Context) error {
 	shell := c.Args().Get(0)
 	if shell == "" {
-		if platform() == "msys_nt-10.0" {
+		if strings.HasPrefix(platform(), "mingw") {
 			shell = "windows"
 		} else {
 			shell = "bash"
