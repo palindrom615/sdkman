@@ -10,6 +10,57 @@ import (
 	"strings"
 )
 
+func CurrentSdks(root string) []Sdk {
+	res := []Sdk{}
+	for _, cand := range getCandidates(root) {
+		sdk, err := CurrentSdk(root, cand)
+		if err == nil {
+			res = append(res, sdk)
+		}
+	}
+	return res
+}
+
+func InstalledSdks(root string, candidate string) []Sdk {
+	if versions, err := ioutil.ReadDir(candPath(root, candidate)); err == nil {
+		var res []Sdk
+		for _, ver := range versions {
+			res = append(res, Sdk{candidate, ver.Name()})
+		}
+		return res
+	} else {
+		return []Sdk{}
+	}
+}
+
+func defaultSdk(reg string, root string, candidate string) (Sdk, error) {
+	if v, netErr := getDefault(reg, candidate); netErr == nil {
+		return Sdk{candidate, v}, nil
+	} else if curr, fsErr := CurrentSdk(root, candidate); fsErr == nil {
+		return curr, nil
+	} else {
+		return Sdk{candidate, ""}, ErrNotOnline
+	}
+}
+
+func checkValidCand(root string, candidate string) error {
+	for _, can := range getCandidates(root) {
+		if can == candidate {
+			return nil
+		}
+	}
+	return ErrNoCand
+}
+
+func CurrentSdk(root string, candidate string) (Sdk, error) {
+	p, err := os.Readlink(Sdk{candidate, "current"}.installPath(root))
+	if err == nil {
+		d, _ := os.Stat(p)
+		return Sdk{candidate, d.Name()}, nil
+	}
+	return Sdk{candidate, ""}, ErrNoCurrSdk(candidate)
+}
+
 type Sdk struct {
 	Candidate string
 	Version   string
@@ -22,6 +73,7 @@ type Archive struct {
 func candPath(root string, candidate string) string {
 	return path.Join(root, "candidates", candidate)
 }
+
 func (sdk Sdk) installPath(root string) string {
 	return path.Join(candPath(root, sdk.Candidate), sdk.Version)
 }
@@ -42,16 +94,6 @@ func (sdk Sdk) archiveFile(root string) string {
 	return ""
 }
 
-func MkdirIfNotExist(root string) error {
-	candDir := path.Join(root, "candidates")
-	arcDir := path.Join(root, "archives")
-	e := os.MkdirAll(candDir, os.ModeDir|os.ModePerm)
-	if e != nil {
-		return e
-	}
-	return os.MkdirAll(arcDir, os.ModeDir|os.ModePerm)
-}
-
 func (sdk Sdk) IsInstalled(root string) bool {
 	dir, err := os.Lstat(sdk.installPath(root))
 	if err != nil {
@@ -67,56 +109,8 @@ func (sdk Sdk) IsInstalled(root string) bool {
 	return false
 }
 
-func InstalledVers(root string, candidate string) []string {
-	if versions, err := ioutil.ReadDir(candPath(root, candidate)); err == nil {
-		var res []string
-		for _, ver := range versions {
-			res = append(res, ver.Name())
-		}
-		return res
-	} else {
-		return []string{}
-	}
-}
-
-func UsingCands(root string) []Sdk {
-	res := []Sdk{}
-	for _, cand := range getCandidates(root) {
-		ver, err := UsingVer(root, cand)
-		if err == nil {
-			res = append(res, Sdk{cand, ver})
-		}
-	}
-	return res
-}
-
 func (sdk Sdk) IsArchived(root string) bool {
 	return sdk.archiveFile(root) != ""
-}
-
-func (archive Archive) Save(r io.ReadCloser, root string, completed chan<- bool) error {
-	if archive.Format == "gz" || archive.Format == "bz2" || archive.Format == "xz" {
-		archive.Format = "tar." + archive.Format
-	}
-	f, err := os.Create(archive.archivePath(root))
-	if err != nil {
-		completed <- false
-		return err
-	}
-	fmt.Printf("downloading %s %s...\n", archive.Sdk.Candidate, archive.Sdk.Version)
-	_, err = io.Copy(f, r)
-	if os.IsNotExist(err) {
-		completed <- false
-		return err
-	}
-	defer func() {
-		r.Close()
-		if f != nil {
-			_ = f.Close()
-		}
-		completed <- true
-	}()
-	return nil
 }
 
 func (sdk Sdk) Unarchive(root string, archiveReady <-chan bool, installReady chan<- bool) error {
@@ -150,15 +144,42 @@ func (sdk Sdk) Unarchive(root string, archiveReady <-chan bool, installReady cha
 	return ErrArcNotIns
 }
 
-func UsingVer(root string, candidate string) (string, error) {
-	p, err := os.Readlink(Sdk{candidate, "current"}.installPath(root))
-	if err == nil {
-		d, _ := os.Stat(p)
-		return d.Name(), nil
-	}
-	return "", err
+func (sdk Sdk) Use(root string) error {
+	return os.Symlink(sdk.installPath(root), Sdk{sdk.Candidate, "current"}.installPath(root))
 }
 
-func (sdk Sdk) UseVer(root string) error {
-	return os.Symlink(sdk.installPath(root), Sdk{sdk.Candidate, "current"}.installPath(root))
+func (sdk Sdk) checkValidVer(reg string, root string, folder string) error {
+	isValid, netErr := getValidate(reg, sdk)
+	if (netErr == nil && isValid) || folder != "" || sdk.IsInstalled(root) {
+		return nil
+	} else if netErr != nil {
+		return ErrNotOnline
+	} else {
+		return ErrNoVer
+	}
+}
+
+func (archive Archive) Save(r io.ReadCloser, root string, completed chan<- bool) error {
+	if archive.Format == "gz" || archive.Format == "bz2" || archive.Format == "xz" {
+		archive.Format = "tar." + archive.Format
+	}
+	f, err := os.Create(archive.archivePath(root))
+	if err != nil {
+		completed <- false
+		return err
+	}
+	fmt.Printf("downloading %s %s...\n", archive.Sdk.Candidate, archive.Sdk.Version)
+	_, err = io.Copy(f, r)
+	if os.IsNotExist(err) {
+		completed <- false
+		return err
+	}
+	defer func() {
+		r.Close()
+		if f != nil {
+			_ = f.Close()
+		}
+		completed <- true
+	}()
+	return nil
 }

@@ -61,10 +61,14 @@ func getList(api string) (io.ReadCloser, error) {
 	return request(candidatesApi + "/list")
 }
 
-func getVersionsList(api string, candidate string, current string, installed []string) (io.ReadCloser, error) {
+func getVersionsList(api string, currentSdk Sdk, installed []Sdk) (io.ReadCloser, error) {
 	candidatesApi := api + "/candidates"
-	return request(candidatesApi + "/" + candidate + "/" + platform() + "/versions/list?current=" + current +
-		"&installed=" + strings.Join(installed, ","))
+	installedVers := ""
+	for _, sdk := range installed {
+		installedVers += sdk.Version + ","
+	}
+	url := fmt.Sprintf("%s/%s/%s/versions/list?current=%s&installed=%s", candidatesApi, currentSdk.Candidate, platform(), currentSdk.Version, installedVers)
+	return request(url)
 }
 
 func getAll(api string) ([]string, error) {

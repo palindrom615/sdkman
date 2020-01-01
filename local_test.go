@@ -10,6 +10,19 @@ import (
 	"testing"
 )
 
+func mkdirP(paths ...string) {
+	for _, path := range paths {
+		os.MkdirAll(path, os.ModeDir|os.ModePerm)
+	}
+}
+
+func TestMain(m *testing.M) {
+	os.Mkdir("test", os.ModePerm|os.ModeDir)
+	code := m.Run()
+	os.RemoveAll("test")
+	os.Exit(code)
+}
+
 func TestMkdirIfNotExist(t *testing.T) {
 	sdkman.MkdirIfNotExist("test")
 	candDir := path.Join("test", "candidates")
@@ -32,29 +45,39 @@ func TestIsInstalled(t *testing.T) {
 	os.RemoveAll("test/candidates/java")
 }
 
-func TestInstalledVers(t *testing.T) {
-	vers := sdkman.InstalledVers("test", "java")
-	if len(vers) != 0 {
+func TestInstalledSdksWithNoCurrSdk(t *testing.T) {
+	sdks := sdkman.InstalledSdks("test", "java")
+	vers := []string{}
+	for _, s := range sdks {
+		vers = append(vers, s.Version)
+	}
+	if len(sdks) != 0 {
 		t.Errorf("no installed version but InstalledVer returns %s", strings.Join(vers, ", "))
 	}
+	os.RemoveAll("test/candidates/java")
+}
+func TestInstalledSdks(t *testing.T) {
+
 	mkdirP("test/candidates/java/8", "test/candidates/java/11", "test/candidates/java/13")
-	vers = sdkman.InstalledVers("test", "java")
-	if len(vers) != 3 {
-		answer := []string{"8", "11", "13"}
-		sort.Strings(answer)
-		sort.Strings(vers)
-		if !reflect.DeepEqual(answer, vers) {
-			t.Errorf("installed version: %s guess: %s", strings.Join(answer, ", "), strings.Join(vers, ", "))
-		}
+	answer := []string{"8", "11", "13"}
+	sdks := sdkman.InstalledSdks("test", "java")
+	vers := []string{}
+	for _, s := range sdks {
+		vers = append(vers, s.Version)
+	}
+	sort.Strings(answer)
+	sort.Strings(vers)
+	if len(vers) != 3 || !reflect.DeepEqual(answer, vers) {
+		t.Errorf("installed version: %s guess: %s", strings.Join(answer, ", "), strings.Join(vers, ", "))
 	}
 	os.RemoveAll("test/candidates/java")
 }
 
-func TestUsingCands(t *testing.T) {
+func TestCurrentSdks(t *testing.T) {
 	mkdirP("test/candidates/java/8", "test/candidates/gradle/5")
 	os.Symlink("test/candidates/java/8", "test/candidates/java/current")
 	os.Symlink("test/candidates/gradle/5", "test/candidates/gradle/current")
-	sdks := sdkman.UsingCands("test")
+	sdks := sdkman.CurrentSdks("test")
 	for _, sdk := range sdks {
 		if sdk.Candidate == "java" && sdk.Version == "8" || sdk.Candidate == "gradle" && sdk.Version == "5" {
 			t.Errorf("installed version: java@8, gradle@5 guess: %s@%s", sdk.Candidate, sdk.Version)
@@ -76,16 +99,16 @@ func TestIsArchived(t *testing.T) {
 	os.RemoveAll("test/archives/java-8.tar.bz2")
 }
 
-func TestUsingVer(t *testing.T) {
-	ver, err := sdkman.UsingVer("test", "java")
-	if err == nil {
-		t.Errorf("no using version, but UsingVer return %s", ver)
+func TestCurrentSdk(t *testing.T) {
+	sdk, err := sdkman.CurrentSdk("test", "java")
+	if !reflect.DeepEqual(err, sdkman.ErrNoCurrSdk("java")) {
+		t.Errorf("no using version, but CurrentSdk return %s", sdk.Candidate + "@" + sdk.Version)
 	}
 	mkdirP("test/candidates/java/8")
 	os.Symlink("test/candidates/java/8", "test/candidates/java/current")
-	ver, err = sdkman.UsingVer("test", "java")
-	if err != nil || ver != "8" {
-		t.Errorf("java@8 is used, but UsingVer return java@%s, error %s", ver, err)
+	sdk, err = sdkman.CurrentSdk("test", "java")
+	if err != nil || sdk.Version != "8" {
+		t.Errorf("java@8 is used, but CurrentSdk return java@%s, error %s", sdk.Version, err)
 	}
 	os.RemoveAll("test/candidates/java")
 }
@@ -93,8 +116,9 @@ func TestUsingVer(t *testing.T) {
 func TestUseVer(t *testing.T) {
 	mkdirP("test/candidates/java/8")
 	sdk := sdkman.Sdk{"java", "8"}
-	err := sdk.UseVer("test")
-	if ver, _ := sdkman.UsingVer("test", "java"); ver != "8" {
-		t.Errorf("UseVer failed to create symlink: %s", err)
+	err := sdk.Use("test")
+	if sdk, _ := sdkman.CurrentSdk("test", "java"); sdk.Version != "8" {
+		t.Errorf("Use failed to create symlink: %s", err)
 	}
+	os.RemoveAll("test/candidates/java")
 }

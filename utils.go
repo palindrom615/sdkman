@@ -4,8 +4,19 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path"
 	"runtime"
 )
+
+func MkdirIfNotExist(root string) error {
+	candDir := path.Join(root, "candidates")
+	arcDir := path.Join(root, "archives")
+	e := os.MkdirAll(candDir, os.ModeDir|os.ModePerm)
+	if e != nil {
+		return e
+	}
+	return os.MkdirAll(arcDir, os.ModeDir|os.ModePerm)
+}
 
 func platform() string {
 	platform := runtime.GOOS
