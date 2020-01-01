@@ -8,7 +8,7 @@ builds:
   binary: sdk
   goos:
     - windows
-    - macOS
+    - darwin
     - linux
   goarch:
     - amd64
