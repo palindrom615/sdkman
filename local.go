@@ -2,12 +2,13 @@ package sdkman
 
 import (
 	"fmt"
-	"github.com/mholt/archiver/v3"
 	"io"
 	"io/ioutil"
 	"os"
 	"path"
 	"strings"
+
+	"github.com/mholt/archiver/v3"
 )
 
 func arg2sdk(reg string, root string, arg string) (Sdk, error) {
@@ -173,9 +174,6 @@ func (sdk Sdk) checkValidVer(reg string, root string) error {
 }
 
 func (archive Archive) Save(r io.ReadCloser, root string, completed chan<- bool) error {
-	if archive.Format == "gz" || archive.Format == "bz2" || archive.Format == "xz" {
-		archive.Format = "tar." + archive.Format
-	}
 	f, err := os.Create(archive.archivePath(root))
 	if err != nil {
 		completed <- false

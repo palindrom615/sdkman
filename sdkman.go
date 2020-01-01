@@ -2,10 +2,11 @@ package sdkman
 
 import (
 	"fmt"
-	"github.com/scylladb/go-set/strset"
-	"github.com/urfave/cli/v2"
 	"path"
 	"strings"
+
+	"github.com/scylladb/go-set/strset"
+	"github.com/urfave/cli/v2"
 )
 
 func Install(c *cli.Context) error {
@@ -91,11 +92,6 @@ func Current(c *cli.Context) error {
 	return nil
 }
 
-type envVar struct {
-	name string
-	val  string
-}
-
 func Export(c *cli.Context) error {
 	shell := c.Args().Get(0)
 	if shell == "" {
@@ -176,32 +172,4 @@ func Update(c *cli.Context) error {
 	}
 	_ = setCandidates(root, freshCsv)
 	return nil
-}
-
-func evalBash(paths []string, envVars []envVar) {
-	fmt.Println("export PATH=" + strings.Join(paths, ":") + ":$PATH")
-	for _, v := range envVars {
-		fmt.Println("export " + v.name + "=" + v.val)
-	}
-}
-
-func evalFish(paths []string, envVars []envVar) {
-	fmt.Println("set -x PATH " + strings.Join(paths, " ") + " $PATH")
-	for _, v := range envVars {
-		fmt.Println("set -x " + v.name + " " + v.val)
-	}
-}
-
-func evalPosh(paths []string, envVars []envVar) {
-	fmt.Printf("$env:Path = \"%s;\" + $env:Path;", strings.Join(paths, ";"))
-	for _, v := range envVars {
-		fmt.Printf("$env:%s = \"%s\";", v.name, v.val)
-	}
-}
-
-func evalWindows(paths []string, envVars []envVar) {
-	fmt.Printf("[Environment]::SetEnvironmentVariable(\"Path\", \"%s;\" + $env:Path, [System.EnvironmentVariableTarget]::User);", strings.Join(paths, ";"))
-	for _, v := range envVars {
-		fmt.Printf("[Environment]::SetEnvironmentVariable(\"%s\", \"%s\", [System.EnvironmentVariableTarget]::User);", v.name, v.val)
-	}
 }

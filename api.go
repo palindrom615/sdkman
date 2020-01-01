@@ -131,7 +131,25 @@ func typeOfResponse(r *http.Response) string {
 		filename := strings.Split(params["filename"], ".")
 		return filename[len(filename)-1]
 	} else {
-		exts, _ := mime.ExtensionsByType(contentType)
-		return exts[0]
+		return extensionByType(contentType)
 	}
+}
+
+func extensionByType(contentType string) string {
+	if contentType == "application/zip" {
+		return ".zip"
+	} else if contentType == "application/gzip" {
+		return ".tar.gz"
+	} else if contentType == "application/x-bzip" {
+		return ".tar.bz"
+	} else if contentType == "application/x-bzip2" {
+		return ".tar.bz2"
+	} else if contentType == "application/x-rar-compressed" {
+		return ".rar"
+	} else if contentType == "application/x-tar" {
+		return ".tar"
+	} else if contentType == "application/x-7z-compressed" {
+		return ".7z"
+	}
+	return ""
 }
