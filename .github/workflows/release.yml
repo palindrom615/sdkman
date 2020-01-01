@@ -12,7 +12,23 @@ jobs:
     env:
       VERSION: $GITHUB_REF
     steps:
-      - name: Set env
+      -
+        name: Set env
         run: echo ::set-env name=VERSION::$(echo ${GITHUB_REF:10})
-      - name: Go Release Binary
-        uses: ngs/go-release.action@v1.0.2
+      -
+        name: Checkout
+        uses: actions/checkout@v1
+      -
+        name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13.x
+      -
+        name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v1
+        with:
+          version: latest
+          args: release --rm-dist
+          key: ${{ secrets.YOUR_PRIVATE_KEY }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
