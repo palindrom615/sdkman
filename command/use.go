@@ -9,12 +9,13 @@ import (
 func Use(c *cli.Context) error {
 	candidate := c.Args().Get(0)
 	version := c.Args().Get(1)
+	sdk := local.Sdk{candidate, version}
 	root := c.String("directory")
 	if err := utils.CheckValidCand(root, candidate); err != nil {
 		return err
 	}
-	if !local.IsInstalled(root, candidate, version) {
+	if !sdk.IsInstalled(root) {
 		return utils.ErrVerNotIns
 	}
-	return local.UseVer(root, candidate, version)
+	return sdk.UseVer(root)
 }

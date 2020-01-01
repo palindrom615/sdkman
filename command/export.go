@@ -16,17 +16,17 @@ type envVar struct {
 func Export(c *cli.Context) error {
 	shell := c.Args().Get(0)
 	root := c.String("directory")
-	cands, _ := local.UsingCands(c.String("directory"))
-	if len(cands) == 0 {
+	sdks := local.UsingCands(c.String("directory"))
+	if len(sdks) == 0 {
 		fmt.Println("")
 		return nil
 	}
 	paths := []string{}
 	homes := []envVar{}
-	for _, cand := range cands {
-		candHome := path.Join(root, "candidates", cand, "current")
+	for _, sdk := range sdks {
+		candHome := path.Join(root, "candidates", sdk.Candidate, "current")
 		paths = append(paths, path.Join(candHome, "bin"))
-		homes = append(homes, envVar{fmt.Sprintf("%s_HOME", strings.ToUpper(cand)), candHome})
+		homes = append(homes, envVar{fmt.Sprintf("%s_HOME", strings.ToUpper(sdk.Candidate)), candHome})
 	}
 
 	if shell == "bash" || shell == "" {

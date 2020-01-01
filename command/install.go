@@ -28,31 +28,33 @@ func Install(c *cli.Context) error {
 			version = dfVer
 		}
 	}
+	target := local.Sdk{candidate, version}
 
-	if local.IsInstalled(root, candidate, version) {
+	if target.IsInstalled(root) {
 		return utils.ErrVerExists
 	}
-	if err := checkValidVer(reg, root, candidate, version, folder); err != nil {
+	if err := checkValidVer(reg, root, target, folder); err != nil {
 		return err
 	}
 
 	archiveReady := make(chan bool)
 	installReady := make(chan bool)
-	go local.Unarchive(root, candidate, version, archiveReady, installReady)
-	if local.IsArchived(root, candidate, version) {
+	go target.Unarchive(root, archiveReady, installReady)
+	if target.IsArchived(root) {
 		archiveReady <- true
 	} else {
-		s, err, t := api.GetDownload(reg, candidate, version)
+		s, err, t := api.GetDownload(reg, target)
 		if err != nil {
 			archiveReady <- false
 			return err
 		}
-		go local.Archive(s, root, candidate, version, t, archiveReady)
+		archive := local.Archive{target, t}
+		go archive.Save(s, root, archiveReady)
 	}
 	if <-installReady == false {
 		return utils.ErrVerInsFail
 	}
-	return local.UseVer(root, candidate, version)
+	return target.UseVer(root)
 }
 
 func defaultVersion(reg string, root string, candidate string) (string, error) {
@@ -66,9 +68,9 @@ func defaultVersion(reg string, root string, candidate string) (string, error) {
 
 }
 
-func checkValidVer(reg string, root string, candidate string, version string, folder string) error {
-	isValid, netErr := api.GetValidate(reg, candidate, version)
-	if (netErr == nil && isValid) || folder != "" || local.IsInstalled(root, candidate, version) {
+func checkValidVer(reg string, root string, target local.Sdk, folder string) error {
+	isValid, netErr := api.GetValidate(reg, target)
+	if (netErr == nil && isValid) || folder != "" || target.IsInstalled(root) {
 		return nil
 	} else if netErr != nil {
 		return utils.ErrNotOnline

@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+	"github.com/palindrom615/sdk/local"
 	"github.com/palindrom615/sdk/utils"
 	"io"
 	"strings"
@@ -13,10 +15,10 @@ func GetDefault(api string, candidate string) (string, error) {
 	return string(res), err
 }
 
-func GetValidate(api string, candidate string, version string) (bool, error) {
+func GetValidate(api string, sdk local.Sdk) (bool, error) {
 	candidatesApi := api + "/candidates"
-
-	res, err := requestSync(candidatesApi + "/validate/" + candidate + "/" + version + "/" + utils.Platform())
+	url := fmt.Sprintf("%s/validate/%s/%s/%s", candidatesApi, sdk.Candidate, sdk.Version, utils.Platform())
+	res, err := requestSync(url)
 	return string(res) == "valid", err
 }
 

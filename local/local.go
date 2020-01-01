@@ -12,22 +12,33 @@ import (
 	"strings"
 )
 
+type Sdk struct {
+	Candidate string
+	Version   string
+}
+type Archive struct {
+	Sdk    Sdk
+	Format string
+}
+
+
 func candPath(root string, candidate string) string {
 	return path.Join(root, "candidates", candidate)
 }
-func installPath(root string, candidate string, version string) string {
-	return path.Join(candPath(root, candidate), version)
+func (sdk Sdk) installPath(root string) string {
+	return path.Join(candPath(root, sdk.Candidate), sdk.Version)
 }
 
-func archivePath(root string, candidate string, version string, format string) string {
-	return path.Join(root, "archives", candidate+"-"+version+"."+format)
+func (archive Archive) archivePath(root string) string {
+	fileName := fmt.Sprintf("%s-%s.%s", archive.Sdk.Candidate, archive.Sdk.Version, archive.Format)
+	return path.Join(root, "archives", fileName)
 }
 
-func archiveFile(root string, candidate string, version string) string {
+func (sdk Sdk) archiveFile(root string) string {
 	archives, _ := os.Open(path.Join(root, "archives"))
 	arcs, _ := archives.Readdir(0)
 	for _, archive := range arcs {
-		if strings.HasPrefix(archive.Name(), candidate+"-"+version) {
+		if strings.HasPrefix(archive.Name(), sdk.Candidate+"-"+sdk.Version) {
 			return path.Join(root, "archives", archive.Name())
 		}
 	}
@@ -44,8 +55,8 @@ func MkdirIfNotExist(root string) error {
 	return os.MkdirAll(arcDir, os.ModeDir|os.ModePerm)
 }
 
-func IsInstalled(root string, candidate string, version string) bool {
-	dir, err := os.Lstat(installPath(root, candidate, version))
+func (sdk Sdk) IsInstalled(root string) bool {
+	dir, err := os.Lstat(sdk.installPath(root))
 	if err != nil {
 		return false
 	}
@@ -53,7 +64,7 @@ func IsInstalled(root string, candidate string, version string) bool {
 	if mode.IsDir() {
 		return true
 	} else if mode&os.ModeSymlink != 0 {
-		_, err := os.Readlink(installPath(root, candidate, version))
+		_, err := os.Readlink(sdk.installPath(root))
 		return err == nil
 	}
 	return false
@@ -71,32 +82,31 @@ func InstalledVers(root string, candidate string) []string {
 	}
 }
 
-func UsingCands(root string) ([]string, []string) {
-	var cands, vers []string
+func UsingCands(root string) []Sdk {
+	res := []Sdk{}
 	for _, cand := range store.GetCandidates(root) {
 		ver, err := UsingVer(root, cand)
 		if err == nil {
-			cands = append(cands, cand)
-			vers = append(vers, ver)
+			res = append(res, Sdk{cand, ver})
 		}
 	}
-	return cands, vers
+	return res
 }
 
-func IsArchived(root string, candidate string, version string) bool {
-	return archiveFile(root, candidate, version) != ""
+func (sdk Sdk) IsArchived(root string) bool {
+	return sdk.archiveFile(root) != ""
 }
 
-func Archive(r io.ReadCloser, root string, candidate string, version string, format string, completed chan<- bool) error {
-	if format == "gz" {
-		format = "tar.gz"
+func (archive Archive) Save(r io.ReadCloser, root string, completed chan<- bool) error {
+	if archive.Format == "gz" || archive.Format == "bz2" || archive.Format == "xz" {
+		archive.Format = "tar." + archive.Format
 	}
-	f, err := os.Create(archivePath(root, candidate, version, format))
+	f, err := os.Create(archive.archivePath(root))
 	if err != nil {
 		completed <- false
 		return err
 	}
-	fmt.Printf("downloading %s %s...\n", candidate, version)
+	fmt.Printf("downloading %s %s...\n", archive.Sdk.Candidate, archive.Sdk.Version)
 	_, err = io.Copy(f, r)
 	if os.IsNotExist(err) {
 		completed <- false
@@ -112,16 +122,16 @@ func Archive(r io.ReadCloser, root string, candidate string, version string, for
 	return nil
 }
 
-func Unarchive(root string, candidate string, version string, archiveReady <-chan bool, installReady chan<- bool) error {
+func (sdk Sdk) Unarchive(root string, archiveReady <-chan bool, installReady chan<- bool) error {
 	if <-archiveReady {
-		fmt.Printf("installing %s %s...\n", candidate, version)
-		if !IsArchived(root, candidate, version) {
+		fmt.Printf("installing %s %s...\n", sdk.Candidate, sdk.Version)
+		if !sdk.IsArchived(root) {
 			return utils.ErrArcNotIns
 		}
-		_ = os.Mkdir(candPath(root, candidate), os.ModeDir|os.ModePerm)
+		_ = os.Mkdir(candPath(root, sdk.Candidate), os.ModeDir|os.ModePerm)
 
-		wd := installPath(root, candidate, version)
-		err := archiver.Unarchive(archiveFile(root, candidate, version), wd)
+		wd := sdk.installPath(root)
+		err := archiver.Unarchive(sdk.archiveFile(root), wd)
 		if err != nil {
 			installReady <- false
 			_ = os.RemoveAll(wd)
@@ -144,7 +154,7 @@ func Unarchive(root string, candidate string, version string, archiveReady <-cha
 }
 
 func UsingVer(root string, candidate string) (string, error) {
-	p, err := os.Readlink(installPath(root, candidate, "current"))
+	p, err := os.Readlink(Sdk{candidate, "current"}.installPath(root))
 	if err == nil {
 		d, _ := os.Stat(p)
 		return d.Name(), nil
@@ -152,6 +162,6 @@ func UsingVer(root string, candidate string) (string, error) {
 	return "", err
 }
 
-func UseVer(root string, candidate string, version string) error {
-	return os.Symlink(installPath(root, candidate, version), installPath(root, candidate, "current"))
+func (sdk Sdk) UseVer(root string) error {
+	return os.Symlink(sdk.installPath(root), Sdk{sdk.Candidate, "current"}.installPath(root))
 }

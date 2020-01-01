@@ -37,10 +37,9 @@ func TestMkdirIfNotExist(t *testing.T) {
 
 func TestIsInstalled(t *testing.T) {
 	root := "test"
-	candidate := "java"
-	version := "8"
+	sdk := local.Sdk{"java", "8"}
 	mkdirP("test/candidates/java/8")
-	if !local.IsInstalled(root, candidate, version) {
+	if !sdk.IsInstalled(root) {
 		t.Error("It is installed but IsInstalled is false")
 	}
 	os.RemoveAll("test/candidates/java")
@@ -68,10 +67,10 @@ func TestUsingCands(t *testing.T) {
 	mkdirP("test/candidates/java/8", "test/candidates/gradle/5")
 	os.Symlink("test/candidates/java/8", "test/candidates/java/current")
 	os.Symlink("test/candidates/gradle/5", "test/candidates/gradle/current")
-	cands, vers := local.UsingCands("test")
-	for i, c := range cands {
-		if c == "java" && vers[i] == "8" || c == "gradle" && vers[i] == "5" {
-			t.Errorf("installed version: java@8, gradle@5 guess: %s@%s", c, vers[i])
+	sdks := local.UsingCands("test")
+	for _, sdk := range sdks {
+		if sdk.Candidate == "java" && sdk.Version == "8" || sdk.Candidate== "gradle" && sdk.Version == "5" {
+			t.Errorf("installed version: java@8, gradle@5 guess: %s@%s", sdk.Candidate, sdk.Version)
 		}
 	}
 	os.RemoveAll("test/candidates/java")
@@ -79,11 +78,12 @@ func TestUsingCands(t *testing.T) {
 }
 
 func TestIsArchived(t *testing.T) {
-	if local.IsArchived("test", "java", "8") {
+	sdk := local.Sdk{"java", "8"}
+	if sdk.IsArchived("test") {
 		t.Error("no archive file, but IsArchived return true")
 	}
 	mkdirP("test/archives/java-8.tar.bz2")
-	if !local.IsArchived("test", "java", "8") {
+	if !sdk.IsArchived("test") {
 		t.Error("archive file exists, but IsArchived return false")
 	}
 	os.RemoveAll("test/archives/java-8.tar.bz2")
@@ -105,7 +105,8 @@ func TestUsingVer(t *testing.T) {
 
 func TestUseVer(t *testing.T) {
 	mkdirP("test/candidates/java/8")
-	err := local.UseVer("test", "java", "8")
+	sdk := local.Sdk{"java", "8"}
+	err := sdk.UseVer("test")
 	if ver, _ := local.UsingVer("test", "java"); ver != "8" {
 		t.Errorf("UseVer failed to create symlink: %s", err)
 	}
