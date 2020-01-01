@@ -32,6 +32,7 @@ func evalPosh(paths []string, envVars []envVar) {
 	for _, v := range envVars {
 		fmt.Printf("$env:%s = \"%s\";", v.name, v.val)
 	}
+	fmt.Println()
 }
 
 func evalWindows(paths []string, envVars []envVar) {
@@ -41,4 +42,5 @@ func evalWindows(paths []string, envVars []envVar) {
 	for _, v := range envVars {
 		fmt.Printf("[Environment]::SetEnvironmentVariable(\"%s\", \"%s\", [System.EnvironmentVariableTarget]::User);", v.name, v.val)
 	}
+	fmt.Println()
 }
