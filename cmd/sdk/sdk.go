@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/palindrom615/sdkman"
-	"github.com/urfave/cli/v2"
 	"log"
 	"os"
 	"path"
+
+	"github.com/palindrom615/sdkman"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
@@ -13,6 +14,12 @@ func main() {
 	app := &cli.App{
 		Name:  "sdkman",
 		Usage: "manage various versions of SDKs",
+		Authors: []*cli.Author{
+			&cli.Author{
+				Name:  "Jang Whemoon",
+				Email: "palindrom615@gmail.com",
+			},
+		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "directory",
