@@ -10,6 +10,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+var (
+	version = "dev"
+	commit = "none"
+	date = "unknown"
+)
 func main() {
 	home, _ := os.UserHomeDir()
 	cli.VersionPrinter = func(c *cli.Context) {
@@ -18,7 +23,7 @@ func main() {
 	app := &cli.App{
 		Name:    "sdkman",
 		Usage:   "manage various versions of SDKs",
-		Version: os.Getenv("VERSION"),
+		Version: version,
 		Authors: []*cli.Author{
 			&cli.Author{
 				Name:  "Jang Whemoon",

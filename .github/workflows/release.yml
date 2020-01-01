@@ -13,9 +13,6 @@ jobs:
       VERSION: $GITHUB_REF
     steps:
       -
-        name: Set env
-        run: echo ::set-env name=VERSION::$(echo ${GITHUB_REF:10})
-      -
         name: Checkout
         uses: actions/checkout@v1
       -
