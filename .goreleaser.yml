@@ -7,7 +7,16 @@ before:
     # you may remove this if you don't need go generate
     - go generate ./...
 builds:
-- env:
+- id: "sdk"
+  main: ./cmd/sdk/sdk.go
+  binary: sdk
+  goos:
+    - windows
+    - macOS
+    - linux
+  goarch:
+    - amd64
+  env:
   - CGO_ENABLED=0
 archives:
 - replacements:
