@@ -24,6 +24,7 @@ func arg2sdk(reg string, root string, arg string) (Sdk, error) {
 	return Sdk{candidate, version}, nil
 }
 
+// CurrentSdks returns every Sdk that is linked via "current"
 func CurrentSdks(root string) []Sdk {
 	res := []Sdk{}
 	for _, cand := range getCandidates(root) {
@@ -35,16 +36,17 @@ func CurrentSdks(root string) []Sdk {
 	return res
 }
 
+// InstalledSdks returns every installed Sdk of specified candidate
 func InstalledSdks(root string, candidate string) []Sdk {
-	if versions, err := ioutil.ReadDir(candPath(root, candidate)); err == nil {
-		var res []Sdk
-		for _, ver := range versions {
-			res = append(res, Sdk{candidate, ver.Name()})
-		}
-		return res
-	} else {
+	versions, err := ioutil.ReadDir(candPath(root, candidate))
+	if err != nil {
 		return []Sdk{}
 	}
+	var res []Sdk
+	for _, ver := range versions {
+		res = append(res, Sdk{candidate, ver.Name()})
+	}
+	return res
 }
 
 func defaultSdk(reg string, root string, candidate string) (Sdk, error) {
@@ -66,6 +68,7 @@ func checkValidCand(root string, candidate string) error {
 	return ErrNoCand
 }
 
+// CurrentSdk returns sdk of specified candidate which is linked with "current"
 func CurrentSdk(root string, candidate string) (Sdk, error) {
 	p, err := os.Readlink(Sdk{candidate, "current"}.installPath(root))
 	if err == nil {
@@ -75,10 +78,14 @@ func CurrentSdk(root string, candidate string) (Sdk, error) {
 	return Sdk{candidate, ""}, ErrNoCurrSdk(candidate)
 }
 
+// Sdk represents each version of sdk
+// ex) Sdk{Candidate: "java", Version: "8.0.232-zulu"}
 type Sdk struct {
 	Candidate string
 	Version   string
 }
+
+// Archive represents downloaded compressed files in "archives" directory
 type Archive struct {
 	Sdk    Sdk
 	Format string
@@ -108,6 +115,7 @@ func (sdk Sdk) archiveFile(root string) string {
 	return ""
 }
 
+// IsInstalled returns if sdk is installed or not
 func (sdk Sdk) IsInstalled(root string) bool {
 	dir, err := os.Lstat(sdk.installPath(root))
 	if err != nil {
@@ -123,10 +131,12 @@ func (sdk Sdk) IsInstalled(root string) bool {
 	return false
 }
 
+// IsArchived returns if archive file of sdk exists or not
 func (sdk Sdk) IsArchived(root string) bool {
 	return sdk.archiveFile(root) != ""
 }
 
+// Unarchive extracts archive file of sdk into "candidates" directory
 func (sdk Sdk) Unarchive(root string, archiveReady <-chan bool, installReady chan<- bool) error {
 	if <-archiveReady {
 		fmt.Printf("installing %s@%s...\n", sdk.Candidate, sdk.Version)
@@ -158,6 +168,7 @@ func (sdk Sdk) Unarchive(root string, archiveReady <-chan bool, installReady cha
 	return ErrArcNotIns
 }
 
+// Use links sdk with symlink named "current" so the sdk is used as default
 func (sdk Sdk) Use(root string) error {
 	return os.Symlink(sdk.installPath(root), Sdk{sdk.Candidate, "current"}.installPath(root))
 }
@@ -173,6 +184,7 @@ func (sdk Sdk) checkValidVer(reg string, root string) error {
 	}
 }
 
+// Save saves bytes read from ReadCloser channel into archive file
 func (archive Archive) Save(r io.ReadCloser, root string, completed chan<- bool) error {
 	f, err := os.Create(archive.archivePath(root))
 	if err != nil {

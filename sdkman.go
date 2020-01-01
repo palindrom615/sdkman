@@ -9,6 +9,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+// Install package
 func Install(c *cli.Context) error {
 	_ = Update(c)
 	reg := c.String("registry")
@@ -23,11 +24,11 @@ func Install(c *cli.Context) error {
 		return err
 	}
 	if target.Version == "" {
-		if defaultSdk, err := defaultSdk(reg, root, target.Candidate); err != nil {
+		defaultSdk, err := defaultSdk(reg, root, target.Candidate)
+		if err != nil {
 			return err
-		} else {
-			target = defaultSdk
 		}
+		target = defaultSdk
 	}
 
 	if target.IsInstalled(root) {
@@ -43,7 +44,7 @@ func Install(c *cli.Context) error {
 	if target.IsArchived(root) {
 		archiveReady <- true
 	} else {
-		s, err, t := getDownload(reg, target)
+		s, t, err := getDownload(reg, target)
 		if err != nil {
 			archiveReady <- false
 			return err
@@ -57,6 +58,7 @@ func Install(c *cli.Context) error {
 	return target.Use(root)
 }
 
+// Use make symbolic link named "current" to installed package.
 func Use(c *cli.Context) error {
 	reg := c.String("registry")
 	root := c.String("directory")
@@ -70,6 +72,7 @@ func Use(c *cli.Context) error {
 	return sdk.Use(root)
 }
 
+// Current print currently used packages
 func Current(c *cli.Context) error {
 	candidate := c.Args().Get(0)
 	root := c.String("directory")
@@ -92,6 +95,7 @@ func Current(c *cli.Context) error {
 	return nil
 }
 
+// Export prints lines of shell scripts setting up PATH and other environment variables like JAVA_HOME
 func Export(c *cli.Context) error {
 	shell := c.Args().Get(0)
 	if shell == "" {
@@ -127,6 +131,7 @@ func Export(c *cli.Context) error {
 	return nil
 }
 
+// List shows available versions of candidate, or available candidates when candidate not specified.
 func List(c *cli.Context) error {
 	candidate := c.Args().Get(0)
 	reg := c.String("registry")
@@ -138,18 +143,18 @@ func List(c *cli.Context) error {
 			pager(list)
 		}
 		return err
-	} else {
-		if err := checkValidCand(root, candidate); err != nil {
-			return err
-		}
-		ins := InstalledSdks(root, candidate)
-		curr, _ := CurrentSdk(root, candidate)
-		list, err := getVersionsList(reg, curr, ins)
-		pager(list)
+	}
+	if err := checkValidCand(root, candidate); err != nil {
 		return err
 	}
+	ins := InstalledSdks(root, candidate)
+	curr, _ := CurrentSdk(root, candidate)
+	list, err := getVersionsList(reg, curr, ins)
+	pager(list)
+	return err
 }
 
+// Update updates available candidates
 func Update(c *cli.Context) error {
 	reg := c.String("registry")
 	root := c.String("directory")

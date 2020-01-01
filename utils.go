@@ -8,6 +8,7 @@ import (
 	"runtime"
 )
 
+// MkdirIfNotExist creates "candidates" and "archives" directory
 func MkdirIfNotExist(root string) error {
 	candDir := path.Join(root, "candidates")
 	arcDir := path.Join(root, "archives")

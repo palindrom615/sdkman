@@ -11,75 +11,75 @@ import (
 	"strings"
 )
 
-func getBroadcastLatestId(api string) ([]byte, error) {
-	broadcastApi := api + "/broadcast"
-	return requestSync(broadcastApi + "/latest/id")
+func getBroadcastLatestID(api string) ([]byte, error) {
+	broadcastAPI := api + "/broadcast"
+	return requestSync(broadcastAPI + "/latest/id")
 }
 
 func getBroadcastLatest(api string) ([]byte, error) {
-	broadcastApi := api + "/broadcast"
-	return requestSync(broadcastApi + "/latest")
+	broadcastAPI := api + "/broadcast"
+	return requestSync(broadcastAPI + "/latest")
 }
 
-func getBroadcastId(api string, id string) ([]byte, error) {
-	broadcastApi := api + "/broadcast"
-	return requestSync(broadcastApi + "/" + id)
+func getBroadcastID(api string, id string) ([]byte, error) {
+	broadcastAPI := api + "/broadcast"
+	return requestSync(broadcastAPI + "/" + id)
 }
 
 func getVersion(api string) ([]byte, error) {
-	brokerApi := api + "/broker"
-	return requestSync(brokerApi + "/version")
+	brokerAPI := api + "/broker"
+	return requestSync(brokerAPI + "/version")
 }
 
 func getDownloadSdkmanVersion(api string, versionType string) ([]byte, error) {
-	brokerApi := api + "/broker"
-	return requestSync(brokerApi + "/download/sdkman/version/" + versionType)
+	brokerAPI := api + "/broker"
+	return requestSync(brokerAPI + "/download/sdkman/version/" + versionType)
 }
 
-func getDownload(api string, sdk Sdk) (io.ReadCloser, error, string) {
-	brokerApi := api + "/broker"
-	return download(brokerApi + "/download/" + sdk.Candidate + "/" + sdk.Version + "/" + platform())
+func getDownload(api string, sdk Sdk) (io.ReadCloser, string, error) {
+	brokerAPI := api + "/broker"
+	return download(brokerAPI + "/download/" + sdk.Candidate + "/" + sdk.Version + "/" + platform())
 }
 
 func getDefault(api string, candidate string) (string, error) {
-	candidatesApi := api + "/candidates"
+	candidatesAPI := api + "/candidates"
 
-	res, err := requestSync(candidatesApi + "/default/" + candidate)
+	res, err := requestSync(candidatesAPI + "/default/" + candidate)
 	return string(res), err
 }
 
 func getValidate(api string, sdk Sdk) (bool, error) {
-	candidatesApi := api + "/candidates"
-	url := fmt.Sprintf("%s/validate/%s/%s/%s", candidatesApi, sdk.Candidate, sdk.Version, platform())
+	candidatesAPI := api + "/candidates"
+	url := fmt.Sprintf("%s/validate/%s/%s/%s", candidatesAPI, sdk.Candidate, sdk.Version, platform())
 	res, err := requestSync(url)
 	return string(res) == "valid", err
 }
 
 func getList(api string) (io.ReadCloser, error) {
-	candidatesApi := api + "/candidates"
+	candidatesAPI := api + "/candidates"
 
-	return request(candidatesApi + "/list")
+	return request(candidatesAPI + "/list")
 }
 
 func getVersionsList(api string, currentSdk Sdk, installed []Sdk) (io.ReadCloser, error) {
-	candidatesApi := api + "/candidates"
+	candidatesAPI := api + "/candidates"
 	installedVers := ""
 	for _, sdk := range installed {
 		installedVers += sdk.Version + ","
 	}
-	url := fmt.Sprintf("%s/%s/%s/versions/list?current=%s&installed=%s", candidatesApi, currentSdk.Candidate, platform(), currentSdk.Version, installedVers)
+	url := fmt.Sprintf("%s/%s/%s/versions/list?current=%s&installed=%s", candidatesAPI, currentSdk.Candidate, platform(), currentSdk.Version, installedVers)
 	return request(url)
 }
 
 func getAll(api string) ([]string, error) {
-	candidatesApi := api + "/candidates"
-	res, err := requestSync(candidatesApi + "/all")
+	candidatesAPI := api + "/candidates"
+	res, err := requestSync(candidatesAPI + "/all")
 	return strings.Split(string(res), ","), err
 }
 
 func getVersionsAll(api string, candidate string) ([]byte, error) {
-	candidatesApi := api + "/candidates"
-	return requestSync(candidatesApi + "/" + candidate + "/" + platform() + "/versions/all")
+	candidatesAPI := api + "/candidates"
+	return requestSync(candidatesAPI + "/" + candidate + "/" + platform() + "/versions/all")
 }
 
 func getAlive(api string) ([]byte, error) {
@@ -95,11 +95,11 @@ func getHooks(api string, phase string, sdk Sdk) ([]byte, error) {
 }
 
 func wrapResponseBody(r *http.Response) io.ReadCloser {
-	if r != nil {
-		return r.Body
-	} else {
+	if r == nil {
 		return ioutil.NopCloser(bytes.NewReader([]byte{}))
+
 	}
+	return r.Body
 }
 
 func request(url string) (io.ReadCloser, error) {
@@ -108,10 +108,10 @@ func request(url string) (io.ReadCloser, error) {
 	return wrapResponseBody(resp), err
 }
 
-func download(url string) (io.ReadCloser, error, string) {
+func download(url string) (io.ReadCloser, string, error) {
 	req, _ := http.NewRequest("GET", url, nil)
 	resp, err := http.DefaultClient.Do(req)
-	return wrapResponseBody(resp), err, typeOfResponse(resp)
+	return wrapResponseBody(resp), typeOfResponse(resp), err
 }
 
 func requestSync(url string) ([]byte, error) {
@@ -126,13 +126,12 @@ func typeOfResponse(r *http.Response) string {
 		return ""
 	}
 	contentType, contentDisposition := r.Header.Get("Content-Type"), r.Header.Get("Content-Disposition")
-	if contentDisposition != "" {
-		_, params, _ := mime.ParseMediaType(contentDisposition)
-		filename := strings.Split(params["filename"], ".")
-		return filename[len(filename)-1]
-	} else {
+	if contentDisposition == "" {
 		return extensionByType(contentType)
 	}
+	_, params, _ := mime.ParseMediaType(contentDisposition)
+	filename := strings.Split(params["filename"], ".")
+	return filename[len(filename)-1]
 }
 
 func extensionByType(contentType string) string {
