@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path"
@@ -11,9 +12,13 @@ import (
 
 func main() {
 	home, _ := os.UserHomeDir()
+	cli.VersionPrinter = func(c *cli.Context) {
+		fmt.Printf(c.App.Version)
+	}
 	app := &cli.App{
-		Name:  "sdkman",
-		Usage: "manage various versions of SDKs",
+		Name:    "sdkman",
+		Usage:   "manage various versions of SDKs",
+		Version: os.Getenv("VERSION"),
 		Authors: []*cli.Author{
 			&cli.Author{
 				Name:  "Jang Whemoon",
