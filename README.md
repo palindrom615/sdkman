@@ -50,7 +50,7 @@ Add-Content $Profile "Invoke-Expression (sdk export posh)"
 # You should add "eval $(sdk" export bash)" on your .bashrc file
 echo "eval \$(sdk export bash)" >> ~/.bashrc
 echo "eval \$(sdk export zsh)" >> ~/.zshrc
-echo "eval \(sdk export fish)" >> ~/.config/config.fish
+echo "eval (sdk export fish)" >> ~/.config/config.fish
 ```
 
 ## Usage
