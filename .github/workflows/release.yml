@@ -1,0 +1,18 @@
+name: release
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    env:
+      VERSION: $GITHUB_REF
+    steps:
+      - name: Set env
+        run: echo ::set-env name=VERSION::$(echo ${GITHUB_REF:10})
+      - name: Go Release Binary
+        uses: ngs/go-release.action@v1.0.2
