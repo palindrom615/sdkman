@@ -1,8 +1,7 @@
-package command
+package sdkman
 
 import (
 	"fmt"
-	"github.com/palindrom615/sdk/local"
 	"github.com/urfave/cli/v2"
 	"path"
 	"strings"
@@ -16,7 +15,7 @@ type envVar struct {
 func Export(c *cli.Context) error {
 	shell := c.Args().Get(0)
 	root := c.String("directory")
-	sdks := local.UsingCands(c.String("directory"))
+	sdks := UsingCands(c.String("directory"))
 	if len(sdks) == 0 {
 		fmt.Println("")
 		return nil

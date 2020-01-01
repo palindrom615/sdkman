@@ -1,10 +1,8 @@
-package local
+package sdkman
 
 import (
 	"fmt"
 	"github.com/mholt/archiver/v3"
-	"github.com/palindrom615/sdk/store"
-	"github.com/palindrom615/sdk/utils"
 	"io"
 	"io/ioutil"
 	"os"
@@ -20,7 +18,6 @@ type Archive struct {
 	Sdk    Sdk
 	Format string
 }
-
 
 func candPath(root string, candidate string) string {
 	return path.Join(root, "candidates", candidate)
@@ -84,7 +81,7 @@ func InstalledVers(root string, candidate string) []string {
 
 func UsingCands(root string) []Sdk {
 	res := []Sdk{}
-	for _, cand := range store.GetCandidates(root) {
+	for _, cand := range getCandidates(root) {
 		ver, err := UsingVer(root, cand)
 		if err == nil {
 			res = append(res, Sdk{cand, ver})
@@ -126,7 +123,7 @@ func (sdk Sdk) Unarchive(root string, archiveReady <-chan bool, installReady cha
 	if <-archiveReady {
 		fmt.Printf("installing %s %s...\n", sdk.Candidate, sdk.Version)
 		if !sdk.IsArchived(root) {
-			return utils.ErrArcNotIns
+			return ErrArcNotIns
 		}
 		_ = os.Mkdir(candPath(root, sdk.Candidate), os.ModeDir|os.ModePerm)
 
@@ -150,7 +147,7 @@ func (sdk Sdk) Unarchive(root string, archiveReady <-chan bool, installReady cha
 		installReady <- true
 		return err
 	}
-	return utils.ErrArcNotIns
+	return ErrArcNotIns
 }
 
 func UsingVer(root string, candidate string) (string, error) {

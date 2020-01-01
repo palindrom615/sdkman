@@ -1,8 +1,7 @@
-package utils
+package sdkman
 
 import (
 	"errors"
-	"github.com/palindrom615/sdk/store"
 )
 
 var (
@@ -20,8 +19,8 @@ func ErrCandNotIns(cand string) error {
 	return errors.New("sdkman: not using any version of " + cand)
 }
 
-func CheckValidCand(root string, candidate string) error {
-	for _, can := range store.GetCandidates(root) {
+func checkValidCand(root string, candidate string) error {
+	for _, can := range getCandidates(root) {
 		if can == candidate {
 			return nil
 		}

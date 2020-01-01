@@ -1,9 +1,6 @@
-package command
+package sdkman
 
 import (
-	"github.com/palindrom615/sdk/api"
-	"github.com/palindrom615/sdk/local"
-	"github.com/palindrom615/sdk/utils"
 	"github.com/urfave/cli/v2"
 )
 
@@ -17,8 +14,8 @@ func Install(c *cli.Context) error {
 
 	_ = Update(c)
 
-	local.MkdirIfNotExist(root)
-	if err := utils.CheckValidCand(root, candidate); err != nil {
+	MkdirIfNotExist(root)
+	if err := checkValidCand(root, candidate); err != nil {
 		return err
 	}
 	if version == "" {
@@ -28,10 +25,10 @@ func Install(c *cli.Context) error {
 			version = dfVer
 		}
 	}
-	target := local.Sdk{candidate, version}
+	target := Sdk{candidate, version}
 
 	if target.IsInstalled(root) {
-		return utils.ErrVerExists
+		return ErrVerExists
 	}
 	if err := checkValidVer(reg, root, target, folder); err != nil {
 		return err
@@ -43,38 +40,38 @@ func Install(c *cli.Context) error {
 	if target.IsArchived(root) {
 		archiveReady <- true
 	} else {
-		s, err, t := api.GetDownload(reg, target)
+		s, err, t := getDownload(reg, target)
 		if err != nil {
 			archiveReady <- false
 			return err
 		}
-		archive := local.Archive{target, t}
+		archive := Archive{target, t}
 		go archive.Save(s, root, archiveReady)
 	}
 	if <-installReady == false {
-		return utils.ErrVerInsFail
+		return ErrVerInsFail
 	}
 	return target.UseVer(root)
 }
 
 func defaultVersion(reg string, root string, candidate string) (string, error) {
-	if v, netErr := api.GetDefault(reg, candidate); netErr == nil {
+	if v, netErr := getDefault(reg, candidate); netErr == nil {
 		return v, nil
-	} else if curr, fsErr := local.UsingVer(root, candidate); fsErr == nil {
+	} else if curr, fsErr := UsingVer(root, candidate); fsErr == nil {
 		return curr, nil
 	} else {
-		return "", utils.ErrNotOnline
+		return "", ErrNotOnline
 	}
 
 }
 
-func checkValidVer(reg string, root string, target local.Sdk, folder string) error {
-	isValid, netErr := api.GetValidate(reg, target)
+func checkValidVer(reg string, root string, target Sdk, folder string) error {
+	isValid, netErr := getValidate(reg, target)
 	if (netErr == nil && isValid) || folder != "" || target.IsInstalled(root) {
 		return nil
 	} else if netErr != nil {
-		return utils.ErrNotOnline
+		return ErrNotOnline
 	} else {
-		return utils.ErrNoVer
+		return ErrNoVer
 	}
 }

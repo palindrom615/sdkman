@@ -1,10 +1,7 @@
-package command
+package sdkman
 
 import (
 	"fmt"
-	"github.com/palindrom615/sdk/api"
-	"github.com/palindrom615/sdk/store"
-	"github.com/palindrom615/sdk/utils"
 	"github.com/urfave/cli/v2"
 	"strings"
 
@@ -14,12 +11,12 @@ import (
 func Update(c *cli.Context) error {
 	reg := c.String("registry")
 	root := c.String("directory")
-	freshCsv, netErr := api.GetAll(reg)
+	freshCsv, netErr := getAll(reg)
 	if netErr != nil {
-		return utils.ErrNotOnline
+		return ErrNotOnline
 	}
 	fresh := strset.New(freshCsv...)
-	cachedCsv := store.GetCandidates(root)
+	cachedCsv := getCandidates(root)
 	cached := strset.New(cachedCsv...)
 
 	added := strset.Difference(fresh, cached)
@@ -30,7 +27,7 @@ func Update(c *cli.Context) error {
 	} else {
 		fmt.Println("Adding new candidates: " + strings.Join(added.List(), ", "))
 		fmt.Println("Removing obsolete candidates: " + strings.Join(obsoleted.List(), ", "))
-		_ = store.SetCandidates(root, freshCsv)
+		_ = setCandidates(root, freshCsv)
 	}
 	return nil
 }

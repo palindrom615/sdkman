@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/palindrom615/sdk/command"
+	"github.com/palindrom615/sdkman"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
@@ -39,29 +39,29 @@ func main() {
 					"l", "ls",
 				},
 				Usage:  "[candidate]",
-				Action: command.List,
+				Action: sdkman.List,
 			}, {
 				Name:    "current",
 				Aliases: []string{"c"},
 				Usage:   "[candidate]",
-				Action:  command.Current,
+				Action:  sdkman.Current,
 			}, {
 				Name:   "update",
 				Usage:  "",
-				Action: command.Update,
+				Action: sdkman.Update,
 			}, {
 				Name:    "install",
 				Usage:   "<candidate> [version]",
 				Aliases: []string{"i"},
-				Action:  command.Install,
+				Action:  sdkman.Install,
 			}, {
 				Name:   "use",
 				Usage:  "<candidate> <version>",
-				Action: command.Use,
+				Action: sdkman.Use,
 			}, {
 				Name:   "export",
 				Usage:  "[shell]",
-				Action: command.Export,
+				Action: sdkman.Export,
 			},
 		},
 	}

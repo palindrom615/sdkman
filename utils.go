@@ -1,4 +1,4 @@
-package utils
+package sdkman
 
 import (
 	"io"
@@ -7,7 +7,7 @@ import (
 	"runtime"
 )
 
-func Platform() string {
+func platform() string {
 	platform := runtime.GOOS
 	if platform == "windows" {
 		platform = "msys_nt-10.0"
@@ -15,9 +15,9 @@ func Platform() string {
 	return platform
 }
 
-func Pager(pages io.ReadCloser) {
+func pager(pages io.ReadCloser) {
 	pager := os.Getenv("PAGER")
-	p := Platform()
+	p := platform()
 
 	if pager == "" {
 		if p == "msys_nt-10.0" {
