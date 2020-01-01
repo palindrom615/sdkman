@@ -10,6 +10,19 @@ import (
 	"strings"
 )
 
+func arg2sdk(reg string, root string, arg string) (Sdk, error){
+	sdk := strings.Split(arg, "@")
+	candidate := sdk[0]
+	if err := checkValidCand(root, candidate); err != nil {
+		return Sdk{}, err
+	}
+	if len(sdk) != 2 {
+		return defaultSdk(reg, root, sdk[0])
+	}
+	version := sdk[1]
+	return Sdk{candidate, version}, nil
+}
+
 func CurrentSdks(root string) []Sdk {
 	res := []Sdk{}
 	for _, cand := range getCandidates(root) {
@@ -115,7 +128,7 @@ func (sdk Sdk) IsArchived(root string) bool {
 
 func (sdk Sdk) Unarchive(root string, archiveReady <-chan bool, installReady chan<- bool) error {
 	if <-archiveReady {
-		fmt.Printf("installing %s %s...\n", sdk.Candidate, sdk.Version)
+		fmt.Printf("installing %s@%s...\n", sdk.Candidate, sdk.Version)
 		if !sdk.IsArchived(root) {
 			return ErrArcNotIns
 		}
@@ -148,9 +161,9 @@ func (sdk Sdk) Use(root string) error {
 	return os.Symlink(sdk.installPath(root), Sdk{sdk.Candidate, "current"}.installPath(root))
 }
 
-func (sdk Sdk) checkValidVer(reg string, root string, folder string) error {
+func (sdk Sdk) checkValidVer(reg string, root string) error {
 	isValid, netErr := getValidate(reg, sdk)
-	if (netErr == nil && isValid) || folder != "" || sdk.IsInstalled(root) {
+	if (netErr == nil && isValid) || sdk.IsInstalled(root) {
 		return nil
 	} else if netErr != nil {
 		return ErrNotOnline
@@ -168,7 +181,7 @@ func (archive Archive) Save(r io.ReadCloser, root string, completed chan<- bool)
 		completed <- false
 		return err
 	}
-	fmt.Printf("downloading %s %s...\n", archive.Sdk.Candidate, archive.Sdk.Version)
+	fmt.Printf("downloading %s@%s...\n", archive.Sdk.Candidate, archive.Sdk.Version)
 	_, err = io.Copy(f, r)
 	if os.IsNotExist(err) {
 		completed <- false

@@ -51,12 +51,12 @@ func main() {
 				Action: sdkman.Update,
 			}, {
 				Name:    "install",
-				Usage:   "<candidate> [version]",
+				Usage:   "candidate[@version]",
 				Aliases: []string{"i"},
 				Action:  sdkman.Install,
 			}, {
 				Name:   "use",
-				Usage:  "<candidate> <version>",
+				Usage:  "candidate@version",
 				Action: sdkman.Use,
 			}, {
 				Name:   "export",

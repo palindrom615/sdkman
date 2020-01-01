@@ -9,12 +9,12 @@ import (
 )
 
 func Install(c *cli.Context) error {
-	target := Sdk{c.Args().Get(0), c.Args().Get(1)}
-	folder := c.Args().Get(2)
-
 	reg := c.String("registry")
 	root := c.String("directory")
-
+	target, err := arg2sdk(reg, root, c.Args().Get(0))
+	if err != nil {
+		return err
+	}
 	_ = Update(c)
 
 	MkdirIfNotExist(root)
@@ -32,7 +32,7 @@ func Install(c *cli.Context) error {
 	if target.IsInstalled(root) {
 		return ErrVerExists
 	}
-	if err := target.checkValidVer(reg, root, folder); err != nil {
+	if err := target.checkValidVer(reg, root); err != nil {
 		return err
 	}
 
@@ -57,11 +57,10 @@ func Install(c *cli.Context) error {
 }
 
 func Use(c *cli.Context) error {
-	candidate := c.Args().Get(0)
-	version := c.Args().Get(1)
-	sdk := Sdk{candidate, version}
+	reg := c.String("registry")
 	root := c.String("directory")
-	if err := checkValidCand(root, candidate); err != nil {
+	sdk, err := arg2sdk(reg, root, c.Args().Get(0))
+	if err != nil {
 		return err
 	}
 	if !sdk.IsInstalled(root) {
@@ -156,13 +155,13 @@ func Update(c *cli.Context) error {
 	added := strset.Difference(fresh, cached)
 	obsoleted := strset.Difference(cached, fresh)
 
-	if added.Size() == 0 && obsoleted.Size() == 0 {
-		fmt.Println("No new candidates found at this time.")
-	} else {
+	if added.Size() != 0 {
 		fmt.Println("Adding new candidates: " + strings.Join(added.List(), ", "))
-		fmt.Println("Removing obsolete candidates: " + strings.Join(obsoleted.List(), ", "))
-		_ = setCandidates(root, freshCsv)
 	}
+	if obsoleted.Size() != 0 {
+		fmt.Println("Removing obsolete candidates: " + strings.Join(obsoleted.List(), ", "))
+	}
+	_ = setCandidates(root, freshCsv)
 	return nil
 }
 
