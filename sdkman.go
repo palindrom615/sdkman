@@ -9,13 +9,13 @@ import (
 )
 
 func Install(c *cli.Context) error {
+	_ = Update(c)
 	reg := c.String("registry")
 	root := c.String("directory")
 	target, err := arg2sdk(reg, root, c.Args().Get(0))
 	if err != nil {
 		return err
 	}
-	_ = Update(c)
 
 	MkdirIfNotExist(root)
 	if err := checkValidCand(root, target.Candidate); err != nil {
