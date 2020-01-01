@@ -12,9 +12,10 @@ import (
 
 var (
 	version = "dev"
-	commit = "none"
-	date = "unknown"
+	commit  = "none"
+	date    = "unknown"
 )
+
 func main() {
 	home, _ := os.UserHomeDir()
 	cli.VersionPrinter = func(c *cli.Context) {

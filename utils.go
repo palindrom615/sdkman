@@ -37,7 +37,6 @@ func platform() string {
 
 func pager(pages io.ReadCloser) {
 	pager := os.Getenv("PAGER")
-	p := platform()
 
 	if pager == "" {
 		if strings.HasPrefix(platform(), "mingw") {

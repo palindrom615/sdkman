@@ -120,13 +120,13 @@ func Export(c *cli.Context) error {
 	}
 
 	if shell == "bash" || shell == "zsh" {
-		evalBash(paths, homes)
+		fmt.Println(exportBash(paths, homes))
 	} else if shell == "fish" {
-		evalFish(paths, homes)
+		fmt.Println(exportFish(paths, homes))
 	} else if shell == "powershell" || shell == "posh" {
-		evalPosh(paths, homes)
+		fmt.Println(exportPosh(paths, homes))
 	} else if shell == "windows" || shell == "window" {
-		evalWindows(paths, homes)
+		fmt.Println(exportWindows(paths, homes))
 	}
 	return nil
 }

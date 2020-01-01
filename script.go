@@ -13,34 +13,36 @@ type envVar struct {
 	val  string
 }
 
-func evalBash(paths []string, envVars []envVar) {
-	fmt.Println("export PATH=" + strings.Join(paths, ":") + ":$PATH")
+func exportBash(paths []string, envVars []envVar) string {
+	res := fmt.Sprintf("export PATH=%s:$PATH\n", strings.Join(paths, ":"))
 	for _, v := range envVars {
-		fmt.Println("export " + v.name + "=" + v.val)
+		res += fmt.Sprintf("export %s=%s\n", v.name, v.val)
 	}
+	return res
 }
 
-func evalFish(paths []string, envVars []envVar) {
-	fmt.Println("set -x PATH " + strings.Join(paths, " ") + " $PATH")
+func exportFish(paths []string, envVars []envVar) string {
+	res := fmt.Sprintf("set -x PATH %s $PATH\n", strings.Join(paths, " "))
 	for _, v := range envVars {
-		fmt.Println("set -x " + v.name + " " + v.val)
+		res += fmt.Sprintf("set -x %s %s\n", v.name, v.val)
 	}
+	return res
 }
 
-func evalPosh(paths []string, envVars []envVar) {
-	fmt.Printf("$env:Path = \"%s;\" + $env:Path;", strings.Join(paths, ";"))
+func exportPosh(paths []string, envVars []envVar) string {
+	res := fmt.Sprintf("$env:Path = \"%s;\" + $env:Path;", strings.Join(paths, ";"))
 	for _, v := range envVars {
-		fmt.Printf("$env:%s = \"%s\";", v.name, v.val)
+		res += fmt.Sprintf("$env:%s = \"%s\";", v.name, v.val)
 	}
-	fmt.Println()
+	return res
 }
 
-func evalWindows(paths []string, envVars []envVar) {
+func exportWindows(paths []string, envVars []envVar) string {
 	path := strset.New(strings.Split(os.Getenv("Path"), ";")...)
 	path.Merge(strset.New(paths...))
-	fmt.Printf("[Environment]::SetEnvironmentVariable(\"Path\", \"%s\", [System.EnvironmentVariableTarget]::User);", strings.Join(path.List(), ";"))
+	res := fmt.Sprintf("[Environment]::SetEnvironmentVariable(\"Path\", \"%s\", [System.EnvironmentVariableTarget]::User);", strings.Join(path.List(), ";"))
 	for _, v := range envVars {
-		fmt.Printf("[Environment]::SetEnvironmentVariable(\"%s\", \"%s\", [System.EnvironmentVariableTarget]::User);", v.name, v.val)
+		res += fmt.Sprintf("[Environment]::SetEnvironmentVariable(\"%s\", \"%s\", [System.EnvironmentVariableTarget]::User);", v.name, v.val)
 	}
-	fmt.Println()
+	return res
 }
