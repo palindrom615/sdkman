@@ -12,6 +12,7 @@ builds:
     - linux
   goarch:
     - amd64
+    - i386
   env:
   - CGO_ENABLED=0
 archives:
