@@ -1,4 +1,4 @@
-package sdkman
+package store
 
 import (
 	"github.com/prologic/bitcask"
@@ -13,14 +13,14 @@ func getStore(dir string) *bitcask.Bitcask {
 	return db
 }
 
-func getCandidates(dir string) []string {
+func GetCandidates(dir string) []string {
 	db := getStore(dir)
 	defer db.Close()
 	candidates, _ := db.Get(keyAll)
 	return strings.Split(string(candidates), ",")
 }
 
-func setCandidates(dir string, val []string) error {
+func SetCandidates(dir string, val []string) error {
 	db := getStore(dir)
 	defer db.Close()
 	return db.Put(keyAll, []byte(strings.Join(val, ",")))

@@ -1,4 +1,4 @@
-package sdkman
+package cmd
 
 import (
 	"fmt"

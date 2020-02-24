@@ -1,4 +1,4 @@
-package sdkman
+package pkgs
 
 import (
 	"bytes"
@@ -36,42 +36,42 @@ func getDownloadSdkmanVersion(api string, versionType string) ([]byte, error) {
 	return requestSync(brokerAPI + "/download/sdkman/version/" + versionType)
 }
 
-func getDownload(api string, sdk Sdk) (io.ReadCloser, string, error) {
+func GetDownload(api string, sdk Sdk) (io.ReadCloser, string, error) {
 	brokerAPI := api + "/broker"
-	return download(brokerAPI + "/download/" + sdk.Candidate + "/" + sdk.Version + "/" + platform())
+	return download(brokerAPI + "/download/" + sdk.Candidate + "/" + sdk.Version + "/" + Platform())
 }
 
-func getDefault(api string, candidate string) (string, error) {
+func GetDefault(api string, candidate string) (string, error) {
 	candidatesAPI := api + "/candidates"
 
 	res, err := requestSync(candidatesAPI + "/default/" + candidate)
 	return string(res), err
 }
 
-func getValidate(api string, sdk Sdk) (bool, error) {
+func GetValidate(api string, sdk Sdk) (bool, error) {
 	candidatesAPI := api + "/candidates"
-	url := fmt.Sprintf("%s/validate/%s/%s/%s", candidatesAPI, sdk.Candidate, sdk.Version, platform())
+	url := fmt.Sprintf("%s/validate/%s/%s/%s", candidatesAPI, sdk.Candidate, sdk.Version, Platform())
 	res, err := requestSync(url)
 	return string(res) == "valid", err
 }
 
-func getList(api string) (io.ReadCloser, error) {
+func GetList(api string) (io.ReadCloser, error) {
 	candidatesAPI := api + "/candidates"
 
 	return request(candidatesAPI + "/list")
 }
 
-func getVersionsList(api string, currentSdk Sdk, installed []Sdk) (io.ReadCloser, error) {
+func GetVersionsList(api string, currentSdk Sdk, installed []Sdk) (io.ReadCloser, error) {
 	candidatesAPI := api + "/candidates"
 	installedVers := ""
 	for _, sdk := range installed {
 		installedVers += sdk.Version + ","
 	}
-	url := fmt.Sprintf("%s/%s/%s/versions/list?current=%s&installed=%s", candidatesAPI, currentSdk.Candidate, platform(), currentSdk.Version, installedVers)
+	url := fmt.Sprintf("%s/%s/%s/versions/list?current=%s&installed=%s", candidatesAPI, currentSdk.Candidate, Platform(), currentSdk.Version, installedVers)
 	return request(url)
 }
 
-func getAll(api string) ([]string, error) {
+func GetAll(api string) ([]string, error) {
 	candidatesAPI := api + "/candidates"
 	res, err := requestSync(candidatesAPI + "/all")
 	return strings.Split(string(res), ","), err
@@ -79,7 +79,7 @@ func getAll(api string) ([]string, error) {
 
 func getVersionsAll(api string, candidate string) ([]byte, error) {
 	candidatesAPI := api + "/candidates"
-	return requestSync(candidatesAPI + "/" + candidate + "/" + platform() + "/versions/all")
+	return requestSync(candidatesAPI + "/" + candidate + "/" + Platform() + "/versions/all")
 }
 
 func getAlive(api string) ([]byte, error) {
@@ -91,7 +91,7 @@ func getSelfupdate(api string, beta bool) ([]byte, error) {
 }
 
 func getHooks(api string, phase string, sdk Sdk) ([]byte, error) {
-	return requestSync(api + "/hooks/" + phase + "/" + sdk.Candidate + "/" + sdk.Version + "/" + platform())
+	return requestSync(api + "/hooks/" + phase + "/" + sdk.Candidate + "/" + sdk.Version + "/" + Platform())
 }
 
 func wrapResponseBody(r *http.Response) io.ReadCloser {

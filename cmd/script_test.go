@@ -1,6 +1,8 @@
-package sdkman
+package cmd
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestExportBash(t *testing.T) {
 	paths := []string{".sdkman/candidates/java/current/bin", ".sdkman/candidates/scala/current/bin"}

@@ -1,4 +1,4 @@
-package sdkman
+package errors
 
 import (
 	"errors"
