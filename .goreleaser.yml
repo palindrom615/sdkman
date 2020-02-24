@@ -4,7 +4,7 @@ before:
   hooks:
 builds:
 - id: "sdk"
-  main: ./cmd/sdk/sdk.go
+  main: ./main.go
   binary: sdk
   goos:
     - windows
