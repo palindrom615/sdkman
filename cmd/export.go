@@ -2,17 +2,19 @@ package cmd
 
 import (
 	"fmt"
+	"path"
+	"runtime"
+	"strings"
+
 	"github.com/palindrom615/sdkman/pkgs"
 	"github.com/spf13/cobra"
-	"path"
-	"strings"
 )
 
 // export prints lines of shell scripts setting up PATH and other environment variables like JAVA_HOME
 func export(cmd *cobra.Command, args []string) error {
 	shell := ""
 	if len(args) == 0 {
-		if strings.HasPrefix(pkgs.Platform(), "mingw") {
+		if runtime.GOOS == "windows" {
 			shell = "windows"
 		} else {
 			shell = "bash"

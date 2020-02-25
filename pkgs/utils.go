@@ -42,7 +42,7 @@ func Pager(pages io.ReadCloser) {
 	pager := os.Getenv("PAGER")
 
 	if pager == "" {
-		if strings.HasPrefix(Platform(), "mingw") {
+		if runtime.GOOS == "windows" {
 			pager = "more"
 		} else {
 			pager = "less"
