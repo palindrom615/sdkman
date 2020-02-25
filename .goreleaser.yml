@@ -11,21 +11,23 @@ builds:
     - darwin
     - linux
   goarch:
+    - 386
     - amd64
     - i386
   env:
-  - CGO_ENABLED=0
+    - CGO_ENABLED=0
+    - GO111MODULE=on
 archives:
-- replacements:
-    darwin: Darwin
-    linux: Linux
-    windows: Windows
-    386: i386
-    amd64: x86_64
-  format: tar.gz
-  format_overrides:
-    - goos: windows
-      format: zip
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
 checksum:
   name_template: 'checksums.txt'
 snapshot:
@@ -36,3 +38,17 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
+brews:
+  - github:
+      owner: palindrom615
+      name: homebrew-tap
+    folder: Formula
+    homepage: "https://github.com/palindrom615/sdkman"
+    description: "tool for managing parallel versions of multiple Software Development Kits"
+scoop:
+  bucket:
+    owner: palindrom615
+    name: scoop-bucket
+  homepage: "https://github.com/palindrom615/sdkman"
+  license: Apache License 2.0
+  description: "tool for managing parallel versions of multiple Software Development Kits"
