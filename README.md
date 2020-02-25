@@ -1,6 +1,9 @@
 ## sdk
 
 [![Build Status](https://travis-ci.org/palindrom615/sdkman.svg?branch=master)](https://travis-ci.org/palindrom615/sdkman)
+
+[![release](https://github.com/palindrom615/sdkman/workflows/release/badge.svg)](https://github.com/palindrom615/sdkman/releases)
+
 **cli stands for client!**
 
 This is unofficial client of [SDKMAN!](https://sdkman.io/) which is a service to manage multiple versions of jdk, gradle, scala and etc.
