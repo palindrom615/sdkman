@@ -14,7 +14,7 @@ This is unofficial client of [SDKMAN!](https://sdkman.io/) which is a service to
 
 ```powershell
 scoop bucket add palindrom615 https://github.com/palindrom615/scoop-bucket
-scoop add sdkman
+scoop install sdkman
 ```
 
 ### homebrew
