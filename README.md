@@ -74,8 +74,21 @@ sdk install java
 sdk install gradle@6.0.1
 ```
 
-## Build
+### Show list of SDK
 
-```bash
-go build cmd/sdk/main.go
+```
+sdk list java
+```
+
+### Set default version of SDK
+
+```
+# should be installed first!
+sdk use java@8.0.242-amzn
+```
+
+### Show currently using SDKs
+
+```
+sdk current
 ```
