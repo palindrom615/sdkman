@@ -1,21 +1,22 @@
 # This is an example goreleaser.yaml file with some sane defaults.
 # Make sure to check the documentation at http://goreleaser.com
+project_name: sdkman
 before:
   hooks:
 builds:
-- id: "sdk"
-  main: ./main.go
-  binary: sdk
-  goos:
-    - windows
-    - darwin
-    - linux
-  goarch:
-    - amd64
-#    - 386
-  env:
-    - CGO_ENABLED=0
-    - GO111MODULE=on
+  - id: "sdk"
+    main: ./main.go
+    binary: sdk
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - 386
+    env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
 archives:
   - replacements:
       darwin: Darwin
@@ -28,26 +29,26 @@ archives:
       - goos: windows
         format: zip
 checksum:
-  name_template: 'checksums.txt'
+  name_template: "checksums.txt"
 snapshot:
   name_template: "{{ .Tag }}-next"
 changelog:
   sort: asc
   filters:
     exclude:
-    - '^docs:'
-    - '^test:'
+      - "^docs:"
+      - "^test:"
 brews:
   - github:
       owner: palindrom615
       name: homebrew-tap
     folder: Formula
     homepage: "https://github.com/palindrom615/sdkman"
-    description: "tool for managing parallel versions of multiple Software Development Kits"
+    description: "A tool for managing parallel versions of multiple Software Development Kits"
 scoop:
   bucket:
     owner: palindrom615
     name: scoop-bucket
   homepage: "https://github.com/palindrom615/sdkman"
   license: Apache License 2.0
-  description: "tool for managing parallel versions of multiple Software Development Kits"
+  description: "A tool for managing parallel versions of multiple Software Development Kits"
