@@ -1,48 +1,56 @@
-## sdk
+# sdkman
 
-[![Build Status](https://travis-ci.org/palindrom615/sdkman.svg?branch=master)](https://travis-ci.org/palindrom615/sdkman)
-
-[![release](https://github.com/palindrom615/sdkman/workflows/release/badge.svg)](https://github.com/palindrom615/sdkman/releases)
+[![Build Status](https://travis-ci.org/palindrom615/sdkman.svg?branch=master)](https://travis-ci.org/palindrom615/sdkman) [![release](https://github.com/palindrom615/sdkman/workflows/release/badge.svg)](https://github.com/palindrom615/sdkman/releases)
 
 **cli stands for client!**
 
-This is unofficial client of [SDKMAN!](https://sdkman.io/) which is a service to manage multiple versions of jdk, gradle, scala and etc.
+This is unofficial client of [SDKMAN!](https://sdkman.io/) which is a tool for managing parallel versions of multiple Software Development Kits like jdk, gradle, scala and etc.
 
 ## Installation
 
-### scoop
+### Windows & scoop
 
 ```powershell
 scoop bucket add palindrom615 https://github.com/palindrom615/scoop-bucket
 scoop install sdkman
 ```
 
-### homebrew
+### macOS & homebrew
 
 ```zsh
 brew tap palindrom615/homebrew-tap
 brew install sdkman
 ```
 
+### Arch linux & aur
+
+with yay:
+
+```bash
+yay -S sdkman
+```
+
+without yay:
+
+```bash
+git clone https://aur.archlinux.org/sdkman
+cd sdkman
+makepkg -si
+```
+
 ### with go
 
 If go is already installed on your computer, one line is enough to get executable:
 
-```bash
-# for linux & macOS
-env GO111MODULE=on go install github.com/palindrom615/sdkman/cmd/sdk
+```sh
+go install --mod=mod github.com/palindrom615/sdkman
 ```
 
-```powershell
-# for powershell
-$env:GO111MODULE=on; go install github.com/palindrom615/sdkman/cmd/sdk
-```
-
-## After Installation
+## Activation
 
 ### Windows
 
-For setting up permanent enviornment variable, after installing sdk open powershell and type
+For setting up permanent enviornment variables, execute below after install sdks.
 
 ```powershell
 Invoke-Expression (sdk export windows)
