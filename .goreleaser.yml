@@ -17,6 +17,14 @@ builds:
     env:
       - CGO_ENABLED=0
       - GO111MODULE=on
+    ldflags:
+      - > 
+          -s 
+          -w 
+          -X github.com/palindrom615/sdkman/cmd.version={{.Version}} 
+          -X github.com/palindrom615/sdkman/cmd.commit={{.Commit}} 
+          -X github.com/palindrom615/sdkman/cmd.date={{.Date}} 
+          -X github.com/palindrom615/sdkman/cmd.builtBy=goreleaser`.
 archives:
   - replacements:
       darwin: Darwin
