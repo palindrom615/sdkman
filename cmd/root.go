@@ -24,6 +24,7 @@ var rootCmd = &cobra.Command{
 	Use:     "sdkman",
 	Short:   "manage various versions of SDKs",
 	Version: version,
+	SilenceUsage: true,
 }
 
 func Execute() {

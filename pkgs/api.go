@@ -131,24 +131,28 @@ func typeOfResponse(r *http.Response) string {
 	}
 	_, params, _ := mime.ParseMediaType(contentDisposition)
 	filename := strings.Split(params["filename"], ".")
-	return filename[len(filename)-1]
+	ext := filename[len(filename)-1]
+	if ext == "gz" || ext == "bz2" || ext == "xz" || ext == "lz4" || ext == "sz" {
+		ext = filename[len(filename)-2] + "." + ext
+	}
+	return ext
 }
 
 func extensionByType(contentType string) string {
 	if contentType == "application/zip" {
-		return ".zip"
+		return "zip"
 	} else if contentType == "application/gzip" {
-		return ".tar.gz"
+		return "tar.gz"
 	} else if contentType == "application/x-bzip" {
-		return ".tar.bz"
+		return "tar.bz"
 	} else if contentType == "application/x-bzip2" {
-		return ".tar.bz2"
+		return "tar.bz2"
 	} else if contentType == "application/x-rar-compressed" {
-		return ".rar"
+		return "rar"
 	} else if contentType == "application/x-tar" {
-		return ".tar"
+		return "tar"
 	} else if contentType == "application/x-7z-compressed" {
-		return ".7z"
+		return "7z"
 	}
 	return ""
 }
