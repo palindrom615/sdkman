@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/yargevad/filepathx"
 	"path"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -31,8 +33,17 @@ func export(cmd *cobra.Command, args []string) error {
 	homes := []envVar{}
 	for _, sdk := range sdks {
 		candHome := path.Join(directory, "candidates", sdk.Candidate, "current")
-		paths = append(paths, path.Join(candHome, "bin"))
-		homes = append(homes, envVar{fmt.Sprintf("%s_HOME", strings.ToUpper(sdk.Candidate)), candHome})
+
+		binPath := path.Join(candHome, "bin")
+		homePath := candHome
+		if sdk.Candidate == "java" {
+			// fix for macOS
+			matches, _ := filepathx.Glob(fmt.Sprintf("%s/**/javac", homePath))
+			binPath = filepath.Join(matches[0], "..")
+			homePath = filepath.Join(binPath, "..")
+		}
+		paths = append(paths, binPath)
+		homes = append(homes, envVar{fmt.Sprintf("%s_HOME", strings.ToUpper(sdk.Candidate)), homePath})
 	}
 
 	if shell == "bash" || shell == "zsh" {
