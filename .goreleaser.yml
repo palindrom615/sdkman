@@ -47,7 +47,7 @@ changelog:
       - "^docs:"
       - "^test:"
 brews:
-  - github:
+  - tap:
       owner: palindrom615
       name: homebrew-tap
     folder: Formula
