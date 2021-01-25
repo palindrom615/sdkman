@@ -36,7 +36,7 @@ func export(cmd *cobra.Command, args []string) error {
 
 		binPath := path.Join(candHome, "bin")
 		homePath := candHome
-		if sdk.Candidate == "java" {
+		if sdk.Candidate == "java" && runtime.GOOS == "darwin" {
 			// fix for macOS
 			matches, _ := filepathx.Glob(fmt.Sprintf("%s/**/javac", homePath))
 			binPath = filepath.Join(matches[0], "..")
