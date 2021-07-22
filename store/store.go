@@ -1,7 +1,7 @@
 package store
 
 import (
-	"github.com/prologic/bitcask"
+	"git.mills.io/prologic/bitcask"
 	"path"
 	"strings"
 )

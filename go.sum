@@ -93,8 +93,8 @@ github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINE
 github.com/plar/go-adaptive-radix-tree v1.0.1 h1:J+2qrXaKWLACw59s8SlTVYYxWjlUr/BlCsfkAzn96/0=
 github.com/plar/go-adaptive-radix-tree v1.0.1/go.mod h1:Ot8d28EII3i7Lv4PSvBlF8ejiD/CtRYDuPsySJbSaK8=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/prologic/bitcask v0.3.5 h1:o5PekS/LTRXQvLmY/5oQxIgjdT5bwcxPLsrGmnyo3Yo=
-github.com/prologic/bitcask v0.3.5/go.mod h1:gl5FAhs5GhvmV6tEIQWwk9d/FD9vc8NC8Hs24/zU/4w=
+git.mills.io/prologic/bitcask v0.3.5 h1:o5PekS/LTRXQvLmY/5oQxIgjdT5bwcxPLsrGmnyo3Yo=
+git.mills.io/prologic/bitcask v0.3.5/go.mod h1:gl5FAhs5GhvmV6tEIQWwk9d/FD9vc8NC8Hs24/zU/4w=
 github.com/prometheus/client_golang v0.9.1/go.mod h1:7SWBe2y4D6OKWSNQJUaRYU/AaXPKyh/dDVn+NZz0KFw=
 github.com/prometheus/client_golang v0.9.3/go.mod h1:/TN21ttK/J9q6uSwhBd54HahCDft0ttaMvbicHlPoso=
 github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910/go.mod h1:MbSGuTsp3dbXC40dX6PRTWyKYBIrTGTE9sqQNg2J8bo=
