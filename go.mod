@@ -1,6 +1,6 @@
 module github.com/palindrom615/sdkman
 
-go 1.12
+go 1.17
 
 require (
 	github.com/mholt/archiver/v3 v3.3.0
