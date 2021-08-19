@@ -2,9 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"strings"
-	"github.com/palindrom615/sdkman/pkgs/strset"
 )
 
 type envVar struct {
@@ -40,18 +38,7 @@ func exportWindows(paths []string, envVars []envVar) string {
 	for i, p := range paths {
 		paths[i] = strings.ReplaceAll(p, "/", "\\")
 	}
-	sdkPaths := strset.New(paths...)
-	originalPaths := strings.Split(os.Getenv("Path"), ";")
-	alreadyAddedSdkPathIdx := []int{}
-	for i, p := range originalPaths {
-		if sdkPaths.Has(strings.ReplaceAll(p, "/", "\\")) {
-			alreadyAddedSdkPathIdx = append(alreadyAddedSdkPathIdx, i)
-		}
-	}
-	originalPaths = removeIndexes(originalPaths, alreadyAddedSdkPathIdx)
-
-	newPath := append(sdkPaths.List(), originalPaths...)
-	res := fmt.Sprintf("[Environment]::SetEnvironmentVariable(\"Path\", \"%s\", [System.EnvironmentVariableTarget]::User);", strings.Join(newPath, ";"))
+	res := fmt.Sprintf("[Environment]::SetEnvironmentVariable(\"Path\", [Environment]::GetEnvironmentVariable(\"Path\", [EnvironmentVariableTarget]::User) + \";%s\", [System.EnvironmentVariableTarget]::User);", strings.Join(paths, ";"))
 	for _, v := range envVars {
 		res += fmt.Sprintf("[Environment]::SetEnvironmentVariable(\"%s\", \"%s\", [System.EnvironmentVariableTarget]::User);", v.name, v.val)
 	}
