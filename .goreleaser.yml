@@ -22,10 +22,6 @@ builds:
     ignore:
       - goos: darwin
         goarch: 386
-      - goos: windows
-        goarch: arm64
-      - goos: windows
-        goarch: arm
     env:
       - CGO_ENABLED=0
       - GO111MODULE=on
