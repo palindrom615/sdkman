@@ -68,12 +68,16 @@ func CurrentSdks(root string) []Sdk {
 
 // CurrentSdk returns sdk of specified candidate which is linked with "current"
 func CurrentSdk(root string, candidate string) (Sdk, error) {
+	if _, err := os.Stat(Sdk{candidate, "current"}.installPath(root)); err != nil {
+		return Sdk{candidate, ""}, errors.ErrNoCurrSdk(candidate)
+	}
 	p, err := os.Readlink(Sdk{candidate, "current"}.installPath(root))
 	if err == nil {
 		d, _ := os.Stat(p)
 		return Sdk{candidate, d.Name()}, nil
 	}
-	return Sdk{candidate, ""}, errors.ErrNoCurrSdk(candidate)
+	// if directory 'current' is not symlink
+	return Sdk{candidate, "current"}, nil
 }
 
 // InstalledSdks returns every installed Sdk of specified candidate

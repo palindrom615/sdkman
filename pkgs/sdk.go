@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/mholt/archiver/v3"
 	"github.com/palindrom615/sdkman/errors"
+	"github.com/otiai10/copy"
 	"io/ioutil"
 	"os"
 	"path"
@@ -92,7 +93,12 @@ func (sdk Sdk) Unarchive(root string, archiveReady <-chan bool, installReady cha
 // Use links sdk with symlink named "current" so the sdk is used as default
 func (sdk Sdk) Use(root string) error {
 	os.Remove(Sdk{sdk.Candidate, "current"}.installPath(root))
-	return os.Symlink(sdk.installPath(root), Sdk{sdk.Candidate, "current"}.installPath(root))
+	err := os.Symlink(sdk.installPath(root), Sdk{sdk.Candidate, "current"}.installPath(root))
+	if err != nil{
+		// windows requires admin privilege to make symlink and I don't want to
+		copy.Copy(sdk.installPath(root), Sdk{sdk.Candidate, "current"}.installPath(root))
+	}
+	return nil
 }
 
 func (sdk Sdk) CheckValidVer(reg string, root string) error {

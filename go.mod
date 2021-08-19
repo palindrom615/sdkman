@@ -6,6 +6,7 @@ require (
 	github.com/mholt/archiver/v3 v3.3.0
 	github.com/spf13/cobra v1.2.1
 	github.com/yargevad/filepathx v1.0.0
+	github.com/otiai10/copy v1.6.0
 )
 
 require (
