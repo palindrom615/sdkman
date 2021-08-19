@@ -109,6 +109,7 @@ func request(url string) (io.ReadCloser, error) {
 }
 
 func download(url string) (io.ReadCloser, string, error) {
+	fmt.Printf("downloading sdk from %s...\n", url)
 	req, _ := http.NewRequest("GET", url, nil)
 	resp, err := http.DefaultClient.Do(req)
 	return wrapResponseBody(resp), typeOfResponse(resp), err

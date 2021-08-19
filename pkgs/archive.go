@@ -25,7 +25,7 @@ func (archive Archive) Save(r io.ReadCloser, root string, completed chan<- bool)
 		completed <- false
 		return err
 	}
-	fmt.Printf("downloading %s@%s...\n", archive.Sdk.Candidate, archive.Sdk.Version)
+	fmt.Printf("saving %s@%s...\n", archive.Sdk.Candidate, archive.Sdk.Version)
 	_, err = io.Copy(f, r)
 	if os.IsNotExist(err) {
 		completed <- false
