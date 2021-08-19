@@ -5,7 +5,7 @@ import (
 	"github.com/palindrom615/sdkman/errors"
 	"github.com/palindrom615/sdkman/pkgs"
 	"github.com/palindrom615/sdkman/store"
-	"github.com/scylladb/go-set/strset"
+	"github.com/palindrom615/sdkman/pkgs/strset"
 	"github.com/spf13/cobra"
 	"strings"
 )
@@ -21,8 +21,8 @@ func update(cmd *cobra.Command, args []string) error {
 		cachedCsv := store.GetCandidates(directory)
 		cached := strset.New(cachedCsv...)
 
-		added := strset.Difference(fresh, cached)
-		obsoleted := strset.Difference(cached, fresh)
+		added := fresh.Difference(cached)
+		obsoleted := cached.Difference(fresh)
 
 		if added.Size() != 0 {
 			fmt.Println("Adding new candidates: " + strings.Join(added.List(), ", "))

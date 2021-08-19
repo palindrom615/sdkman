@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	"github.com/scylladb/go-set/strset"
+	"github.com/palindrom615/sdkman/pkgs/strset"
 )
 
 type envVar struct {
