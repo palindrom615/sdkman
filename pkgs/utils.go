@@ -23,21 +23,6 @@ func MkdirIfNotExist(root string) error {
 	return os.MkdirAll(arcDir, os.ModeDir|os.ModePerm)
 }
 
-func Platform() string {
-	platform := runtime.GOOS
-	is32bit := runtime.GOARCH == "386" || runtime.GOARCH == "amd64p32"
-
-	if platform == "windows" {
-		platform = "MSYS_NT-10.0"
-		if is32bit {
-			platform = "MINGW32_NT-6.2"
-		}
-	} else if platform == "linux" && is32bit {
-		platform += "32"
-	}
-	return platform
-}
-
 func Pager(pages io.ReadCloser) {
 	pager := os.Getenv("PAGER")
 
