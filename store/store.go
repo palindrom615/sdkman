@@ -7,7 +7,7 @@ import (
 )
 
 func GetCandidates(dir string) []string {
-	candidates, err := ioutil.ReadFile(path.Join(dir, "candidates"))
+	candidates, err := ioutil.ReadFile(path.Join(dir, "candidates.txt"))
 	if err != nil {
 		return []string{}
 	}
@@ -15,5 +15,5 @@ func GetCandidates(dir string) []string {
 }
 
 func SetCandidates(dir string, val []string) error {
-	return ioutil.WriteFile(path.Join(dir, "candidates"), []byte(strings.Join(val, ",")), 0666)
+	return ioutil.WriteFile(path.Join(dir, "candidates.txt"), []byte(strings.Join(val, ",")), 0666)
 }
