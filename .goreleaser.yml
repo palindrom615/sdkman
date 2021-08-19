@@ -13,8 +13,14 @@ builds:
       - linux
     goarch:
       - amd64
+      - arm
+      - arm64
       # support i386 after https://github.com/scylladb/go-set/issues/16 release
       #- 386
+    goarm:
+      - 5
+      - 6
+      - 7
     env:
       - CGO_ENABLED=0
       - GO111MODULE=on
