@@ -6,6 +6,7 @@ import (
 	"github.com/palindrom615/sdkman/sdk"
 	"os"
 	"path"
+	"path/filepath"
 	"reflect"
 	"sort"
 	"strings"
@@ -111,7 +112,8 @@ func TestCurrentSdk(t *testing.T) {
 		t.Errorf("no using version, but CurrentSdk return %s", currentSdk.Candidate+"@"+currentSdk.Version)
 	}
 	mkdirP("test/candidates/java/8")
-	os.Symlink("test/candidates/java/8", "test/candidates/java/current")
+	targetPath, _ := filepath.Abs("test/candidates/java/8")
+	os.Symlink(targetPath, "test/candidates/java/current")
 	currentSdk, err = sdk.CurrentSdk("test", "java")
 	if err != nil || currentSdk.Version != "8" {
 		t.Errorf("java@8 is used, but CurrentSdk return java@%s, error %s", currentSdk.Version, err)
