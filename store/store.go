@@ -6,7 +6,7 @@ import (
 	"github.com/palindrom615/sdkman/errors"
 	"github.com/palindrom615/sdkman/pkgs"
 	"io/ioutil"
-	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -15,7 +15,7 @@ type Store struct {
 }
 
 func (store Store) GetCandidates() []string {
-	candidates, err := ioutil.ReadFile(path.Join(store.SdkHome, "candidates.txt"))
+	candidates, err := ioutil.ReadFile(filepath.Join(store.SdkHome, "candidates.txt"))
 	if err != nil {
 		return []string{}
 	}
@@ -23,7 +23,7 @@ func (store Store) GetCandidates() []string {
 }
 
 func (store Store) SetCandidates(val []string) error {
-	return ioutil.WriteFile(path.Join(store.SdkHome, "candidates.txt"), []byte(strings.Join(val, ",")), 0666)
+	return ioutil.WriteFile(filepath.Join(store.SdkHome, "candidates.txt"), []byte(strings.Join(val, ",")), 0666)
 }
 
 func (store Store) Update(registry string) error {

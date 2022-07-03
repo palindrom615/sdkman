@@ -8,7 +8,6 @@ import (
 	"github.com/palindrom615/sdkman/store"
 	"io/ioutil"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 )
@@ -22,19 +21,19 @@ type Sdk struct {
 }
 
 func candPath(root string, candidate string) string {
-	return path.Join(root, "candidates", candidate)
+	return filepath.Join(root, "candidates", candidate)
 }
 
 func (sdk Sdk) installPath() string {
-	return path.Join(candPath(sdk.SdkHome, sdk.Candidate), sdk.Version)
+	return filepath.Join(candPath(sdk.SdkHome, sdk.Candidate), sdk.Version)
 }
 
 func (sdk Sdk) archiveFile() string {
-	archives, _ := os.Open(path.Join(sdk.SdkHome, "archives"))
+	archives, _ := os.Open(filepath.Join(sdk.SdkHome, "archives"))
 	arcs, _ := archives.Readdir(0)
 	for _, archive := range arcs {
 		if strings.HasPrefix(archive.Name(), sdk.Candidate+"-"+sdk.Version) {
-			return path.Join(sdk.SdkHome, "archives", archive.Name())
+			return filepath.Join(sdk.SdkHome, "archives", archive.Name())
 		}
 	}
 	return ""
@@ -77,9 +76,9 @@ func (sdk Sdk) Unarchive() error {
 	// for nested directory like java:
 	if l, _ := ioutil.ReadDir(wd); len(l) == 1 && l[0].IsDir() {
 		nestedRoot := l[0].Name()
-		inside, _ := ioutil.ReadDir(path.Join(wd, nestedRoot))
+		inside, _ := ioutil.ReadDir(filepath.Join(wd, nestedRoot))
 		for _, c := range inside {
-			os.Rename(path.Join(wd, nestedRoot, c.Name()), path.Join(wd, c.Name()))
+			os.Rename(filepath.Join(wd, nestedRoot, c.Name()), filepath.Join(wd, c.Name()))
 		}
 		os.Remove(nestedRoot)
 	}

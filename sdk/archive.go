@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path"
+	"path/filepath"
 )
 
 // Archive represents downloaded compressed files in "archives" directory
@@ -16,7 +16,7 @@ type Archive struct {
 
 func (archive Archive) archivePath(root string) string {
 	fileName := fmt.Sprintf("%s-%s.%s", archive.Sdk.Candidate, archive.Sdk.Version, archive.Format)
-	return path.Join(root, "archives", fileName)
+	return filepath.Join(root, "archives", fileName)
 }
 
 // Save saves bytes read from ReadCloser channel into archive file

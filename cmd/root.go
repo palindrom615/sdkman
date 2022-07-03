@@ -5,7 +5,7 @@ import (
 	"github.com/palindrom615/sdkman/pkgs"
 	store2 "github.com/palindrom615/sdkman/store"
 	"os"
-	"path"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
@@ -34,7 +34,7 @@ func Execute() {
 	home, _ := os.UserHomeDir()
 
 	rootCmd.PersistentFlags().StringVarP(&registry, "registry", "r", "https://api.sdkman.io/2", "sdkman registry")
-	rootCmd.PersistentFlags().StringVarP(&sdkHome, "sdkHome", "d", path.Join(home, ".sdkman"), "sdk install directory")
+	rootCmd.PersistentFlags().StringVarP(&sdkHome, "sdkHome", "d", filepath.Join(home, ".sdkman"), "sdk install directory")
 	rootCmd.PersistentFlags().BoolVarP(&insecure, "insecure", "i", false, "whether allow insecure request")
 	store = store2.Store{sdkHome}
 	rootCmd.AddCommand(listCmd, currentCmd, installCmd, useCmd, exportCmd)
