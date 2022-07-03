@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/palindrom615/sdkman/api"
 	"github.com/palindrom615/sdkman/custom_errors"
-	"github.com/palindrom615/sdkman/pkgs"
+	"github.com/palindrom615/sdkman/util"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -31,9 +31,9 @@ func (store Store) Update(registry string) error {
 	if netErr != nil {
 		return custom_errors.ErrNotOnline
 	}
-	fresh := pkgs.NewStrSet(freshCsv...)
+	fresh := util.NewStrSet(freshCsv...)
 	cachedCsv := store.GetCandidates()
-	cached := pkgs.NewStrSet(cachedCsv...)
+	cached := util.NewStrSet(cachedCsv...)
 
 	added := fresh.Difference(cached)
 	obsoleted := cached.Difference(fresh)

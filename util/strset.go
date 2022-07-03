@@ -1,4 +1,4 @@
-package pkgs
+package util
 
 type StrSet struct {
 	m map[string]bool

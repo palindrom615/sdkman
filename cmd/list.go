@@ -3,8 +3,8 @@ package cmd
 import (
 	"github.com/palindrom615/sdkman/api"
 	"github.com/palindrom615/sdkman/custom_errors"
-	"github.com/palindrom615/sdkman/pkgs"
 	"github.com/palindrom615/sdkman/sdk"
+	"github.com/palindrom615/sdkman/util"
 	"github.com/spf13/cobra"
 )
 
@@ -19,7 +19,7 @@ func list(cmd *cobra.Command, args []string) error {
 func listAll() error {
 	list, err := api.GetList(registry)
 	if err == nil {
-		pkgs.Pager(list)
+		util.Pager(list)
 	}
 	return err
 }
@@ -35,7 +35,7 @@ func listCandidate(candidate string) error {
 	}
 	curr, _ := sdk.CurrentSdk(sdkHome, candidate)
 	list, err := api.GetVersionsList(registry, curr.Candidate, curr.Version, installedVersion)
-	pkgs.Pager(list)
+	util.Pager(list)
 	return err
 }
 

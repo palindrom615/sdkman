@@ -2,8 +2,8 @@ package script
 
 import (
 	"fmt"
-	"github.com/palindrom615/sdkman/pkgs"
 	"github.com/palindrom615/sdkman/sdk"
+	"github.com/palindrom615/sdkman/util"
 	"strings"
 )
 
@@ -39,8 +39,8 @@ func exportPosh(paths []string, envVars []envVar) string {
 func exportWindows(paths []string, envVars []envVar) string {
 	currentPaths := getCurrentPath()
 
-	s := pkgs.NewStrSet(currentPaths...)
-	p := pkgs.NewStrSet(paths...)
+	s := util.NewStrSet(currentPaths...)
+	p := util.NewStrSet(paths...)
 	paths = p.Difference(s).List()
 
 	for i, p := range paths {

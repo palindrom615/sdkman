@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/palindrom615/sdkman/pkgs"
 	store2 "github.com/palindrom615/sdkman/store"
+	"github.com/palindrom615/sdkman/util"
 	"os"
 	"path/filepath"
 
@@ -39,7 +39,7 @@ func Execute() {
 	store = store2.Store{sdkHome}
 	rootCmd.AddCommand(listCmd, currentCmd, installCmd, useCmd, exportCmd)
 
-	pkgs.MkdirIfNotExist(sdkHome)
+	util.MkdirIfNotExist(sdkHome)
 	err := rootCmd.Execute()
 
 	if err != nil {
