@@ -2,6 +2,7 @@ package pkgs
 
 import (
 	"fmt"
+	"github.com/palindrom615/sdkman/sdk"
 	"io"
 	"os"
 	"path"
@@ -9,7 +10,7 @@ import (
 
 // Archive represents downloaded compressed files in "archives" directory
 type Archive struct {
-	Sdk    Sdk
+	Sdk    sdk.Sdk
 	Format string
 }
 

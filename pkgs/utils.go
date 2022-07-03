@@ -1,10 +1,7 @@
 package pkgs
 
 import (
-	"github.com/palindrom615/sdkman/errors"
-	"github.com/palindrom615/sdkman/store"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -38,53 +35,4 @@ func Pager(pages io.ReadCloser) {
 	_ = c1.Start()
 	_ = c1.Wait()
 	defer pages.Close()
-}
-
-// CurrentSdks returns every Sdk that is linked via "current"
-func CurrentSdks(root string) []Sdk {
-	res := []Sdk{}
-	for _, cand := range store.GetCandidates(root) {
-		sdk, err := CurrentSdk(root, cand)
-		if err == nil {
-			res = append(res, sdk)
-		}
-	}
-	return res
-}
-
-// CurrentSdk returns sdk of specified candidate which is linked with "current"
-func CurrentSdk(root string, candidate string) (Sdk, error) {
-	if _, err := os.Stat(Sdk{candidate, "current"}.installPath(root)); err != nil {
-		return Sdk{candidate, ""}, errors.ErrNoCurrSdk(candidate)
-	}
-	p, err := os.Readlink(Sdk{candidate, "current"}.installPath(root))
-	if err == nil {
-		d, _ := os.Stat(p)
-		return Sdk{candidate, d.Name()}, nil
-	}
-	// if directory 'current' is not symlink
-	return Sdk{candidate, "current"}, nil
-}
-
-// InstalledSdks returns every installed Sdk of specified candidate
-func InstalledSdks(root string, candidate string) []Sdk {
-	versions, err := ioutil.ReadDir(candPath(root, candidate))
-	if err != nil {
-		return []Sdk{}
-	}
-	var res []Sdk
-	for _, ver := range versions {
-		res = append(res, Sdk{candidate, ver.Name()})
-	}
-	return res
-}
-
-func DefaultSdk(reg string, root string, candidate string) (Sdk, error) {
-	if v, netErr := GetDefault(reg, candidate); netErr == nil {
-		return Sdk{candidate, v}, nil
-	} else if curr, fsErr := CurrentSdk(root, candidate); fsErr == nil {
-		return curr, nil
-	} else {
-		return Sdk{candidate, ""}, errors.ErrNotOnline
-	}
 }

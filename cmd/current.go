@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/palindrom615/sdkman/errors"
-	"github.com/palindrom615/sdkman/pkgs"
+	"github.com/palindrom615/sdkman/sdk"
 	"github.com/spf13/cobra"
 )
 
@@ -11,7 +11,7 @@ import (
 func current(cmd *cobra.Command, args []string) error {
 	root := sdkHome
 	if len(args) == 0 {
-		sdks := pkgs.CurrentSdks(root)
+		sdks := sdk.CurrentSdks(root)
 		if len(sdks) == 0 {
 			return errors.ErrNoCurrCands
 		}
@@ -20,7 +20,7 @@ func current(cmd *cobra.Command, args []string) error {
 		}
 	} else {
 		candidate := args[0]
-		sdk, err := pkgs.CurrentSdk(root, candidate)
+		sdk, err := sdk.CurrentSdk(root, candidate)
 		if err == nil {
 			fmt.Println(sdk.Candidate + "@" + sdk.Version)
 		} else {

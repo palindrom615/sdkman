@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/palindrom615/sdkman/sdk"
 	"github.com/yargevad/filepathx"
 	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
 
-	"github.com/palindrom615/sdkman/pkgs"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +24,7 @@ func export(cmd *cobra.Command, args []string) error {
 	} else {
 		shell = args[0]
 	}
-	sdks := pkgs.CurrentSdks(sdkHome)
+	sdks := sdk.CurrentSdks(sdkHome)
 	if len(sdks) == 0 {
 		fmt.Println("")
 		return nil

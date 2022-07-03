@@ -1,10 +1,12 @@
-package pkgs
+package sdk
 
 import (
 	"fmt"
 	"github.com/mholt/archiver/v3"
 	"github.com/otiai10/copy"
 	"github.com/palindrom615/sdkman/errors"
+	"github.com/palindrom615/sdkman/pkgs"
+	"github.com/palindrom615/sdkman/store"
 	"io/ioutil"
 	"os"
 	"path"
@@ -102,7 +104,7 @@ func (sdk Sdk) Use(root string) error {
 }
 
 func (sdk Sdk) CheckValidVer(reg string, root string) error {
-	isValid, netErr := GetValidate(reg, sdk)
+	isValid, netErr := pkgs.GetValidate(reg, sdk)
 	if (netErr == nil && isValid) || sdk.IsInstalled(root) {
 		return nil
 	} else if netErr != nil {
@@ -116,7 +118,7 @@ func (sdk Sdk) CheckValidVer(reg string, root string) error {
 func GetFromVersionString(registry string, sdkHome string, versionString string) (Sdk, error) {
 	sdk := strings.Split(versionString, "@")
 	candidate := sdk[0]
-	if err := CheckValidCand(sdkHome, candidate); err != nil {
+	if err := pkgs.CheckValidCand(sdkHome, candidate); err != nil {
 		return Sdk{}, err
 	}
 	if len(sdk) != 2 {
@@ -124,4 +126,53 @@ func GetFromVersionString(registry string, sdkHome string, versionString string)
 	}
 	version := sdk[1]
 	return Sdk{candidate, version}, nil
+}
+
+// CurrentSdks returns every Sdk that is linked via "current"
+func CurrentSdks(root string) []Sdk {
+	res := []Sdk{}
+	for _, cand := range store.GetCandidates(root) {
+		sdk, err := CurrentSdk(root, cand)
+		if err == nil {
+			res = append(res, sdk)
+		}
+	}
+	return res
+}
+
+// CurrentSdk returns sdk of specified candidate which is linked with "current"
+func CurrentSdk(root string, candidate string) (Sdk, error) {
+	if _, err := os.Stat(Sdk{candidate, "current"}.installPath(root)); err != nil {
+		return Sdk{candidate, ""}, errors.ErrNoCurrSdk(candidate)
+	}
+	p, err := os.Readlink(Sdk{candidate, "current"}.installPath(root))
+	if err == nil {
+		d, _ := os.Stat(p)
+		return Sdk{candidate, d.Name()}, nil
+	}
+	// if directory 'current' is not symlink
+	return Sdk{candidate, "current"}, nil
+}
+
+// InstalledSdks returns every installed Sdk of specified candidate
+func InstalledSdks(root string, candidate string) []Sdk {
+	versions, err := ioutil.ReadDir(candPath(root, candidate))
+	if err != nil {
+		return []Sdk{}
+	}
+	var res []Sdk
+	for _, ver := range versions {
+		res = append(res, Sdk{candidate, ver.Name()})
+	}
+	return res
+}
+
+func DefaultSdk(reg string, root string, candidate string) (Sdk, error) {
+	if v, netErr := pkgs.GetDefault(reg, candidate); netErr == nil {
+		return Sdk{candidate, v}, nil
+	} else if curr, fsErr := CurrentSdk(root, candidate); fsErr == nil {
+		return curr, nil
+	} else {
+		return Sdk{candidate, ""}, errors.ErrNotOnline
+	}
 }

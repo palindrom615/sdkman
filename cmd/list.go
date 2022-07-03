@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/palindrom615/sdkman/pkgs"
+	"github.com/palindrom615/sdkman/sdk"
 	"github.com/spf13/cobra"
 )
 
@@ -24,8 +25,8 @@ func listCandidate(candidate string) error {
 	if err := pkgs.CheckValidCand(sdkHome, candidate); err != nil {
 		return err
 	}
-	ins := pkgs.InstalledSdks(sdkHome, candidate)
-	curr, _ := pkgs.CurrentSdk(sdkHome, candidate)
+	ins := sdk.InstalledSdks(sdkHome, candidate)
+	curr, _ := sdk.CurrentSdk(sdkHome, candidate)
 	list, err := pkgs.GetVersionsList(registry, curr, ins)
 	pkgs.Pager(list)
 	return err

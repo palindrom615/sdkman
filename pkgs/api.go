@@ -3,6 +3,7 @@ package pkgs
 import (
 	"bytes"
 	"fmt"
+	"github.com/palindrom615/sdkman/sdk"
 	"io"
 	"io/ioutil"
 	"mime"
@@ -36,7 +37,7 @@ func getDownloadSdkmanVersion(api string, versionType string) ([]byte, error) {
 	return requestSync(brokerAPI + "/download/sdkman/version/" + versionType)
 }
 
-func GetDownload(api string, sdk Sdk) (io.ReadCloser, string, error) {
+func GetDownload(api string, sdk sdk.Sdk) (io.ReadCloser, string, error) {
 	brokerAPI := api + "/broker"
 	return download(brokerAPI + "/download/" + sdk.Candidate + "/" + sdk.Version + "/" + Platform())
 }
@@ -48,7 +49,7 @@ func GetDefault(api string, candidate string) (string, error) {
 	return string(res), err
 }
 
-func GetValidate(api string, sdk Sdk) (bool, error) {
+func GetValidate(api string, sdk sdk.Sdk) (bool, error) {
 	candidatesAPI := api + "/candidates"
 	url := fmt.Sprintf("%s/validate/%s/%s/%s", candidatesAPI, sdk.Candidate, sdk.Version, Platform())
 	res, err := requestSync(url)
@@ -61,7 +62,7 @@ func GetList(api string) (io.ReadCloser, error) {
 	return request(candidatesAPI + "/list")
 }
 
-func GetVersionsList(api string, currentSdk Sdk, installed []Sdk) (io.ReadCloser, error) {
+func GetVersionsList(api string, currentSdk sdk.Sdk, installed []sdk.Sdk) (io.ReadCloser, error) {
 	candidatesAPI := api + "/candidates"
 	installedVers := ""
 	for _, sdk := range installed {
@@ -90,7 +91,7 @@ func getSelfupdate(api string, beta bool) ([]byte, error) {
 	return requestSync(api + "/selfupdate?beta=" + strconv.FormatBool(beta))
 }
 
-func getHooks(api string, phase string, sdk Sdk) ([]byte, error) {
+func getHooks(api string, phase string, sdk sdk.Sdk) ([]byte, error) {
 	return requestSync(api + "/hooks/" + phase + "/" + sdk.Candidate + "/" + sdk.Version + "/" + Platform())
 }
 

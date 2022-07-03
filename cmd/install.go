@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/palindrom615/sdkman/errors"
 	"github.com/palindrom615/sdkman/pkgs"
+	"github.com/palindrom615/sdkman/sdk"
 	"github.com/spf13/cobra"
 )
 
@@ -10,7 +11,7 @@ import (
 func install(c *cobra.Command, args []string) error {
 	_ = updateCmd.RunE(c, args)
 
-	target, err := pkgs.GetFromVersionString(registry, sdkHome, args[0])
+	target, err := sdk.GetFromVersionString(registry, sdkHome, args[0])
 	if err != nil {
 		return err
 	}
@@ -19,7 +20,7 @@ func install(c *cobra.Command, args []string) error {
 		return err
 	}
 	if target.Version == "" {
-		defaultSdk, err := pkgs.DefaultSdk(registry, sdkHome, target.Candidate)
+		defaultSdk, err := sdk.DefaultSdk(registry, sdkHome, target.Candidate)
 		if err != nil {
 			return err
 		}
