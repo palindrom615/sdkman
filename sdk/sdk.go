@@ -7,7 +7,6 @@ import (
 	"github.com/palindrom615/sdkman/api"
 	"github.com/palindrom615/sdkman/errors"
 	"github.com/palindrom615/sdkman/store"
-	"github.com/palindrom615/sdkman/validate"
 	"io/ioutil"
 	"os"
 	"path"
@@ -123,8 +122,9 @@ func (sdk Sdk) CheckValidVer(reg string, root string) error {
 func GetFromVersionString(registry string, sdkHome string, versionString string) (Sdk, error) {
 	sdk := strings.Split(versionString, "@")
 	candidate := sdk[0]
-	if err := validate.CheckValidCand(sdkHome, candidate); err != nil {
-		return Sdk{}, err
+	s := store.Store{sdkHome}
+	if !s.HasCandidate(candidate) {
+		return Sdk{}, errors.ErrNoCand
 	}
 	if len(sdk) != 2 {
 		return DefaultSdk(registry, sdkHome, sdk[0])
@@ -136,7 +136,8 @@ func GetFromVersionString(registry string, sdkHome string, versionString string)
 // CurrentSdks returns every Sdk that is linked via "current"
 func CurrentSdks(root string) []Sdk {
 	res := []Sdk{}
-	for _, cand := range store.GetCandidates(root) {
+	s := store.Store{root}
+	for _, cand := range s.GetCandidates() {
 		sdk, err := CurrentSdk(root, cand)
 		if err == nil {
 			res = append(res, sdk)

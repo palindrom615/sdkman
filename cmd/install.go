@@ -5,21 +5,23 @@ import (
 	"github.com/palindrom615/sdkman/errors"
 	"github.com/palindrom615/sdkman/pkgs"
 	"github.com/palindrom615/sdkman/sdk"
-	"github.com/palindrom615/sdkman/validate"
 	"github.com/spf13/cobra"
 )
 
 // install package
 func install(c *cobra.Command, args []string) error {
-	_ = updateCmd.RunE(c, args)
+	err := store.Update(registry)
+	if err != nil {
+		return err
+	}
 
 	target, err := sdk.GetFromVersionString(registry, sdkHome, args[0])
 	if err != nil {
 		return err
 	}
 
-	if err := validate.CheckValidCand(sdkHome, target.Candidate); err != nil {
-		return err
+	if !store.HasCandidate(target.Candidate) {
+		return errors.ErrNoCand
 	}
 	if target.Version == "" {
 		defaultSdk, err := sdk.DefaultSdk(registry, sdkHome, target.Candidate)

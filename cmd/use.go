@@ -8,6 +8,7 @@ import (
 
 // use make symbolic link named "current" to installed package.
 func use(cmd *cobra.Command, args []string) error {
+	store.Update(registry)
 	sdk, err := sdk.GetFromVersionString(registry, sdkHome, args[0])
 	if err != nil {
 		return err
