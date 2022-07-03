@@ -10,15 +10,11 @@ import (
 func install(c *cobra.Command, args []string) error {
 	_ = updateCmd.RunE(c, args)
 
-	if len(args) == 0 {
-		return errors.ErrNoCand
-	}
 	target, err := pkgs.Arg2sdk(registry, sdkHome, args[0])
 	if err != nil {
 		return err
 	}
 
-	pkgs.MkdirIfNotExist(sdkHome)
 	if err := pkgs.CheckValidCand(sdkHome, target.Candidate); err != nil {
 		return err
 	}
@@ -61,4 +57,10 @@ var installCmd = &cobra.Command{
 	Use:     "install candidate[@version]",
 	Aliases: []string{"i"},
 	RunE:    install,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) == 0 {
+			return errors.ErrNoCand
+		}
+		return nil
+	},
 }

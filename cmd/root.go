@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/palindrom615/sdkman/pkgs"
 	"os"
 	"path"
 
@@ -35,7 +36,10 @@ func Execute() {
 	rootCmd.PersistentFlags().BoolVarP(&insecure, "insecure", "i", false, "whether allow insecure request")
 	rootCmd.AddCommand(listCmd, currentCmd, updateCmd, installCmd, useCmd, exportCmd)
 
-	if err := rootCmd.Execute(); err != nil {
+	pkgs.MkdirIfNotExist(sdkHome)
+	err := rootCmd.Execute()
+
+	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

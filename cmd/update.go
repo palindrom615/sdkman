@@ -30,8 +30,7 @@ func update(cmd *cobra.Command, args []string) error {
 		if obsoleted.Size() != 0 {
 			fmt.Println("Removing obsolete candidates: " + strings.Join(obsoleted.List(), ", "))
 		}
-		_ = store.SetCandidates(sdkHome, freshCsv)
-		return nil
+		return store.SetCandidates(sdkHome, freshCsv)
 	}
 }
 

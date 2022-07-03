@@ -8,9 +8,6 @@ import (
 
 // use make symbolic link named "current" to installed package.
 func use(cmd *cobra.Command, args []string) error {
-	if len(args) == 0 {
-		return errors.ErrNoCand
-	}
 	sdk, err := pkgs.Arg2sdk(registry, sdkHome, args[0])
 	if err != nil {
 		return err
@@ -24,4 +21,10 @@ func use(cmd *cobra.Command, args []string) error {
 var useCmd = &cobra.Command{
 	Use:  "use candidate@version",
 	RunE: use,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) == 0 {
+			return errors.ErrNoCand
+		}
+		return nil
+	},
 }
