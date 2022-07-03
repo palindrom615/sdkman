@@ -1,9 +1,7 @@
 package cmd
 
 import (
-	"github.com/palindrom615/sdkman/api"
 	"github.com/palindrom615/sdkman/errors"
-	"github.com/palindrom615/sdkman/pkgs"
 	"github.com/palindrom615/sdkman/sdk"
 	"github.com/spf13/cobra"
 )
@@ -31,31 +29,11 @@ func install(c *cobra.Command, args []string) error {
 		target = defaultSdk
 	}
 
-	if target.IsInstalled(sdkHome) {
-		return errors.ErrVerExists
-	}
-	if err := target.CheckValidVer(registry, sdkHome); err != nil {
+	err = target.Install(registry)
+	if err != nil {
 		return err
 	}
-
-	archiveReady := make(chan bool)
-	installReady := make(chan bool)
-	go target.Unarchive(sdkHome, archiveReady, installReady)
-	if target.IsArchived(sdkHome) {
-		archiveReady <- true
-	} else {
-		s, t, err := api.GetDownload(registry, target.Candidate, target.Version)
-		if err != nil {
-			archiveReady <- false
-			return err
-		}
-		archive := pkgs.Archive{target, t}
-		go archive.Save(s, sdkHome, archiveReady)
-	}
-	if <-installReady == false {
-		return errors.ErrVerInsFail
-	}
-	return target.Use(sdkHome)
+	return target.Use()
 }
 
 var installCmd = &cobra.Command{

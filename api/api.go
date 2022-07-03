@@ -39,7 +39,7 @@ func getDownloadSdkmanVersion(api string, versionType string) ([]byte, error) {
 
 func GetDownload(api string, candidate string, version string) (io.ReadCloser, string, error) {
 	brokerAPI := api + "/broker"
-	return Download(brokerAPI + "/download/" + candidate + "/" + version + "/" + util.Platform())
+	return download(brokerAPI + "/download/" + candidate + "/" + version + "/" + util.Platform())
 }
 
 func GetDefault(api string, candidate string) (string, error) {
@@ -106,7 +106,7 @@ func request(url string) (io.ReadCloser, error) {
 	return wrapResponseBody(resp), err
 }
 
-func Download(url string) (io.ReadCloser, string, error) {
+func download(url string) (io.ReadCloser, string, error) {
 	fmt.Printf("downloading sdk from %s...\n", url)
 	req, _ := http.NewRequest("GET", url, nil)
 	resp, err := http.DefaultClient.Do(req)

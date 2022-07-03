@@ -13,10 +13,10 @@ func use(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	if !sdk.IsInstalled(sdkHome) {
+	if !sdk.IsInstalled() {
 		return errors.ErrVerNotIns
 	}
-	return sdk.Use(sdkHome)
+	return sdk.Use()
 }
 
 var useCmd = &cobra.Command{
