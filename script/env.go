@@ -4,15 +4,13 @@ import (
 	"fmt"
 	"github.com/palindrom615/sdkman/sdk"
 	"github.com/yargevad/filepathx"
-	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
 )
 
-func getPathsHomes(sdks []sdk.Sdk) ([]string, []envVar) {
-	paths := []string{}
-	homes := []envVar{}
+func getPathsHomes(sdks []sdk.Sdk) (paths []string, homes []envVar) {
 	for _, s := range sdks {
 		candHome := filepath.Join(s.SdkHome, "candidates", s.Candidate, "current")
 
@@ -30,13 +28,12 @@ func getPathsHomes(sdks []sdk.Sdk) ([]string, []envVar) {
 	return paths, homes
 }
 
-func getCurrentPath() []string {
-	del := ":"
-	key := "PATH"
-	if runtime.GOOS == "windows" {
-		del = ";"
-		key = "Path"
-	}
-	path := os.Getenv(key)
-	return strings.Split(path, del)
+func getWindowsUserPath() (paths []string) {
+	out, _ := exec.Command("powershell", "-nologo", "-noprofile", "[Environment]::GetEnvironmentVariable(\"Path\", [EnvironmentVariableTarget]::User)").CombinedOutput()
+	return strings.Split(strings.TrimSpace(string(out)), ";")
+}
+
+func poshSetWindowsUserPath(paths []string) (script string) {
+	p := strings.Join(paths, ";")
+	return "[Environment]::SetEnvironmentVariable(\"Path\", \"" + p + "\", [System.EnvironmentVariableTarget]::User);"
 }

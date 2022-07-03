@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/palindrom615/sdkman/script"
 	"github.com/palindrom615/sdkman/sdk"
 	"github.com/spf13/cobra"
@@ -12,18 +11,15 @@ import (
 func export(cmd *cobra.Command, args []string) error {
 	sdks := sdk.CurrentSdks(sdkHome)
 	if len(sdks) == 0 {
-		fmt.Println("")
 		return nil
 	}
 
-	shell := ""
-	if len(args) == 0 {
-		shell = getDefaultShell()
-	} else {
+	shell := getDefaultShell()
+	if len(args) != 0 {
 		shell = args[0]
 	}
 
-	script.RunExport(shell, sdks)
+	script.RunExport(shell, sdks, sdkHome)
 	return nil
 }
 

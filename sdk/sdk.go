@@ -103,7 +103,7 @@ func (sdk Sdk) Install(registry string) error {
 		return custom_errors.ErrVerExists
 	}
 	if sdk.IsArchived() {
-		println(sdk.ToString() + ": use cached binary" + sdk.archiveFile())
+		println(sdk.ToString() + ": use cached binary " + sdk.archiveFile())
 	} else {
 		err := sdk.Download(registry)
 		if err != nil {

@@ -3,7 +3,6 @@ package script
 import (
 	"fmt"
 	"github.com/palindrom615/sdkman/sdk"
-	"github.com/palindrom615/sdkman/util"
 	"strings"
 )
 
@@ -12,7 +11,7 @@ type envVar struct {
 	val  string
 }
 
-func exportBash(paths []string, envVars []envVar) string {
+func exportBash(paths []string, envVars []envVar) (script string) {
 	res := fmt.Sprintf("export PATH=%s:$PATH\n", strings.Join(paths, ":"))
 	for _, v := range envVars {
 		res += fmt.Sprintf("export %s=%s\n", v.name, v.val)
@@ -20,7 +19,7 @@ func exportBash(paths []string, envVars []envVar) string {
 	return res
 }
 
-func exportFish(paths []string, envVars []envVar) string {
+func exportFish(paths []string, envVars []envVar) (script string) {
 	res := fmt.Sprintf("set -x PATH %s $PATH\n", strings.Join(paths, " "))
 	for _, v := range envVars {
 		res += fmt.Sprintf("set -x %s %s\n", v.name, v.val)
@@ -28,7 +27,7 @@ func exportFish(paths []string, envVars []envVar) string {
 	return res
 }
 
-func exportPosh(paths []string, envVars []envVar) string {
+func exportPosh(paths []string, envVars []envVar) (script string) {
 	res := fmt.Sprintf("$env:Path = \"%s;\" + $env:Path;", strings.Join(paths, ";"))
 	for _, v := range envVars {
 		res += fmt.Sprintf("$env:%s = \"%s\";", v.name, v.val)
@@ -36,25 +35,23 @@ func exportPosh(paths []string, envVars []envVar) string {
 	return res
 }
 
-func exportWindows(paths []string, envVars []envVar) string {
-	currentPaths := getCurrentPath()
-
-	s := util.NewStrSet(currentPaths...)
-	p := util.NewStrSet(paths...)
-	paths = p.Difference(s).List()
-
-	for i, p := range paths {
-		paths[i] = strings.ReplaceAll(p, "/", "\\")
+func exportWindows(paths []string, envVars []envVar, sdkHome string) (script string) {
+	currentPaths := []string{}
+	for _, path := range getWindowsUserPath() {
+		if !strings.Contains(path, sdkHome) && path != "" {
+			currentPaths = append(currentPaths, path)
+		}
 	}
 
-	res := fmt.Sprintf("[Environment]::SetEnvironmentVariable(\"Path\", [Environment]::GetEnvironmentVariable(\"Path\", [EnvironmentVariableTarget]::User) + \";%s\", [System.EnvironmentVariableTarget]::User);", strings.Join(paths, ";"))
+	paths = append(currentPaths, paths...)
+	res := poshSetWindowsUserPath(paths)
 	for _, v := range envVars {
 		res += fmt.Sprintf("[Environment]::SetEnvironmentVariable(\"%s\", \"%s\", [System.EnvironmentVariableTarget]::User);", v.name, v.val)
 	}
 	return res
 }
 
-func RunExport(shell string, sdks []sdk.Sdk) {
+func RunExport(shell string, sdks []sdk.Sdk, sdkHome string) {
 	paths, homes := getPathsHomes(sdks)
 
 	if shell == "bash" || shell == "zsh" {
@@ -64,6 +61,6 @@ func RunExport(shell string, sdks []sdk.Sdk) {
 	} else if shell == "powershell" || shell == "posh" {
 		fmt.Println(exportPosh(paths, homes))
 	} else if shell == "windows" || shell == "window" {
-		fmt.Println(exportWindows(paths, homes))
+		fmt.Println(exportWindows(paths, homes, sdkHome))
 	}
 }
