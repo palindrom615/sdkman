@@ -3,7 +3,7 @@ package store
 import (
 	"fmt"
 	"github.com/palindrom615/sdkman/api"
-	"github.com/palindrom615/sdkman/errors"
+	"github.com/palindrom615/sdkman/custom_errors"
 	"github.com/palindrom615/sdkman/pkgs"
 	"io/ioutil"
 	"path/filepath"
@@ -29,7 +29,7 @@ func (store Store) SetCandidates(val []string) error {
 func (store Store) Update(registry string) error {
 	freshCsv, netErr := api.GetAll(registry)
 	if netErr != nil {
-		return errors.ErrNotOnline
+		return custom_errors.ErrNotOnline
 	}
 	fresh := pkgs.NewStrSet(freshCsv...)
 	cachedCsv := store.GetCandidates()

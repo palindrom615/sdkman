@@ -4,7 +4,7 @@ import (
 	"github.com/mholt/archiver/v3"
 	"github.com/otiai10/copy"
 	"github.com/palindrom615/sdkman/api"
-	"github.com/palindrom615/sdkman/errors"
+	"github.com/palindrom615/sdkman/custom_errors"
 	"github.com/palindrom615/sdkman/store"
 	"io/ioutil"
 	"os"
@@ -63,7 +63,7 @@ func (sdk Sdk) IsArchived() bool {
 // Unarchive extracts archive file of sdk into "candidates" directory
 func (sdk Sdk) Unarchive() error {
 	if !sdk.IsArchived() {
-		return errors.ErrArcNotIns
+		return custom_errors.ErrArcNotIns
 	}
 	_ = os.Mkdir(candPath(sdk.SdkHome, sdk.Candidate), os.ModeDir|os.ModePerm)
 
@@ -100,10 +100,10 @@ func (sdk Sdk) Use() error {
 
 func (sdk Sdk) Install(registry string) error {
 	if sdk.IsInstalled() {
-		return errors.ErrVerExists
+		return custom_errors.ErrVerExists
 	}
 	if sdk.IsArchived() {
-		println("use cached version of " + sdk.ToString())
+		println(sdk.ToString() + ": use cached binary" + sdk.archiveFile())
 	} else {
 		err := sdk.Download(registry)
 		if err != nil {
@@ -114,7 +114,7 @@ func (sdk Sdk) Install(registry string) error {
 	if err != nil {
 		return err
 	}
-	println("installed " + sdk.ToString())
+	println(sdk.ToString() + ": installed ")
 	return nil
 }
 
@@ -131,7 +131,7 @@ func (sdk Sdk) Download(registry string) error {
 	if err != nil {
 		return err
 	}
-	println("downloaded " + sdk.ToString() + "...")
+	println(sdk.ToString() + ": downloaded")
 	return nil
 }
 
@@ -140,9 +140,9 @@ func (sdk Sdk) CheckValidVer(reg string) error {
 	if (netErr == nil && isValid) || sdk.IsInstalled() {
 		return nil
 	} else if netErr != nil {
-		return errors.ErrNotOnline
+		return custom_errors.ErrNotOnline
 	} else {
-		return errors.ErrNoVer
+		return custom_errors.ErrNoVer
 	}
 }
 
@@ -156,7 +156,7 @@ func GetFromVersionString(registry string, sdkHome string, versionString string)
 	candidate := sdk[0]
 	s := store.Store{sdkHome}
 	if !s.HasCandidate(candidate) {
-		return Sdk{}, errors.ErrNoCand
+		return Sdk{}, custom_errors.ErrNoCand
 	}
 	if len(sdk) != 2 {
 		return DefaultSdk(registry, sdkHome, sdk[0])
@@ -181,7 +181,7 @@ func CurrentSdks(root string) []Sdk {
 // CurrentSdk returns sdk of specified candidate which is linked with "current"
 func CurrentSdk(root string, candidate string) (Sdk, error) {
 	if _, err := os.Stat(Sdk{candidate, "current", root}.installPath()); err != nil {
-		return Sdk{candidate, "", root}, errors.ErrNoCurrSdk(candidate)
+		return Sdk{candidate, "", root}, custom_errors.ErrNoCurrSdk(candidate)
 	}
 	p, err := os.Readlink(Sdk{candidate, "current", root}.installPath())
 	if err == nil {
@@ -211,6 +211,6 @@ func DefaultSdk(reg string, root string, candidate string) (Sdk, error) {
 	} else if curr, fsErr := CurrentSdk(root, candidate); fsErr == nil {
 		return curr, nil
 	} else {
-		return Sdk{candidate, "", root}, errors.ErrNotOnline
+		return Sdk{candidate, "", root}, custom_errors.ErrNotOnline
 	}
 }

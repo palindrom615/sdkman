@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/palindrom615/sdkman/errors"
+	"github.com/palindrom615/sdkman/custom_errors"
 	"github.com/palindrom615/sdkman/sdk"
 	"github.com/spf13/cobra"
 )
@@ -18,7 +18,7 @@ func current(cmd *cobra.Command, args []string) error {
 func currentAll() error {
 	sdks := sdk.CurrentSdks(sdkHome)
 	if len(sdks) == 0 {
-		return errors.ErrNoCurrCands
+		return custom_errors.ErrNoCurrCands
 	}
 	for _, s := range sdks {
 		fmt.Printf("%s@%s\n", s.Candidate, s.Version)
@@ -29,7 +29,7 @@ func currentAll() error {
 func currentCandidate(candidate string) error {
 	currentSdk, err := sdk.CurrentSdk(sdkHome, candidate)
 	if err != nil {
-		return errors.ErrNoCurrSdk(candidate)
+		return custom_errors.ErrNoCurrSdk(candidate)
 
 	}
 	fmt.Println(currentSdk.Candidate + "@" + currentSdk.Version)

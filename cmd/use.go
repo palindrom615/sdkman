@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/palindrom615/sdkman/errors"
+	"github.com/palindrom615/sdkman/custom_errors"
 	"github.com/palindrom615/sdkman/sdk"
 	"github.com/spf13/cobra"
 )
@@ -14,7 +14,7 @@ func use(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if !sdk.IsInstalled() {
-		return errors.ErrVerNotIns
+		return custom_errors.ErrVerNotIns
 	}
 	return sdk.Use()
 }
@@ -24,7 +24,7 @@ var useCmd = &cobra.Command{
 	RunE: use,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
-			return errors.ErrNoCand
+			return custom_errors.ErrNoCand
 		}
 		return nil
 	},

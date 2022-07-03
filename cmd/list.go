@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/palindrom615/sdkman/api"
-	"github.com/palindrom615/sdkman/errors"
+	"github.com/palindrom615/sdkman/custom_errors"
 	"github.com/palindrom615/sdkman/pkgs"
 	"github.com/palindrom615/sdkman/sdk"
 	"github.com/spf13/cobra"
@@ -26,7 +26,7 @@ func listAll() error {
 
 func listCandidate(candidate string) error {
 	if !store.HasCandidate(candidate) {
-		return errors.ErrNoCand
+		return custom_errors.ErrNoCand
 	}
 	installedSdk := sdk.InstalledSdks(sdkHome, candidate)
 	installedVersion := make([]string, len(installedSdk))
