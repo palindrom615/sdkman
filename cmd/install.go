@@ -33,15 +33,6 @@ func install(c *cobra.Command, args []string) error {
 		wg.Add(1)
 		go func(target sdk.Sdk) {
 			defer wg.Done()
-			if target.Version == "" {
-				defaultSdk, err := sdk.DefaultSdk(registry, sdkHome, target.Candidate)
-				if err != nil {
-					println(target.ToString() + ": " + err.Error())
-					return
-				}
-				target = defaultSdk
-			}
-
 			err := target.Install(registry)
 			if err != nil {
 				println(target.ToString() + ": " + err.Error())
