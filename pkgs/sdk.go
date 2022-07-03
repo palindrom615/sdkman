@@ -3,8 +3,8 @@ package pkgs
 import (
 	"fmt"
 	"github.com/mholt/archiver/v3"
-	"github.com/palindrom615/sdkman/errors"
 	"github.com/otiai10/copy"
+	"github.com/palindrom615/sdkman/errors"
 	"io/ioutil"
 	"os"
 	"path"
@@ -94,7 +94,7 @@ func (sdk Sdk) Unarchive(root string, archiveReady <-chan bool, installReady cha
 func (sdk Sdk) Use(root string) error {
 	os.Remove(Sdk{sdk.Candidate, "current"}.installPath(root))
 	err := os.Symlink(sdk.installPath(root), Sdk{sdk.Candidate, "current"}.installPath(root))
-	if err != nil{
+	if err != nil {
 		// windows requires admin privilege to make symlink and I don't want to
 		copy.Copy(sdk.installPath(root), Sdk{sdk.Candidate, "current"}.installPath(root))
 	}
@@ -110,4 +110,18 @@ func (sdk Sdk) CheckValidVer(reg string, root string) error {
 	} else {
 		return errors.ErrNoVer
 	}
+}
+
+// GetFromVersionString versionString format: e.g. "kotlin@1.7.0", "java@17.0.3-tem"
+func GetFromVersionString(registry string, sdkHome string, versionString string) (Sdk, error) {
+	sdk := strings.Split(versionString, "@")
+	candidate := sdk[0]
+	if err := CheckValidCand(sdkHome, candidate); err != nil {
+		return Sdk{}, err
+	}
+	if len(sdk) != 2 {
+		return DefaultSdk(registry, sdkHome, sdk[0])
+	}
+	version := sdk[1]
+	return Sdk{candidate, version}, nil
 }

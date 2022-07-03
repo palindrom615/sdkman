@@ -9,7 +9,6 @@ import (
 	"os/exec"
 	"path"
 	"runtime"
-	"strings"
 )
 
 // MkdirIfNotExist creates "candidates" and "archives" directory
@@ -39,19 +38,6 @@ func Pager(pages io.ReadCloser) {
 	_ = c1.Start()
 	_ = c1.Wait()
 	defer pages.Close()
-}
-
-func Arg2sdk(reg string, root string, arg string) (Sdk, error) {
-	sdk := strings.Split(arg, "@")
-	candidate := sdk[0]
-	if err := CheckValidCand(root, candidate); err != nil {
-		return Sdk{}, err
-	}
-	if len(sdk) != 2 {
-		return DefaultSdk(reg, root, sdk[0])
-	}
-	version := sdk[1]
-	return Sdk{candidate, version}, nil
 }
 
 // CurrentSdks returns every Sdk that is linked via "current"
@@ -101,13 +87,4 @@ func DefaultSdk(reg string, root string, candidate string) (Sdk, error) {
 	} else {
 		return Sdk{candidate, ""}, errors.ErrNotOnline
 	}
-}
-
-func CheckValidCand(root string, candidate string) error {
-	for _, can := range store.GetCandidates(root) {
-		if can == candidate {
-			return nil
-		}
-	}
-	return errors.ErrNoCand
 }

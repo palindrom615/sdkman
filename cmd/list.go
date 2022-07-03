@@ -6,23 +6,27 @@ import (
 )
 
 func list(cmd *cobra.Command, args []string) error {
-	reg := registry
-	root := sdkHome
-
 	if len(args) == 0 {
-		list, err := pkgs.GetList(reg)
-		if err == nil {
-			pkgs.Pager(list)
-		}
+		return listAll()
+	}
+	return listCandidate(args[0])
+}
+
+func listAll() error {
+	list, err := pkgs.GetList(registry)
+	if err == nil {
+		pkgs.Pager(list)
+	}
+	return err
+}
+
+func listCandidate(candidate string) error {
+	if err := pkgs.CheckValidCand(sdkHome, candidate); err != nil {
 		return err
 	}
-	candidate := args[0]
-	if err := pkgs.CheckValidCand(root, candidate); err != nil {
-		return err
-	}
-	ins := pkgs.InstalledSdks(root, candidate)
-	curr, _ := pkgs.CurrentSdk(root, candidate)
-	list, err := pkgs.GetVersionsList(reg, curr, ins)
+	ins := pkgs.InstalledSdks(sdkHome, candidate)
+	curr, _ := pkgs.CurrentSdk(sdkHome, candidate)
+	list, err := pkgs.GetVersionsList(registry, curr, ins)
 	pkgs.Pager(list)
 	return err
 }

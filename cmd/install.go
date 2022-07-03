@@ -10,7 +10,7 @@ import (
 func install(c *cobra.Command, args []string) error {
 	_ = updateCmd.RunE(c, args)
 
-	target, err := pkgs.Arg2sdk(registry, sdkHome, args[0])
+	target, err := pkgs.GetFromVersionString(registry, sdkHome, args[0])
 	if err != nil {
 		return err
 	}
