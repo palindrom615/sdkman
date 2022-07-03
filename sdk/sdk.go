@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"github.com/mholt/archiver/v3"
 	"github.com/otiai10/copy"
+	"github.com/palindrom615/sdkman/api"
 	"github.com/palindrom615/sdkman/errors"
-	"github.com/palindrom615/sdkman/pkgs"
 	"github.com/palindrom615/sdkman/store"
+	"github.com/palindrom615/sdkman/validate"
 	"io/ioutil"
 	"os"
 	"path"
@@ -18,6 +19,7 @@ import (
 type Sdk struct {
 	Candidate string
 	Version   string
+	SdkHome   string
 }
 
 func candPath(root string, candidate string) string {
@@ -94,17 +96,17 @@ func (sdk Sdk) Unarchive(root string, archiveReady <-chan bool, installReady cha
 
 // Use links sdk with symlink named "current" so the sdk is used as default
 func (sdk Sdk) Use(root string) error {
-	os.Remove(Sdk{sdk.Candidate, "current"}.installPath(root))
-	err := os.Symlink(sdk.installPath(root), Sdk{sdk.Candidate, "current"}.installPath(root))
+	os.Remove(Sdk{sdk.Candidate, "current", root}.installPath(root))
+	err := os.Symlink(sdk.installPath(root), Sdk{sdk.Candidate, "current", root}.installPath(root))
 	if err != nil {
 		// windows requires admin privilege to make symlink and I don't want to
-		copy.Copy(sdk.installPath(root), Sdk{sdk.Candidate, "current"}.installPath(root))
+		copy.Copy(sdk.installPath(root), Sdk{sdk.Candidate, "current", root}.installPath(root))
 	}
 	return nil
 }
 
 func (sdk Sdk) CheckValidVer(reg string, root string) error {
-	isValid, netErr := pkgs.GetValidate(reg, sdk)
+	isValid, netErr := api.GetValidate(reg, sdk.Candidate, sdk.Version)
 	if (netErr == nil && isValid) || sdk.IsInstalled(root) {
 		return nil
 	} else if netErr != nil {
@@ -118,14 +120,14 @@ func (sdk Sdk) CheckValidVer(reg string, root string) error {
 func GetFromVersionString(registry string, sdkHome string, versionString string) (Sdk, error) {
 	sdk := strings.Split(versionString, "@")
 	candidate := sdk[0]
-	if err := pkgs.CheckValidCand(sdkHome, candidate); err != nil {
+	if err := validate.CheckValidCand(sdkHome, candidate); err != nil {
 		return Sdk{}, err
 	}
 	if len(sdk) != 2 {
 		return DefaultSdk(registry, sdkHome, sdk[0])
 	}
 	version := sdk[1]
-	return Sdk{candidate, version}, nil
+	return Sdk{candidate, version, sdkHome}, nil
 }
 
 // CurrentSdks returns every Sdk that is linked via "current"
@@ -142,16 +144,16 @@ func CurrentSdks(root string) []Sdk {
 
 // CurrentSdk returns sdk of specified candidate which is linked with "current"
 func CurrentSdk(root string, candidate string) (Sdk, error) {
-	if _, err := os.Stat(Sdk{candidate, "current"}.installPath(root)); err != nil {
-		return Sdk{candidate, ""}, errors.ErrNoCurrSdk(candidate)
+	if _, err := os.Stat(Sdk{candidate, "current", root}.installPath(root)); err != nil {
+		return Sdk{candidate, "", root}, errors.ErrNoCurrSdk(candidate)
 	}
-	p, err := os.Readlink(Sdk{candidate, "current"}.installPath(root))
+	p, err := os.Readlink(Sdk{candidate, "current", root}.installPath(root))
 	if err == nil {
 		d, _ := os.Stat(p)
-		return Sdk{candidate, d.Name()}, nil
+		return Sdk{candidate, d.Name(), root}, nil
 	}
 	// if directory 'current' is not symlink
-	return Sdk{candidate, "current"}, nil
+	return Sdk{candidate, "current", root}, nil
 }
 
 // InstalledSdks returns every installed Sdk of specified candidate
@@ -162,17 +164,17 @@ func InstalledSdks(root string, candidate string) []Sdk {
 	}
 	var res []Sdk
 	for _, ver := range versions {
-		res = append(res, Sdk{candidate, ver.Name()})
+		res = append(res, Sdk{candidate, ver.Name(), root})
 	}
 	return res
 }
 
 func DefaultSdk(reg string, root string, candidate string) (Sdk, error) {
-	if v, netErr := pkgs.GetDefault(reg, candidate); netErr == nil {
-		return Sdk{candidate, v}, nil
+	if v, netErr := api.GetDefault(reg, candidate); netErr == nil {
+		return Sdk{candidate, v, root}, nil
 	} else if curr, fsErr := CurrentSdk(root, candidate); fsErr == nil {
 		return curr, nil
 	} else {
-		return Sdk{candidate, ""}, errors.ErrNotOnline
+		return Sdk{candidate, "", root}, errors.ErrNotOnline
 	}
 }

@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"github.com/palindrom615/sdkman/api"
 	"github.com/palindrom615/sdkman/errors"
 	"github.com/palindrom615/sdkman/pkgs"
 	"github.com/palindrom615/sdkman/sdk"
+	"github.com/palindrom615/sdkman/validate"
 	"github.com/spf13/cobra"
 )
 
@@ -16,7 +18,7 @@ func install(c *cobra.Command, args []string) error {
 		return err
 	}
 
-	if err := pkgs.CheckValidCand(sdkHome, target.Candidate); err != nil {
+	if err := validate.CheckValidCand(sdkHome, target.Candidate); err != nil {
 		return err
 	}
 	if target.Version == "" {
@@ -40,7 +42,7 @@ func install(c *cobra.Command, args []string) error {
 	if target.IsArchived(sdkHome) {
 		archiveReady <- true
 	} else {
-		s, t, err := pkgs.GetDownload(registry, target)
+		s, t, err := api.GetDownload(registry, target.Candidate, target.Version)
 		if err != nil {
 			archiveReady <- false
 			return err

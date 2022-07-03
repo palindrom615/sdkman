@@ -9,24 +9,30 @@ import (
 
 // Current print currently used packages
 func current(cmd *cobra.Command, args []string) error {
-	root := sdkHome
 	if len(args) == 0 {
-		sdks := sdk.CurrentSdks(root)
-		if len(sdks) == 0 {
-			return errors.ErrNoCurrCands
-		}
-		for _, sdk := range sdks {
-			fmt.Printf("%s@%s\n", sdk.Candidate, sdk.Version)
-		}
-	} else {
-		candidate := args[0]
-		sdk, err := sdk.CurrentSdk(root, candidate)
-		if err == nil {
-			fmt.Println(sdk.Candidate + "@" + sdk.Version)
-		} else {
-			return errors.ErrNoCurrSdk(candidate)
-		}
+		return currentAll()
 	}
+	return currentCandidate(args[0])
+}
+
+func currentAll() error {
+	sdks := sdk.CurrentSdks(sdkHome)
+	if len(sdks) == 0 {
+		return errors.ErrNoCurrCands
+	}
+	for _, s := range sdks {
+		fmt.Printf("%s@%s\n", s.Candidate, s.Version)
+	}
+	return nil
+}
+
+func currentCandidate(candidate string) error {
+	currentSdk, err := sdk.CurrentSdk(sdkHome, candidate)
+	if err != nil {
+		return errors.ErrNoCurrSdk(candidate)
+
+	}
+	fmt.Println(currentSdk.Candidate + "@" + currentSdk.Version)
 	return nil
 }
 

@@ -1,7 +1,6 @@
-package cmd
+package script
 
 import (
-	"reflect"
 	"testing"
 )
 
@@ -32,14 +31,5 @@ func TestExportPosh(t *testing.T) {
 
 	if exportPosh(paths, envVars) != answer {
 		t.Errorf("expected: %s, return: %s", answer, exportPosh(paths, envVars))
-	}
-}
-
-func TestRemoveIndexes(t *testing.T) {
-	paths := []string{"a", "b", "c", "d"}
-	idxs := []int{1, 3}
-	res := removeIndexes(paths, idxs)
-	if !reflect.DeepEqual(res, []string{"a", "c"}) {
-		t.Errorf("expected: %s, return: %s", []string{"a", "c"}, res)
 	}
 }

@@ -1,7 +1,8 @@
-package cmd
+package script
 
 import (
 	"fmt"
+	"github.com/palindrom615/sdkman/sdk"
 	"strings"
 )
 
@@ -45,12 +46,16 @@ func exportWindows(paths []string, envVars []envVar) string {
 	return res
 }
 
-func removeIndexes(s []string, idxs []int) []string {
-	res := []string{}
-	oldIdx := 0
-	for _, idx := range idxs {
-		res = append(res, s[oldIdx:idx]...)
-		oldIdx = idx + 1
+func RunExport(shell string, sdks []sdk.Sdk) {
+	paths, homes := getPathsHomes(sdks)
+
+	if shell == "bash" || shell == "zsh" {
+		fmt.Println(exportBash(paths, homes))
+	} else if shell == "fish" {
+		fmt.Println(exportFish(paths, homes))
+	} else if shell == "powershell" || shell == "posh" {
+		fmt.Println(exportPosh(paths, homes))
+	} else if shell == "windows" || shell == "window" {
+		fmt.Println(exportWindows(paths, homes))
 	}
-	return res
 }

@@ -1,9 +1,9 @@
-package pkgs
+package api
 
 import (
 	"bytes"
 	"fmt"
-	"github.com/palindrom615/sdkman/sdk"
+	"github.com/palindrom615/sdkman/util"
 	"io"
 	"io/ioutil"
 	"mime"
@@ -37,9 +37,9 @@ func getDownloadSdkmanVersion(api string, versionType string) ([]byte, error) {
 	return requestSync(brokerAPI + "/download/sdkman/version/" + versionType)
 }
 
-func GetDownload(api string, sdk sdk.Sdk) (io.ReadCloser, string, error) {
+func GetDownload(api string, candidate string, version string) (io.ReadCloser, string, error) {
 	brokerAPI := api + "/broker"
-	return download(brokerAPI + "/download/" + sdk.Candidate + "/" + sdk.Version + "/" + Platform())
+	return Download(brokerAPI + "/download/" + candidate + "/" + version + "/" + util.Platform())
 }
 
 func GetDefault(api string, candidate string) (string, error) {
@@ -49,9 +49,9 @@ func GetDefault(api string, candidate string) (string, error) {
 	return string(res), err
 }
 
-func GetValidate(api string, sdk sdk.Sdk) (bool, error) {
+func GetValidate(api string, candidate string, version string) (bool, error) {
 	candidatesAPI := api + "/candidates"
-	url := fmt.Sprintf("%s/validate/%s/%s/%s", candidatesAPI, sdk.Candidate, sdk.Version, Platform())
+	url := fmt.Sprintf("%s/validate/%s/%s/%s", candidatesAPI, candidate, version, util.Platform())
 	res, err := requestSync(url)
 	return string(res) == "valid", err
 }
@@ -62,13 +62,10 @@ func GetList(api string) (io.ReadCloser, error) {
 	return request(candidatesAPI + "/list")
 }
 
-func GetVersionsList(api string, currentSdk sdk.Sdk, installed []sdk.Sdk) (io.ReadCloser, error) {
+func GetVersionsList(api string, candidate string, version string, installed []string) (io.ReadCloser, error) {
 	candidatesAPI := api + "/candidates"
-	installedVers := ""
-	for _, sdk := range installed {
-		installedVers += sdk.Version + ","
-	}
-	url := fmt.Sprintf("%s/%s/%s/versions/list?current=%s&installed=%s", candidatesAPI, currentSdk.Candidate, Platform(), currentSdk.Version, installedVers)
+	installedVersions := strings.Join(installed, ",")
+	url := fmt.Sprintf("%s/%s/%s/versions/list?current=%s&installed=%s", candidatesAPI, candidate, util.Platform(), version, installedVersions)
 	return request(url)
 }
 
@@ -80,7 +77,7 @@ func GetAll(api string) ([]string, error) {
 
 func getVersionsAll(api string, candidate string) ([]byte, error) {
 	candidatesAPI := api + "/candidates"
-	return requestSync(candidatesAPI + "/" + candidate + "/" + Platform() + "/versions/all")
+	return requestSync(candidatesAPI + "/" + candidate + "/" + util.Platform() + "/versions/all")
 }
 
 func getAlive(api string) ([]byte, error) {
@@ -91,8 +88,8 @@ func getSelfupdate(api string, beta bool) ([]byte, error) {
 	return requestSync(api + "/selfupdate?beta=" + strconv.FormatBool(beta))
 }
 
-func getHooks(api string, phase string, sdk sdk.Sdk) ([]byte, error) {
-	return requestSync(api + "/hooks/" + phase + "/" + sdk.Candidate + "/" + sdk.Version + "/" + Platform())
+func getHooks(api string, phase string, candidate string, version string) ([]byte, error) {
+	return requestSync(api + "/hooks/" + phase + "/" + candidate + "/" + version + "/" + util.Platform())
 }
 
 func wrapResponseBody(r *http.Response) io.ReadCloser {
@@ -109,7 +106,7 @@ func request(url string) (io.ReadCloser, error) {
 	return wrapResponseBody(resp), err
 }
 
-func download(url string) (io.ReadCloser, string, error) {
+func Download(url string) (io.ReadCloser, string, error) {
 	fmt.Printf("downloading sdk from %s...\n", url)
 	req, _ := http.NewRequest("GET", url, nil)
 	resp, err := http.DefaultClient.Do(req)

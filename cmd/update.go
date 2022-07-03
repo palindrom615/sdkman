@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/palindrom615/sdkman/api"
 	"github.com/palindrom615/sdkman/errors"
 	"github.com/palindrom615/sdkman/pkgs"
-	"github.com/palindrom615/sdkman/pkgs/strset"
 	"github.com/palindrom615/sdkman/store"
 	"github.com/spf13/cobra"
 	"strings"
@@ -13,13 +13,13 @@ import (
 // Update updates available candidates
 func update(cmd *cobra.Command, args []string) error {
 	{
-		freshCsv, netErr := pkgs.GetAll(registry)
+		freshCsv, netErr := api.GetAll(registry)
 		if netErr != nil {
 			return errors.ErrNotOnline
 		}
-		fresh := strset.New(freshCsv...)
+		fresh := pkgs.NewStrSet(freshCsv...)
 		cachedCsv := store.GetCandidates(sdkHome)
-		cached := strset.New(cachedCsv...)
+		cached := pkgs.NewStrSet(cachedCsv...)
 
 		added := fresh.Difference(cached)
 		obsoleted := cached.Difference(fresh)

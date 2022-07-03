@@ -18,17 +18,22 @@ func mkdirP(paths ...string) {
 	}
 }
 
+var (
+	sdkHome = "test"
+)
+
 func TestMain(m *testing.M) {
 	os.Mkdir("test", os.ModePerm|os.ModeDir)
+
 	code := m.Run()
 	os.RemoveAll("test")
 	os.Exit(code)
 }
 
 func TestMkdirIfNotExist(t *testing.T) {
-	pkgs.MkdirIfNotExist("test")
-	candDir := path.Join("test", "candidates")
-	arcDir := path.Join("test", "archives")
+	pkgs.MkdirIfNotExist(sdkHome)
+	candDir := path.Join(sdkHome, "candidates")
+	arcDir := path.Join(sdkHome, "archives")
 	if f, err := os.Stat(candDir); os.IsNotExist(err) || !f.Mode().IsDir() {
 		t.Error("candidates path not created")
 	}
@@ -38,17 +43,16 @@ func TestMkdirIfNotExist(t *testing.T) {
 }
 
 func TestIsInstalled(t *testing.T) {
-	root := "test"
-	sdk := sdk.Sdk{"java", "8"}
+	s := sdk.Sdk{"java", "8", sdkHome}
 	mkdirP("test/candidates/java/8")
-	if !sdk.IsInstalled(root) {
+	if !s.IsInstalled(sdkHome) {
 		t.Error("It is installed but IsInstalled is false")
 	}
 	os.RemoveAll("test/candidates/java")
 }
 
 func TestInstalledSdksWithNoCurrSdk(t *testing.T) {
-	sdks := sdk.InstalledSdks("test", "java")
+	sdks := sdk.InstalledSdks(sdkHome, "java")
 	vers := []string{}
 	for _, s := range sdks {
 		vers = append(vers, s.Version)
@@ -79,10 +83,10 @@ func TestCurrentSdks(t *testing.T) {
 	mkdirP("test/candidates/java/8", "test/candidates/gradle/5")
 	os.Symlink("test/candidates/java/8", "test/candidates/java/current")
 	os.Symlink("test/candidates/gradle/5", "test/candidates/gradle/current")
-	sdks := sdk.CurrentSdks("test")
-	for _, sdk := range sdks {
-		if sdk.Candidate == "java" && sdk.Version == "8" || sdk.Candidate == "gradle" && sdk.Version == "5" {
-			t.Errorf("installed version: java@8, gradle@5 guess: %s@%s", sdk.Candidate, sdk.Version)
+	sdks := sdk.CurrentSdks(sdkHome)
+	for _, s := range sdks {
+		if s.Candidate == "java" && s.Version == "8" || s.Candidate == "gradle" && s.Version == "5" {
+			t.Errorf("installed version: java@8, gradle@5 guess: %s@%s", s.Candidate, s.Version)
 		}
 	}
 	os.RemoveAll("test/candidates/java")
@@ -90,36 +94,36 @@ func TestCurrentSdks(t *testing.T) {
 }
 
 func TestIsArchived(t *testing.T) {
-	sdk := sdk.Sdk{"java", "8"}
-	if sdk.IsArchived("test") {
+	s := sdk.Sdk{"java", "8", sdkHome}
+	if s.IsArchived(sdkHome) {
 		t.Error("no archive file, but IsArchived return true")
 	}
 	mkdirP("test/archives/java-8.tar.bz2")
-	if !sdk.IsArchived("test") {
+	if !s.IsArchived(sdkHome) {
 		t.Error("archive file exists, but IsArchived return false")
 	}
 	os.RemoveAll("test/archives/java-8.tar.bz2")
 }
 
 func TestCurrentSdk(t *testing.T) {
-	sdk, err := sdk.CurrentSdk("test", "java")
+	currentSdk, err := sdk.CurrentSdk("test", "java")
 	if !reflect.DeepEqual(err, errors.ErrNoCurrSdk("java")) {
-		t.Errorf("no using version, but CurrentSdk return %s", sdk.Candidate+"@"+sdk.Version)
+		t.Errorf("no using version, but CurrentSdk return %s", currentSdk.Candidate+"@"+currentSdk.Version)
 	}
 	mkdirP("test/candidates/java/8")
 	os.Symlink("test/candidates/java/8", "test/candidates/java/current")
-	sdk, err = sdk.CurrentSdk("test", "java")
-	if err != nil || sdk.Version != "8" {
-		t.Errorf("java@8 is used, but CurrentSdk return java@%s, error %s", sdk.Version, err)
+	currentSdk, err = sdk.CurrentSdk("test", "java")
+	if err != nil || currentSdk.Version != "8" {
+		t.Errorf("java@8 is used, but CurrentSdk return java@%s, error %s", currentSdk.Version, err)
 	}
 	os.RemoveAll("test/candidates/java")
 }
 
 func TestUseVer(t *testing.T) {
 	mkdirP("test/candidates/java/8")
-	sdk := sdk.Sdk{"java", "8"}
-	err := sdk.Use("test")
-	if sdk, _ := sdk.CurrentSdk("test", "java"); sdk.Version != "8" {
+	s := sdk.Sdk{"java", "8", sdkHome}
+	err := s.Use(sdkHome)
+	if s, _ := sdk.CurrentSdk(sdkHome, "java"); s.Version != "8" {
 		t.Errorf("Use failed to create symlink: %s", err)
 	}
 	os.RemoveAll("test/candidates/java")

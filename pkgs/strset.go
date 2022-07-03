@@ -1,23 +1,23 @@
 package pkgs
 
-type strset struct {
+type StrSet struct {
 	m map[string]bool
 }
 
-func New(strings ...string) strset {
+func NewStrSet(strings ...string) StrSet {
 	m := make(map[string]bool)
 	for _, s := range strings {
 		m[s] = true
 	}
-	return strset{m}
+	return StrSet{m}
 }
 
-func (s1 strset) Has(s string) bool {
+func (s1 StrSet) Has(s string) bool {
 	_, ok := s1.m[s]
 	return ok
 }
 
-func (s1 strset) List() []string {
+func (s1 StrSet) List() []string {
 	list := make([]string, len(s1.m))
 	i := 0
 	for k := range s1.m {
@@ -27,17 +27,17 @@ func (s1 strset) List() []string {
 	return list
 }
 
-func (s1 strset) Difference(s2 strset) strset {
+func (s1 StrSet) Difference(s2 StrSet) StrSet {
 	var diff []string
-	for k, _ := range s1.m {
+	for k := range s1.m {
 		_, ok := s2.m[k]
 		if !ok {
 			diff = append(diff, k)
 		}
 	}
-	return New(diff...)
+	return NewStrSet(diff...)
 }
 
-func (s1 strset) Size() int {
+func (s1 StrSet) Size() int {
 	return len(s1.m)
 }
