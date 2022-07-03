@@ -36,6 +36,33 @@ func getDefaultShell() string {
 }
 
 var exportCmd = &cobra.Command{
-	Use:  "export [shell]",
+	Use:   "export [shell]",
+	Short: "'sdk export [shell]' command print script putting sdk paths in system environment variables",
+	Long: `'sdk export [shell]' command print script putting sdk paths in system environment variables.
+	To apply script for current shell only,
+	
+	powershell:
+		> Invoke-Expression (sdk export posh)
+	bash:
+		> eval $(sdk export bash)
+	zsh:
+		> eval $(sdk export zsh)
+	fish:
+		> eval (sdk export fish)
+
+
+	To apply script permanently,
+
+	windows (user-wide global):
+		> Invoke-Expression (sdk export windows)
+	powershell:
+		> Add-Content $Profile "Invoke-Expression (sdk export posh)"
+	bash:
+		> echo "eval \$(sdk export bash)" >> ~/.bashrc
+	zsh:
+		> echo "eval \$(sdk export zsh)" >> ~/.zshrc
+	fish:
+		> echo "eval (sdk export fish)" >> ~/.config/config.fish	
+	`,
 	RunE: export,
 }
