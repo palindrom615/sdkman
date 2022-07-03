@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/palindrom615/sdkman/sdk"
 	"github.com/yargevad/filepathx"
-	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -14,9 +13,9 @@ func getPathsHomes(sdks []sdk.Sdk) ([]string, []envVar) {
 	paths := []string{}
 	homes := []envVar{}
 	for _, s := range sdks {
-		candHome := path.Join(s.SdkHome, "candidates", s.Candidate, "current")
+		candHome := filepath.Join(s.SdkHome, "candidates", s.Candidate, "current")
 
-		binPath := path.Join(candHome, "bin")
+		binPath := filepath.Join(candHome, "bin")
 		homePath := candHome
 		if s.Candidate == "java" && runtime.GOOS == "darwin" {
 			// fix for macOS
