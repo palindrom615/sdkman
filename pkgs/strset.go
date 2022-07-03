@@ -1,4 +1,4 @@
-package strset
+package pkgs
 
 type strset struct {
 	m map[string]bool
@@ -31,7 +31,7 @@ func (s1 strset) Difference(s2 strset) strset {
 	var diff []string
 	for k, _ := range s1.m {
 		_, ok := s2.m[k]
-		if ok {
+		if !ok {
 			diff = append(diff, k)
 		}
 	}
@@ -41,4 +41,3 @@ func (s1 strset) Difference(s2 strset) strset {
 func (s1 strset) Size() int {
 	return len(s1.m)
 }
-
