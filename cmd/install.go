@@ -13,34 +13,34 @@ func install(c *cobra.Command, args []string) error {
 	if len(args) == 0 {
 		return errors.ErrNoCand
 	}
-	target, err := pkgs.Arg2sdk(registry, directory, args[0])
+	target, err := pkgs.Arg2sdk(registry, sdkHome, args[0])
 	if err != nil {
 		return err
 	}
 
-	pkgs.MkdirIfNotExist(directory)
-	if err := pkgs.CheckValidCand(directory, target.Candidate); err != nil {
+	pkgs.MkdirIfNotExist(sdkHome)
+	if err := pkgs.CheckValidCand(sdkHome, target.Candidate); err != nil {
 		return err
 	}
 	if target.Version == "" {
-		defaultSdk, err := pkgs.DefaultSdk(registry, directory, target.Candidate)
+		defaultSdk, err := pkgs.DefaultSdk(registry, sdkHome, target.Candidate)
 		if err != nil {
 			return err
 		}
 		target = defaultSdk
 	}
 
-	if target.IsInstalled(directory) {
+	if target.IsInstalled(sdkHome) {
 		return errors.ErrVerExists
 	}
-	if err := target.CheckValidVer(registry, directory); err != nil {
+	if err := target.CheckValidVer(registry, sdkHome); err != nil {
 		return err
 	}
 
 	archiveReady := make(chan bool)
 	installReady := make(chan bool)
-	go target.Unarchive(directory, archiveReady, installReady)
-	if target.IsArchived(directory) {
+	go target.Unarchive(sdkHome, archiveReady, installReady)
+	if target.IsArchived(sdkHome) {
 		archiveReady <- true
 	} else {
 		s, t, err := pkgs.GetDownload(registry, target)
@@ -49,46 +49,16 @@ func install(c *cobra.Command, args []string) error {
 			return err
 		}
 		archive := pkgs.Archive{target, t}
-		go archive.Save(s, directory, archiveReady)
+		go archive.Save(s, sdkHome, archiveReady)
 	}
 	if <-installReady == false {
 		return errors.ErrVerInsFail
 	}
-	return target.Use(directory)
+	return target.Use(sdkHome)
 }
 
 var installCmd = &cobra.Command{
-	Use:                        "install candidate[@version]",
-	Aliases:                    []string{"i"},
-	SuggestFor:                 nil,
-	Short:                      "",
-	Long:                       "",
-	Example:                    "",
-	ValidArgs:                  nil,
-	Args:                       nil,
-	ArgAliases:                 nil,
-	BashCompletionFunction:     "",
-	Deprecated:                 "",
-	Hidden:                     false,
-	Annotations:                nil,
-	Version:                    "",
-	PersistentPreRun:           nil,
-	PersistentPreRunE:          nil,
-	PreRun:                     nil,
-	PreRunE:                    nil,
-	Run:                        nil,
-	RunE:                       install,
-	PostRun:                    nil,
-	PostRunE:                   nil,
-	PersistentPostRun:          nil,
-	PersistentPostRunE:         nil,
-	SilenceErrors:              false,
-	SilenceUsage:               false,
-	DisableFlagParsing:         false,
-	DisableAutoGenTag:          false,
-	DisableFlagsInUseLine:      false,
-	DisableSuggestions:         false,
-	SuggestionsMinimumDistance: 0,
-	TraverseChildren:           false,
-	FParseErrWhitelist:         cobra.FParseErrWhitelist{},
+	Use:     "install candidate[@version]",
+	Aliases: []string{"i"},
+	RunE:    install,
 }

@@ -9,7 +9,7 @@ import (
 
 // Current print currently used packages
 func current(cmd *cobra.Command, args []string) error {
-	root := directory
+	root := sdkHome
 	if len(args) == 0 {
 		sdks := pkgs.CurrentSdks(root)
 		if len(sdks) == 0 {
@@ -31,37 +31,7 @@ func current(cmd *cobra.Command, args []string) error {
 }
 
 var currentCmd = &cobra.Command{
-	Use:                        "current [candidate]",
-	Aliases:                    []string{"c"},
-	SuggestFor:                 nil,
-	Short:                      "",
-	Long:                       "",
-	Example:                    "",
-	ValidArgs:                  nil,
-	Args:                       nil,
-	ArgAliases:                 nil,
-	BashCompletionFunction:     "",
-	Deprecated:                 "",
-	Hidden:                     false,
-	Annotations:                nil,
-	Version:                    "",
-	PersistentPreRun:           nil,
-	PersistentPreRunE:          nil,
-	PreRun:                     nil,
-	PreRunE:                    nil,
-	RunE:                       current,
-	Run:                        nil,
-	PostRun:                    nil,
-	PostRunE:                   nil,
-	PersistentPostRun:          nil,
-	PersistentPostRunE:         nil,
-	SilenceErrors:              false,
-	SilenceUsage:               false,
-	DisableFlagParsing:         false,
-	DisableAutoGenTag:          false,
-	DisableFlagsInUseLine:      false,
-	DisableSuggestions:         false,
-	SuggestionsMinimumDistance: 0,
-	TraverseChildren:           false,
-	FParseErrWhitelist:         cobra.FParseErrWhitelist{},
+	Use:     "current [candidate]",
+	Aliases: []string{"c"},
+	RunE:    current,
 }

@@ -15,15 +15,15 @@ var (
 )
 
 var (
-	registry  string
-	directory string
-	insecure  bool
+	registry string
+	sdkHome  string
+	insecure bool
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "sdkman",
-	Short:   "manage various versions of SDKs",
-	Version: version,
+	Use:          "sdkman",
+	Short:        "manage various versions of SDKs",
+	Version:      version,
 	SilenceUsage: true,
 }
 
@@ -31,7 +31,7 @@ func Execute() {
 	home, _ := os.UserHomeDir()
 
 	rootCmd.PersistentFlags().StringVarP(&registry, "registry", "r", "https://api.sdkman.io/2", "sdkman registry")
-	rootCmd.PersistentFlags().StringVarP(&directory, "directory", "d", path.Join(home, ".sdkman"), "sdkman registry")
+	rootCmd.PersistentFlags().StringVarP(&sdkHome, "sdkHome", "d", path.Join(home, ".sdkman"), "sdk install directory")
 	rootCmd.PersistentFlags().BoolVarP(&insecure, "insecure", "i", false, "whether allow insecure request")
 	rootCmd.AddCommand(listCmd, currentCmd, updateCmd, installCmd, useCmd, exportCmd)
 

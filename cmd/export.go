@@ -24,7 +24,7 @@ func export(cmd *cobra.Command, args []string) error {
 	} else {
 		shell = args[0]
 	}
-	sdks := pkgs.CurrentSdks(directory)
+	sdks := pkgs.CurrentSdks(sdkHome)
 	if len(sdks) == 0 {
 		fmt.Println("")
 		return nil
@@ -32,7 +32,7 @@ func export(cmd *cobra.Command, args []string) error {
 	paths := []string{}
 	homes := []envVar{}
 	for _, sdk := range sdks {
-		candHome := path.Join(directory, "candidates", sdk.Candidate, "current")
+		candHome := path.Join(sdkHome, "candidates", sdk.Candidate, "current")
 
 		binPath := path.Join(candHome, "bin")
 		homePath := candHome
@@ -59,37 +59,6 @@ func export(cmd *cobra.Command, args []string) error {
 }
 
 var exportCmd = &cobra.Command{
-	Use:                        "export [shell]",
-	Aliases:                    nil,
-	SuggestFor:                 nil,
-	Short:                      "",
-	Long:                       "",
-	Example:                    "",
-	ValidArgs:                  nil,
-	Args:                       nil,
-	ArgAliases:                 nil,
-	BashCompletionFunction:     "",
-	Deprecated:                 "",
-	Hidden:                     false,
-	Annotations:                nil,
-	Version:                    "",
-	PersistentPreRun:           nil,
-	PersistentPreRunE:          nil,
-	PreRun:                     nil,
-	PreRunE:                    nil,
-	Run:                        nil,
-	RunE:                       export,
-	PostRun:                    nil,
-	PostRunE:                   nil,
-	PersistentPostRun:          nil,
-	PersistentPostRunE:         nil,
-	SilenceErrors:              false,
-	SilenceUsage:               false,
-	DisableFlagParsing:         false,
-	DisableAutoGenTag:          false,
-	DisableFlagsInUseLine:      false,
-	DisableSuggestions:         false,
-	SuggestionsMinimumDistance: 0,
-	TraverseChildren:           false,
-	FParseErrWhitelist:         cobra.FParseErrWhitelist{},
+	Use:  "export [shell]",
+	RunE: export,
 }

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/palindrom615/sdkman/errors"
 	"github.com/palindrom615/sdkman/pkgs"
-	"github.com/palindrom615/sdkman/store"
 	"github.com/palindrom615/sdkman/pkgs/strset"
+	"github.com/palindrom615/sdkman/store"
 	"github.com/spf13/cobra"
 	"strings"
 )
@@ -18,7 +18,7 @@ func update(cmd *cobra.Command, args []string) error {
 			return errors.ErrNotOnline
 		}
 		fresh := strset.New(freshCsv...)
-		cachedCsv := store.GetCandidates(directory)
+		cachedCsv := store.GetCandidates(sdkHome)
 		cached := strset.New(cachedCsv...)
 
 		added := fresh.Difference(cached)
@@ -30,43 +30,12 @@ func update(cmd *cobra.Command, args []string) error {
 		if obsoleted.Size() != 0 {
 			fmt.Println("Removing obsolete candidates: " + strings.Join(obsoleted.List(), ", "))
 		}
-		_ = store.SetCandidates(directory, freshCsv)
+		_ = store.SetCandidates(sdkHome, freshCsv)
 		return nil
 	}
 }
 
 var updateCmd = &cobra.Command{
-	Use:                        "update",
-	Aliases:                    nil,
-	SuggestFor:                 nil,
-	Short:                      "",
-	Long:                       "",
-	Example:                    "",
-	ValidArgs:                  nil,
-	Args:                       nil,
-	ArgAliases:                 nil,
-	BashCompletionFunction:     "",
-	Deprecated:                 "",
-	Hidden:                     false,
-	Annotations:                nil,
-	Version:                    "",
-	PersistentPreRun:           nil,
-	PersistentPreRunE:          nil,
-	PreRun:                     nil,
-	PreRunE:                    nil,
-	Run:                        nil,
-	RunE:                       update,
-	PostRun:                    nil,
-	PostRunE:                   nil,
-	PersistentPostRun:          nil,
-	PersistentPostRunE:         nil,
-	SilenceErrors:              false,
-	SilenceUsage:               false,
-	DisableFlagParsing:         false,
-	DisableAutoGenTag:          false,
-	DisableFlagsInUseLine:      false,
-	DisableSuggestions:         false,
-	SuggestionsMinimumDistance: 0,
-	TraverseChildren:           false,
-	FParseErrWhitelist:         cobra.FParseErrWhitelist{},
+	Use:  "update",
+	RunE: update,
 }
