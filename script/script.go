@@ -2,6 +2,7 @@ package script
 
 import (
 	"fmt"
+	"github.com/palindrom615/sdkman/pkgs"
 	"github.com/palindrom615/sdkman/sdk"
 	"strings"
 )
@@ -36,9 +37,16 @@ func exportPosh(paths []string, envVars []envVar) string {
 }
 
 func exportWindows(paths []string, envVars []envVar) string {
+	currentPaths := getCurrentPath()
+
+	s := pkgs.NewStrSet(currentPaths...)
+	p := pkgs.NewStrSet(paths...)
+	paths = p.Difference(s).List()
+
 	for i, p := range paths {
 		paths[i] = strings.ReplaceAll(p, "/", "\\")
 	}
+
 	res := fmt.Sprintf("[Environment]::SetEnvironmentVariable(\"Path\", [Environment]::GetEnvironmentVariable(\"Path\", [EnvironmentVariableTarget]::User) + \";%s\", [System.EnvironmentVariableTarget]::User);", strings.Join(paths, ";"))
 	for _, v := range envVars {
 		res += fmt.Sprintf("[Environment]::SetEnvironmentVariable(\"%s\", \"%s\", [System.EnvironmentVariableTarget]::User);", v.name, v.val)

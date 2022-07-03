@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/palindrom615/sdkman/sdk"
 	"github.com/yargevad/filepathx"
+	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -27,4 +28,15 @@ func getPathsHomes(sdks []sdk.Sdk) ([]string, []envVar) {
 		homes = append(homes, envVar{fmt.Sprintf("%s_HOME", strings.ToUpper(s.Candidate)), homePath})
 	}
 	return paths, homes
+}
+
+func getCurrentPath() []string {
+	del := ":"
+	key := "PATH"
+	if runtime.GOOS == "windows" {
+		del = ";"
+		key = "Path"
+	}
+	path := os.Getenv(key)
+	return strings.Split(path, del)
 }
